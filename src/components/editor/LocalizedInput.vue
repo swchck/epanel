@@ -48,8 +48,8 @@ const filled = computed(() => LOCALES.filter((l) => get(l)).length)
     <Input v-else :id="id" v-model="current" :placeholder="placeholder" class="pr-16" />
     <button
       type="button"
-      class="absolute top-1.5 right-1.5 flex h-6 items-center gap-1 rounded-md px-1.5 font-mono text-[11px] text-muted-foreground transition hover:bg-accent hover:text-foreground"
-      :class="{ 'text-primary': filled > 1 }"
+      class="absolute right-1.5 flex h-6 items-center gap-1 rounded-md px-1.5 font-mono text-[11px] leading-none text-muted-foreground transition hover:bg-accent hover:text-foreground"
+      :class="[props.multiline ? 'top-1.5' : 'top-1/2 -translate-y-1/2', { 'text-primary': filled > 1 }]"
       :title="t('editor.translations')"
       :aria-label="t('editor.translations')"
       @click="open = true"

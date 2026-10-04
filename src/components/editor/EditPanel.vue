@@ -3,6 +3,7 @@ import { computed, ref, watch } from 'vue'
 import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, Minus, Plus, SquareDashed, Trash2, X } from '@lucide/vue'
 import { Button } from '@/components/ui/button'
 import DeviceChip from '@/components/common/DeviceChip.vue'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import PanelEnclosure from '@/components/panel/PanelEnclosure.vue'
 import { TYPE_ACCENT } from '@/components/panel/geometry'
 import { DEVICE_TYPES, type DeviceType } from '@/domain/model'
@@ -51,6 +52,18 @@ function add(type: DeviceType) {
   slot.value = null
   ui.select(dev.id)
 }
+
+const moves = computed(() => {
+  const l = loc.value
+  const id = selected.value?.id
+  if (!l || !id) return []
+  return [
+    { key: 'editor.panel.left', icon: ArrowLeft, disabled: l.index === 0, run: () => moveItem(d.value, l.row, l.index, -1) },
+    { key: 'editor.panel.right', icon: ArrowRight, disabled: l.index >= (d.value.rows[l.row]?.items.length ?? 0) - 1, run: () => moveItem(d.value, l.row, l.index, 1) },
+    { key: 'editor.panel.rowUp', icon: ArrowUp, disabled: l.row === 0, run: () => moveToRow(d.value, id, l.row - 1) },
+    { key: 'editor.panel.rowDown', icon: ArrowDown, disabled: l.row >= d.value.rows.length - 1, run: () => moveToRow(d.value, id, l.row + 1) },
+  ]
+})
 
 function remove() {
   if (!selected.value) return
@@ -129,20 +142,31 @@ function used(i: number) {
         </div>
       </div>
       <div v-else-if="selected" class="rounded-2xl border bg-card p-4">
-        <div class="mb-4 flex flex-wrap items-center gap-1.5">
-          <DeviceChip :device="selected" />
-          <span class="mr-auto truncate text-sm text-muted-foreground">{{ tx(selected.label) }}</span>
-          <template v-if="loc">
-            <Button variant="outline" size="icon-sm" :aria-label="t('editor.panel.left')" @click="moveItem(d, loc.row, loc.index, -1)"><ArrowLeft /></Button>
-            <Button variant="outline" size="icon-sm" :aria-label="t('editor.panel.right')" @click="moveItem(d, loc.row, loc.index, 1)"><ArrowRight /></Button>
-            <Button variant="outline" size="icon-sm" :disabled="loc.row === 0" :aria-label="t('editor.panel.rowUp')" @click="moveToRow(d, selected.id, loc.row - 1)"><ArrowUp /></Button>
-            <Button variant="outline" size="icon-sm" :disabled="loc.row >= d.rows.length - 1" :aria-label="t('editor.panel.rowDown')" @click="moveToRow(d, selected.id, loc.row + 1)"><ArrowDown /></Button>
-            <Button variant="outline" size="icon-sm" :aria-label="t('editor.panel.blankBefore')" @click="insertBlank(d, loc.row, loc.index)"><SquareDashed /></Button>
-            <Button variant="outline" size="icon-sm" :aria-label="t('editor.panel.insertRight')" @click="openSlot(loc.row, loc.index + 1)"><Plus /></Button>
-          </template>
-          <Button v-else variant="outline" size="sm" @click="moveToRow(d, selected.id, Math.max(0, d.rows.length - 1))">{{ t('editor.panel.place') }}</Button>
-          <Button variant="destructive" size="icon-sm" :aria-label="t('common.delete')" @click="remove"><Trash2 /></Button>
+        <div class="mb-4 flex items-start gap-3">
+          <DeviceChip :device="selected" size="lg" />
+          <div class="min-w-0 flex-1 pt-0.5">
+            <div class="truncate font-medium">{{ tx(selected.label) || t(`device.type.${selected.type}`) }}</div>
+            <div class="text-xs text-muted-foreground">
+              <template v-if="loc">{{ t('device.place', { row: loc.row + 1, pos: (data.layout[loc.row]?.items.find((i) => i.device?.id === selected!.id)?.position ?? loc.index + 1) }) }}</template>
+              <template v-else>{{ t('editor.panel.unplacedOne') }}</template>
+            </div>
+          </div>
+          <Button variant="ghost" size="icon-sm" class="text-muted-foreground hover:text-danger" :aria-label="t('common.delete')" @click="remove"><Trash2 /></Button>
         </div>
+        <div v-if="loc" class="mb-5 flex flex-wrap items-center gap-2 rounded-xl bg-muted/50 p-1.5">
+          <div class="flex" role="group" :aria-label="t('editor.panel.position')">
+            <Tooltip v-for="m in moves" :key="m.key">
+              <TooltipTrigger as-child>
+                <Button variant="ghost" size="icon-sm" :disabled="m.disabled" :aria-label="t(m.key)" @click="m.run()"><component :is="m.icon" /></Button>
+              </TooltipTrigger>
+              <TooltipContent>{{ t(m.key) }}</TooltipContent>
+            </Tooltip>
+          </div>
+          <div class="h-5 w-px bg-border" />
+          <Button variant="ghost" size="sm" class="h-7" @click="insertBlank(d, loc.row, loc.index)"><SquareDashed /> {{ t('editor.panel.blankShort') }}</Button>
+          <Button variant="ghost" size="sm" class="h-7" @click="openSlot(loc.row, loc.index + 1)"><Plus /> {{ t('editor.panel.insertRight') }}</Button>
+        </div>
+        <Button v-else variant="outline" size="sm" class="mb-5" @click="moveToRow(d, selected.id, Math.max(0, d.rows.length - 1))">{{ t('editor.panel.place') }}</Button>
         <DeviceForm :id="selected.id" :key="selected.id" />
       </div>
       <div v-else class="rounded-2xl border border-dashed p-6 text-sm text-muted-foreground">

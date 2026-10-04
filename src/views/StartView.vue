@@ -67,7 +67,7 @@ function create() {
 
 <template>
   <div class="relative grid min-h-dvh place-items-center bg-background px-4 py-10">
-    <div class="absolute top-[calc(var(--titlebar)+0.75rem)] right-3 flex gap-1">
+    <div class="absolute top-3 right-3 z-[61] flex gap-1">
       <LangSwitch />
       <ThemeToggle />
     </div>
