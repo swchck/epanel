@@ -100,3 +100,16 @@ export async function printPage(): Promise<void> {
   const { invoke } = await import('@tauri-apps/api/core')
   await invoke('print_page')
 }
+
+// the desktop webview won't follow tel:, mailto: or web links by itself, so clicks on them go to the OS
+export function routeExternalLinks() {
+  if (!isDesktop) return
+  document.addEventListener('click', async (e) => {
+    const a = (e.target as Element | null)?.closest?.('a[href]')
+    const href = a?.getAttribute('href')
+    if (!href || !/^(tel:|mailto:|https?:)/i.test(href)) return
+    e.preventDefault()
+    const { openUrl } = await import('@tauri-apps/plugin-opener')
+    await openUrl(href)
+  })
+}

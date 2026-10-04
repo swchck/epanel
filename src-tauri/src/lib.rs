@@ -88,6 +88,7 @@ fn panel_arg() -> Option<PathBuf> {
 pub fn run() {
     let app = tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_opener::init())
         .manage(PendingOpen(Mutex::new(panel_arg())))
         .invoke_handler(tauri::generate_handler![read_text, write_text, take_opened_file, print_page])
         .build(tauri::generate_context!())
