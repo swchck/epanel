@@ -13,10 +13,8 @@ import { NAV, type NavName } from '@/router'
 import { useData } from '@/stores/data'
 import { useUi } from '@/stores/ui'
 import BrandMark from './BrandMark.vue'
-import LangSwitch from './LangSwitch.vue'
 import OfflineBadge from './OfflineBadge.vue'
 import SearchDialog from './SearchDialog.vue'
-import ThemeToggle from './ThemeToggle.vue'
 import { NAV_ICONS } from './navIcons'
 
 const data = useData()
@@ -185,8 +183,6 @@ whenever(
           <TooltipContent side="right">{{ t('nav.leave') }}</TooltipContent>
         </Tooltip>
         <div v-else-if="!collapsed" class="flex-1" />
-        <LangSwitch :compact="collapsed" />
-        <ThemeToggle />
         <Tooltip v-if="collapsed">
           <TooltipTrigger as-child>
             <Button variant="ghost" size="icon" class="size-9" :aria-label="t('nav.expand')" @click="ui.sidebarCollapsed = false"><PanelLeftOpen /></Button>
@@ -207,8 +203,6 @@ whenever(
         <Button variant="ghost" size="icon" :aria-label="t('search.open')" @click="ui.searchOpen = true">
           <Search class="size-5" />
         </Button>
-        <LangSwitch />
-        <ThemeToggle />
       </header>
 
       <div v-if="data.source === 'demo'" data-tauri-drag-region class="no-print flex items-center gap-2 border-b bg-info/10 px-4 py-2 text-sm text-info lg:px-8">

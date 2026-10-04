@@ -6,15 +6,14 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenu
 import { LOCALES, type Locale } from '@/domain/model'
 import { LOCALE_NAMES, setLocale } from '@/i18n'
 
-defineProps<{ compact?: boolean }>()
 const { locale } = useI18n()
 </script>
 
 <template>
   <DropdownMenu>
     <DropdownMenuTrigger as-child>
-      <Button variant="ghost" size="sm" class="gap-1.5 px-2 font-mono text-xs uppercase" :class="{ 'size-9 px-0': compact }" :aria-label="`${locale} · ${$t('settings.language')}`">
-        <Languages v-if="!compact" class="size-4" />
+      <Button variant="ghost" size="sm" class="gap-1.5 px-2 font-mono text-xs uppercase" :aria-label="`${locale} · ${$t('settings.language')}`">
+        <Languages class="size-4" />
         {{ locale }}
       </Button>
     </DropdownMenuTrigger>
