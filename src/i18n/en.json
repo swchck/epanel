@@ -368,7 +368,33 @@
       "s4": "Call 112 and report an electrical fire."
     },
     "never": "Never hold a lever up by hand so it \"stays on\", and never tape breakers. That disables protection against fire and electric shock.",
-    "contacts": "Who to call"
+    "contacts": "Who to call",
+    "q": {
+      "what": "What happened?",
+      "neighbours": "Do the neighbours and the stairwell have power?"
+    },
+    "a": {
+      "neighboursYes": "Yes, theirs works",
+      "neighboursNo": "No, it is dark there too"
+    },
+    "notFound": "I can’t see any lever down",
+    "stepOf": "Step {n} of {total}",
+    "next": "Done, next",
+    "fixed": "Power is back",
+    "notHelped": "It didn’t help",
+    "restart": "Start over",
+    "done": {
+      "title": "Great, everything works",
+      "text": "If it trips again, go through the questions once more. If it keeps happening, have an electrician look at the panel."
+    },
+    "stuck": {
+      "title": "That didn’t help",
+      "text": "Leave the device off and don’t force it back on. Call someone who can fix it:"
+    },
+    "outage": {
+      "title": "Looks like the whole building is down",
+      "text": "Your panel isn’t the problem. Call the management company. While you wait, unplug powerful appliances so the surge doesn’t hit them when power returns."
+    }
   },
   "contact": {
     "role": {

@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Drawer, DrawerContent, DrawerDescription, DrawerTitle } from '@/components/ui/drawer'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
+import ContactList from '@/components/common/ContactList.vue'
 import DeviceDetails from '@/components/panel/DeviceDetails.vue'
 import PanelEnclosure from '@/components/panel/PanelEnclosure.vue'
 import { TYPE_ACCENT } from '@/components/panel/geometry'
@@ -193,6 +194,10 @@ watch(
           <span class="flex items-center gap-1.5"><span class="inline-block size-3 rounded-full bg-warn text-center text-[8px] leading-3 font-bold text-white">!</span> {{ t('panel.legend.issue') }}</span>
           <span>{{ t('panel.legend.tap') }}</span>
         </div>
+        <section v-if="!wide && data.data?.meta.contacts.length" class="no-print mt-6">
+          <h2 class="mb-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase">{{ t('emergency.contacts') }}</h2>
+          <ContactList compact />
+        </section>
       </div>
 
       <aside v-if="wide" class="no-print">
@@ -203,10 +208,16 @@ watch(
             </button>
             <DeviceDetails :id="ui.selectedDevice" :key="ui.selectedDevice" />
           </template>
-          <div v-else class="flex flex-col items-center gap-3 py-14 text-center text-sm text-muted-foreground">
-            <ScanSearch class="size-8 opacity-50" />
-            <p class="max-w-56">{{ t('panel.pickHint') }}</p>
-          </div>
+          <template v-else>
+            <div class="flex flex-col items-center gap-3 py-10 text-center text-sm text-muted-foreground">
+              <ScanSearch class="size-8 opacity-50" />
+              <p class="max-w-56">{{ t('panel.pickHint') }}</p>
+            </div>
+            <section v-if="data.data?.meta.contacts.length" class="border-t pt-4">
+              <h2 class="mb-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase">{{ t('emergency.contacts') }}</h2>
+              <ContactList compact />
+            </section>
+          </template>
         </div>
       </aside>
     </div>

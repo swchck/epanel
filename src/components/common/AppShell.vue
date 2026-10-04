@@ -168,7 +168,7 @@ whenever(
         <RouterLink to="/edit/publish" class="font-medium underline-offset-2 hover:underline">{{ t('banner.draftAction') }}</RouterLink>
       </div>
 
-      <main class="flex-1 pb-24" :class="fill ? 'lg:min-h-0 lg:pb-0' : 'lg:pb-10'">
+      <main class="flex-1 pb-24" :class="fill ? 'lg:min-h-0 lg:overflow-y-auto lg:pb-0' : 'lg:pb-10'">
         <RouterView v-slot="{ Component }">
           <Transition name="page" mode="out-in">
             <component :is="Component" :key="route.name === 'device' ? 'panel' : route.path" />

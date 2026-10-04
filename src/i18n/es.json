@@ -368,7 +368,33 @@
       "s4": "Llama al 112 e informa de un incendio eléctrico."
     },
     "never": "Nunca sujetes una palanca con la mano para que «aguante» ni fijes los automáticos con cinta. Eso anula la protección contra incendios y descargas eléctricas.",
-    "contacts": "A quién llamar"
+    "contacts": "A quién llamar",
+    "q": {
+      "what": "¿Qué ha pasado?",
+      "neighbours": "¿Tienen luz los vecinos y la escalera?"
+    },
+    "a": {
+      "neighboursYes": "Sí, a ellos les funciona",
+      "neighboursNo": "No, ellos también están a oscuras"
+    },
+    "notFound": "No veo ninguna palanca bajada",
+    "stepOf": "Paso {n} de {total}",
+    "next": "Hecho, siguiente",
+    "fixed": "Ya hay luz",
+    "notHelped": "No ha funcionado",
+    "restart": "Empezar de nuevo",
+    "done": {
+      "title": "Perfecto, todo funciona",
+      "text": "Si vuelve a saltar, repite las preguntas. Si pasa a menudo, que un electricista revise el cuadro."
+    },
+    "stuck": {
+      "title": "No ha funcionado",
+      "text": "Deja el dispositivo apagado y no lo fuerces. Llama a un profesional:"
+    },
+    "outage": {
+      "title": "Parece un corte en todo el edificio",
+      "text": "Tu cuadro no es el problema. Llama a la administración. Mientras esperas, desenchufa los aparatos potentes para que no les afecte el pico cuando vuelva la luz."
+    }
   },
   "contact": {
     "role": {

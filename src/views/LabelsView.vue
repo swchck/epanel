@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { useElementSize } from '@vueuse/core'
 import { Printer, TriangleAlert } from '@lucide/vue'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
@@ -16,6 +17,16 @@ const showLabels = ref(true)
 // millimetres; one DIN module is 17.5 mm
 const MODULE_MM = 17.5
 const labelHeight = ref(14)
+const MM_PX = 96 / 25.4
+
+// a full 18-module strip is 315 mm, wider than the page column; the preview shrinks to fit,
+// print keeps the real size (zoom is reset in the print styles below)
+const strips = ref<HTMLElement | null>(null)
+const { width: stripsWidth } = useElementSize(strips)
+const stripZoom = computed(() => {
+  const widest = Math.max(1, ...data.layout.map((r) => r.modules)) * MODULE_MM * MM_PX
+  return stripsWidth.value ? Math.min(1, stripsWidth.value / widest) : 1
+})
 
 const mainUrl = computed(() => appUrl(data.data?.meta.publicUrl, '/', withKey.value ? data.password : null))
 const deviceUrl = (id: string) => appUrl(data.data?.meta.publicUrl, `/d/${id}`, withKey.value ? data.password : null)
@@ -65,10 +76,10 @@ function rating(id: string) {
         </div>
       </section>
 
-      <section v-if="showLabels" class="space-y-[6mm]">
+      <section v-if="showLabels" ref="strips" class="strips space-y-[6mm]">
         <div v-for="(row, ri) in data.layout" :key="row.id" class="strip-wrap">
           <div class="no-print mb-1 text-xs text-muted-foreground">{{ t('labels.row', { n: ri + 1 }) }}</div>
-          <div class="flex overflow-x-auto bg-white text-black" :style="{ width: `${row.modules * MODULE_MM}mm` }">
+          <div class="strip flex bg-white text-black" :style="{ width: `${row.modules * MODULE_MM}mm`, zoom: stripZoom }">
             <div
               v-for="item in row.items"
               :key="item.device?.id ?? `b${item.start}`"
@@ -103,6 +114,9 @@ function rating(id: string) {
   .sticker,
   .strip-wrap {
     break-inside: avoid;
+  }
+  .strip {
+    zoom: 1 !important;
   }
 }
 </style>

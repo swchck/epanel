@@ -368,7 +368,33 @@
       "s4": "Pozovite 112 i prijavite požar na električnoj instalaciji."
     },
     "never": "Nikada ne držite polugu rukom da bi „ostala gore“ i nikada ne lepite osigurače trakom. Time isključujete zaštitu od požara i strujnog udara.",
-    "contacts": "Koga pozvati"
+    "contacts": "Koga pozvati",
+    "q": {
+      "what": "Šta se desilo?",
+      "neighbours": "Da li komšije i hodnik imaju struju?"
+    },
+    "a": {
+      "neighboursYes": "Da, kod njih sve radi",
+      "neighboursNo": "Ne, i kod njih je mrak"
+    },
+    "notFound": "Ne vidim spuštenu polugu",
+    "stepOf": "Korak {n} od {total}",
+    "next": "Urađeno, dalje",
+    "fixed": "Struja je stigla",
+    "notHelped": "Nije pomoglo",
+    "restart": "Ispočetka",
+    "done": {
+      "title": "Odlično, sve radi",
+      "text": "Ako ponovo izbaci, prođite pitanja još jednom. Ako se često ponavlja, pozovite električara da pogleda tablu."
+    },
+    "stuck": {
+      "title": "Nije pomoglo",
+      "text": "Ostavite uređaj isključen i ne uključujte ga na silu. Pozovite stručnjaka:"
+    },
+    "outage": {
+      "title": "Izgleda da je nestalo struje u celoj zgradi",
+      "text": "Vaša tabla nije problem. Pozovite upravnika zgrade. Dok čekate, isključite jake uređaje iz utičnica da ih ne udari skok napona kad struja dođe."
+    }
   },
   "contact": {
     "role": {
