@@ -739,6 +739,12 @@
       "used": "{used} de {total} módulos",
       "mod": "mód.",
       "blank": "hueco",
+      "device": "dispositivo",
+      "view": {
+        "label": "Vista del cuadro",
+        "visual": "Cuadro",
+        "list": "Lista"
+      },
       "narrower": "Más estrecho",
       "wider": "Más ancho",
       "addRow": "Añadir fila",

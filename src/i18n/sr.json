@@ -739,6 +739,12 @@
       "used": "{used} od {total} modula",
       "mod": "mod.",
       "blank": "prazno",
+      "device": "uređaj",
+      "view": {
+        "label": "Prikaz table",
+        "visual": "Tabla",
+        "list": "Lista"
+      },
       "narrower": "Uže",
       "wider": "Šire",
       "addRow": "Dodaj red",

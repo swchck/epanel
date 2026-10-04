@@ -739,6 +739,12 @@
       "used": "{used} of {total} modules",
       "mod": "mod.",
       "blank": "blank",
+      "device": "device",
+      "view": {
+        "label": "Panel view",
+        "visual": "Panel",
+        "list": "List"
+      },
       "narrower": "Narrower",
       "wider": "Wider",
       "addRow": "Add row",
