@@ -646,6 +646,28 @@ data:
       'y': 740
       label: {ru: Щит ЩК-1, en: Panel DB-1}
       heightMm: 1600
+    - id: jb-living
+      kind: junction
+      room: living
+      x: 275
+      'y': 400
+      label: {ru: Распредкоробка освещения гостиной, en: Living room lighting junction box, sr: Razvodna kutija rasvete dnevne sobe, es: Caja de registro de la iluminación del salón}
+      heightMm: 2500
+    - id: jb-hall
+      kind: junction
+      room: hallway
+      x: 890
+      'y': 460
+      label: {ru: Распредкоробка спальни, en: Bedroom junction box, sr: Razvodna kutija spavaće sobe, es: Caja de registro del dormitorio}
+      heightMm: 2400
+    - id: jb-bath
+      kind: junction
+      room: bathroom
+      x: 60
+      'y': 745
+      label: {ru: Коробка за натяжным потолком у входа, en: Junction box above the stretch ceiling by the door, sr: Kutija iznad spuštenog plafona kod vrata, es: Caja sobre el techo tensado junto a la puerta}
+      heightMm: 2650
+      concealed: true
     - id: w-s1
       kind: socket
       room: wardrobe

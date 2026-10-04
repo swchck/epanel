@@ -113,3 +113,16 @@ export function routeExternalLinks() {
     await openUrl(href)
   })
 }
+
+/**
+ * Reports whether the desktop window is fullscreen, now and after every resize. No-op on the web.
+ */
+export async function watchFullscreen(onChange: (fullscreen: boolean) => void) {
+  if (!isDesktop) return
+  const { getCurrentWindow } = await import('@tauri-apps/api/window')
+  const win = getCurrentWindow()
+  const update = async () => onChange(await win.isFullscreen())
+  await update()
+  // macOS has no separate fullscreen event; entering and leaving it both arrive as a resize
+  await win.onResized(() => void update())
+}

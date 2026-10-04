@@ -1,4 +1,4 @@
-import { AirVent, Cable, CircleDot, EthernetPort, Heater, Lightbulb, Plug, Radar, Router, TabletSmartphone, ToggleLeft, WashingMachine } from '@lucide/vue'
+import { AirVent, Box, CircleDot, EthernetPort, Heater, Lightbulb, Plug, Radar, Router, TabletSmartphone, ToggleLeft, WashingMachine } from '@lucide/vue'
 import type { Component } from 'vue'
 import type { CableType, PointKind } from '@/domain/model'
 
@@ -9,7 +9,7 @@ export const POINT_ICONS: Record<PointKind, Component> = {
   appliance: WashingMachine,
   heating: Heater,
   ac: AirVent,
-  junction: Cable,
+  junction: Box,
   network: Router,
   data: EthernetPort,
   panel: TabletSmartphone,

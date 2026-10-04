@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
-import { Camera, Check, ImagePlus, Magnet, MousePointer2, Pentagon, Plug, Spline, Square, Trash2, X } from '@lucide/vue'
+import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref } from 'vue'
+import { Camera, Check, ChevronLeft, ImagePlus, Magnet, MousePointer2, Pentagon, Plug, Spline, Square, Trash2, Undo2, X } from '@lucide/vue'
 import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Kbd } from '@/components/ui/kbd'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Slider } from '@/components/ui/slider'
 import { Switch } from '@/components/ui/switch'
@@ -32,6 +33,13 @@ const sel = ref<Sel>(null)
 const snapOn = ref(true)
 const pending = ref<Point2[]>([])
 const cursor = ref<Point2 | null>(null)
+const Plan3D = defineAsyncComponent(() => import('@/components/plan/Plan3D.vue'))
+// 3D is for checking heights and runs; drawing stays in 2D where clicks map to plan coordinates
+const view3d = ref(false)
+function toggle3d() {
+  setMode('select')
+  view3d.value = !view3d.value
+}
 const newKind = ref<PointKind>('socket')
 const newDevice = ref<string>('__')
 const newRouteKind = ref<RouteKind>('power')
@@ -167,8 +175,11 @@ async function onCanvas(x: number, y: number) {
     else if (px !== first[0] && py !== first[1]) addRoom(rectFrom(first, [px, py]))
   } else if (mode.value === 'room' || mode.value === 'route') {
     const first = pending.value[0]
+    const last = pending.value.at(-1)
     // clicking the first vertex again closes the polygon
     if (mode.value === 'room' && first && pending.value.length >= 3 && Math.hypot(first[0] - px, first[1] - py) < d.value.plan.grid / 3) return finish()
+    // a second click on the last vertex (a double click, in practice) ends the line where the cursor already is
+    if (last && Math.hypot(last[0] - px, last[1] - py) < d.value.plan.grid / 3) return finish()
     pending.value.push([px, py])
   } else if (mode.value === 'point') {
     const id = uniqueId(
@@ -249,6 +260,10 @@ function onKey(e: KeyboardEvent) {
     if (mode.value !== 'select') mode.value = 'select'
     else sel.value = null
   } else if (e.key === 'Enter' && pending.value.length) finish()
+  else if (e.key === 'Backspace' && pending.value.length) {
+    pending.value.pop()
+    e.preventDefault()
+  }
   // Backspace on a focused button or select trigger must not delete the selection
   else if ((e.key === 'Delete' || e.key === 'Backspace') && sel.value && !target?.closest('button,a,[role=combobox],[role=listbox],[role=dialog]')) removeSelected()
 }
@@ -330,7 +345,7 @@ const opacity = computed({
   set: (v: number[]) => (d.value.plan.backgroundOpacity = v[0] ?? 0.6),
 })
 
-const hint = computed(() => t(`editor.plan.hint.${mode.value}`))
+const hint = computed(() => t(`editor.plan.hint.${view3d.value ? 'view3d' : mode.value}`))
 </script>
 
 <template>
@@ -342,7 +357,8 @@ const hint = computed(() => t(`editor.plan.hint.${mode.value}`))
             v-for="m in MODES"
             :key="m.id"
             class="flex items-center gap-1.5 px-3 py-1.5 text-sm transition"
-            :class="mode === m.id ? 'bg-primary text-primary-foreground' : 'hover:bg-accent'"
+            :class="mode === m.id ? 'bg-primary text-primary-foreground' : 'hover:bg-accent disabled:opacity-40 disabled:hover:bg-transparent'"
+            :disabled="view3d && m.id !== 'select'"
             @click="setMode(m.id)"
           >
             <component :is="m.icon" class="size-4" />
@@ -370,18 +386,29 @@ const hint = computed(() => t(`editor.plan.hint.${mode.value}`))
             <SelectItem v-for="f in feeders" :key="f.id" :value="f.id">{{ f.id }} · {{ tx(f.label) }}</SelectItem>
           </SelectContent>
         </Select>
-        <template v-if="pending.length">
-          <Button size="sm" @click="finish"><Check /> {{ t('editor.plan.finish') }}</Button>
-          <Button size="sm" variant="ghost" @click="pending = []"><X /> {{ t('common.cancel') }}</Button>
-        </template>
         <div class="flex-1" />
-        <label class="flex items-center gap-1.5 text-xs"><Magnet class="size-3.5" /><Switch v-model="snapOn" class="scale-90" /></label>
+        <div class="flex overflow-hidden rounded-lg border text-xs font-medium">
+          <button v-for="v in [false, true]" :key="String(v)" class="px-2.5 py-1.5 transition" :class="view3d === v ? 'bg-primary text-primary-foreground' : 'hover:bg-accent'" :aria-pressed="view3d === v" @click="view3d !== v && toggle3d()">
+            {{ v ? '3D' : '2D' }}
+          </button>
+        </div>
+        <label v-if="!view3d" class="flex items-center gap-1.5 text-xs"><Magnet class="size-3.5" /><Switch v-model="snapOn" class="scale-90" /></label>
         <Button size="sm" variant="outline" :disabled="busy" @click="uploadBackground"><ImagePlus /> {{ t('editor.plan.background') }}</Button>
       </div>
       <p class="text-xs text-muted-foreground">{{ hint }}</p>
 
       <div class="relative h-[min(72vh,900px)] min-h-[420px] overflow-hidden rounded-2xl border bg-card">
+        <Plan3D
+          v-if="view3d"
+          show-routes
+          :focus-point="point?.id"
+          :selected-route="route?.id"
+          @point="(id) => (sel = { kind: 'point', id })"
+          @route="(id) => (sel = { kind: 'route', id })"
+          @canvas="sel = null"
+        />
         <FloorPlan
+          v-else
           ref="plan"
           all-layers
           show-routes
@@ -394,6 +421,7 @@ const hint = computed(() => t(`editor.plan.hint.${mode.value}`))
           @room="(id) => mode === 'select' && (sel = { kind: 'room', id })"
           @photo="(id) => (sel = { kind: 'photo', id })"
           @move="(x, y) => (cursor = place(x, y))"
+          @leave="cursor = null"
         >
           <g v-if="pending.length" pointer-events="none">
             <polyline
@@ -459,25 +487,22 @@ const hint = computed(() => t(`editor.plan.hint.${mode.value}`))
             />
           </template>
         </FloorPlan>
-      </div>
-
-      <div class="grid gap-3 rounded-2xl border bg-card p-4 sm:grid-cols-5">
-        <FormRow :label="t('editor.plan.wallHeight')"><NumberInput v-model="d.plan.wallHeight" :suffix="t('units.cm')" /></FormRow>
-        <FormRow :label="t('editor.plan.width')"><NumberInput v-model="d.plan.width" :suffix="t('units.cm')" /></FormRow>
-        <FormRow :label="t('editor.plan.height')"><NumberInput v-model="d.plan.height" :suffix="t('units.cm')" /></FormRow>
-        <FormRow :label="t('editor.plan.grid')"><NumberInput v-model="d.plan.grid" :suffix="t('units.cm')" /></FormRow>
-        <FormRow v-if="d.plan.background" :label="t('editor.plan.opacity')">
-          <div class="flex items-center gap-2 pt-2">
-            <Slider v-model="opacity" :min="0" :max="1" :step="0.05" class="flex-1" />
-            <Button variant="ghost" size="icon-sm" :aria-label="t('common.delete')" @click="d.plan.background = undefined"><Trash2 /></Button>
-          </div>
-        </FormRow>
+        <div
+          v-if="pending.length"
+          class="absolute bottom-3 left-1/2 flex -translate-x-1/2 items-center gap-1 rounded-xl border bg-popover/95 p-1 shadow-lg backdrop-blur"
+          @pointerenter="cursor = null"
+        >
+          <Button size="sm" :disabled="pending.length < (mode === 'route' ? 2 : 3)" @click="finish"><Check /> {{ t('editor.plan.finish') }} <Kbd class="ml-1">↵</Kbd></Button>
+          <Button size="sm" variant="ghost" @click="pending.pop()"><Undo2 /> {{ t('editor.plan.undoPoint') }} <Kbd class="ml-1">⌫</Kbd></Button>
+          <Button size="sm" variant="ghost" @click="pending = []"><X /> {{ t('common.cancel') }} <Kbd class="ml-1">Esc</Kbd></Button>
+        </div>
       </div>
     </div>
 
     <aside class="space-y-4">
       <div v-if="point" class="space-y-3 rounded-2xl border bg-card p-4">
         <div class="flex items-center gap-2">
+          <Button variant="ghost" size="icon-sm" class="-ml-1.5" :aria-label="t('editor.plan.backToPlan')" @click="sel = null"><ChevronLeft /></Button>
           <component :is="POINT_ICONS[point.kind]" class="size-5" :style="{ color: POINT_COLORS[point.kind] }" />
           <span class="mr-auto font-mono text-xs text-muted-foreground">{{ point.id }}</span>
           <Button variant="destructive" size="icon-sm" :aria-label="t('common.delete')" @click="removeSelected"><Trash2 /></Button>
@@ -512,6 +537,9 @@ const hint = computed(() => t(`editor.plan.hint.${mode.value}`))
           <FormRow :label="t('editor.plan.count')"><NumberInput v-model="point.count" integer /></FormRow>
           <FormRow :label="t('editor.plan.heightMm')"><NumberInput v-model="point.heightMm" optional allow-zero :suffix="t('units.mm')" /></FormRow>
         </div>
+        <label class="flex items-center gap-2 text-sm">
+          <Switch :model-value="!!point.concealed" @update:model-value="(v) => (point!.concealed = v || undefined)" /> {{ t('editor.plan.concealed') }}
+        </label>
         <FormRow v-if="point.kind === 'panel' || point.kind === 'sensor'" :label="t('editor.plan.controls')" :hint="t('editor.plan.controlsHint')">
           <Input
             :model-value="point.controls.join(', ')"
@@ -533,6 +561,7 @@ const hint = computed(() => t(`editor.plan.hint.${mode.value}`))
 
       <div v-else-if="room" class="space-y-3 rounded-2xl border bg-card p-4">
         <div class="flex items-center gap-2">
+          <Button variant="ghost" size="icon-sm" class="-ml-1.5" :aria-label="t('editor.plan.backToPlan')" @click="sel = null"><ChevronLeft /></Button>
           <Pentagon class="size-5 text-primary" />
           <span class="mr-auto font-mono text-xs text-muted-foreground">{{ room.id }}</span>
           <Button variant="destructive" size="icon-sm" :aria-label="t('common.delete')" @click="removeSelected"><Trash2 /></Button>
@@ -549,6 +578,7 @@ const hint = computed(() => t(`editor.plan.hint.${mode.value}`))
 
       <div v-else-if="route" class="space-y-3 rounded-2xl border bg-card p-4">
         <div class="flex items-center gap-2">
+          <Button variant="ghost" size="icon-sm" class="-ml-1.5" :aria-label="t('editor.plan.backToPlan')" @click="sel = null"><ChevronLeft /></Button>
           <Spline class="size-5 text-danger" />
           <span class="mr-auto font-mono text-xs text-muted-foreground">{{ route.id }}</span>
           <Button variant="destructive" size="icon-sm" :aria-label="t('common.delete')" @click="removeSelected"><Trash2 /></Button>
@@ -611,6 +641,11 @@ const hint = computed(() => t(`editor.plan.hint.${mode.value}`))
       </div>
 
       <div v-else-if="photo" class="space-y-3 rounded-2xl border bg-card p-4">
+        <div class="flex items-center gap-2">
+          <Button variant="ghost" size="icon-sm" class="-ml-1.5" :aria-label="t('editor.plan.backToPlan')" @click="sel = null"><ChevronLeft /></Button>
+          <Camera class="size-5 text-primary" />
+          <span class="mr-auto font-mono text-xs text-muted-foreground">{{ photo.id }}</span>
+        </div>
         <img :src="photo.src.startsWith(ASSET_PREFIX) ? assets[photo.src.slice(ASSET_PREFIX.length)] : photo.src" class="aspect-[4/3] w-full rounded-lg object-cover" alt="" />
         <FormRow :label="t('editor.plan.caption')"><LocalizedInput v-model="photo.caption" /></FormRow>
         <div class="grid grid-cols-2 gap-2">
@@ -646,6 +681,18 @@ const hint = computed(() => t(`editor.plan.hint.${mode.value}`))
           </button>
         </div>
         <p v-if="data.issues.length" class="text-xs text-danger">{{ data.issues.length }} {{ t('editor.refIssues') }}</p>
+        <div class="grid grid-cols-2 gap-3 border-t pt-3">
+          <FormRow :label="t('editor.plan.wallHeight')"><NumberInput v-model="d.plan.wallHeight" :suffix="t('units.cm')" /></FormRow>
+          <FormRow :label="t('editor.plan.grid')"><NumberInput v-model="d.plan.grid" :suffix="t('units.cm')" /></FormRow>
+          <FormRow :label="t('editor.plan.width')"><NumberInput v-model="d.plan.width" :suffix="t('units.cm')" /></FormRow>
+          <FormRow :label="t('editor.plan.height')"><NumberInput v-model="d.plan.height" :suffix="t('units.cm')" /></FormRow>
+          <FormRow v-if="d.plan.background" :label="t('editor.plan.opacity')" class="col-span-2">
+            <div class="flex items-center gap-2 pt-2">
+              <Slider v-model="opacity" :min="0" :max="1" :step="0.05" class="flex-1" />
+              <Button variant="ghost" size="icon-sm" :aria-label="t('common.delete')" @click="d.plan.background = undefined"><Trash2 /></Button>
+            </div>
+          </FormRow>
+        </div>
       </div>
     </aside>
   </div>

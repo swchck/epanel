@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { MIN_PASSWORD_LENGTH } from '@/domain/crypto'
 import { computed, ref, toRaw } from 'vue'
 import { CircleAlert, CloudUpload, Download, FileDown, FileUp, KeyRound, LoaderCircle, Save, Trash2, TriangleAlert } from '@lucide/vue'
 import { toast } from 'vue-sonner'
@@ -15,6 +14,7 @@ import { useDraft } from '@/composables/useDraft'
 import { useText } from '@/composables/useText'
 import { isDesktop, openTextFile, saveTextFile } from '@/platform'
 import FormRow from './FormRow.vue'
+import PasswordDialog from './PasswordDialog.vue'
 
 const { d, data } = useDraft()
 const { t, locale } = useText()
@@ -38,7 +38,29 @@ function stamp() {
   d.value.meta.updated = isoDay(new Date())
 }
 
-async function encrypted(): Promise<string> {
+// a panel opened from a plain YAML file or created from scratch has no password until its first encrypted export
+const pwDialog = ref<'set' | 'change' | null>(null)
+let pwWaiter: ((ok: boolean) => void) | null = null
+function askPassword(): Promise<boolean> {
+  pwDialog.value = 'set'
+  return new Promise((resolve) => (pwWaiter = resolve))
+}
+function onPasswordSet(pw: string) {
+  const changed = pwDialog.value === 'change'
+  data.setPassword(pw)
+  if (changed) toast.success(t('editor.publish.passwordChanged'), { description: t('editor.publish.passwordChangedHint') })
+  pwWaiter?.(true)
+  pwWaiter = null
+}
+function onPasswordDialog(open: boolean) {
+  if (open) return
+  pwDialog.value = null
+  pwWaiter?.(false)
+  pwWaiter = null
+}
+
+async function encrypted(): Promise<string | null> {
+  if (!data.password && !(await askPassword())) return null
   stamp()
   return JSON.stringify(await data.exportEnvelope())
 }
@@ -46,7 +68,9 @@ async function encrypted(): Promise<string> {
 async function saveFile(saveAs: boolean) {
   busy.value = 'save'
   try {
-    const path = await saveTextFile(`${fileBase.value}.panel`, await encrypted(), saveAs ? undefined : data.file?.path)
+    const text = await encrypted()
+    if (!text) return
+    const path = await saveTextFile(`${fileBase.value}.panel`, text, saveAs ? undefined : data.file?.path)
     if (!path) return
     if (isDesktop) data.file = { name: path.split(/[\\/]/).pop() ?? path, path }
     await data.commitDraft()
@@ -63,7 +87,8 @@ async function downloadPlain(kind: 'yaml' | 'json') {
 }
 
 async function downloadPublishFile() {
-  await saveTextFile('panel.enc.json', await encrypted())
+  const text = await encrypted()
+  if (text) await saveTextFile('panel.enc.json', text)
 }
 
 // importing someone else's file (the electrician's) replaces the draft, never the published copy
@@ -96,8 +121,10 @@ const ghReady = computed(() => gh.value.owner && gh.value.repo && gh.value.branc
 async function publish() {
   busy.value = 'publish'
   try {
+    const text = await encrypted()
+    if (!text) return
     await saveTarget(gh.value, rememberToken.value, data.password)
-    const { commitUrl } = await publishFile(gh.value, await encrypted(), `Update panel data ${isoDay(new Date())}`)
+    const { commitUrl } = await publishFile(gh.value, text, `Update panel data ${isoDay(new Date())}`)
     await data.commitDraft()
     toast.success(t('editor.publish.published'), {
       description: t('editor.publish.publishedHint'),
@@ -113,17 +140,6 @@ async function publish() {
   }
 }
 
-const pw1 = ref('')
-const pw2 = ref('')
-function changePassword() {
-  if (pw1.value.length < MIN_PASSWORD_LENGTH || pw1.value !== pw2.value) {
-    toast.error(t('start.passwordMismatch'))
-    return
-  }
-  data.setPassword(pw1.value)
-  pw1.value = pw2.value = ''
-  toast.success(t('editor.publish.passwordChanged'), { description: t('editor.publish.passwordChangedHint') })
-}
 </script>
 
 <template>
@@ -197,14 +213,15 @@ function changePassword() {
       <p class="text-xs text-muted-foreground">{{ t('editor.publish.manual') }}</p>
     </section>
 
-    <section class="space-y-3 rounded-2xl border bg-card p-5 lg:col-span-2">
-      <h3 class="flex items-center gap-2 font-semibold"><KeyRound class="size-4.5" /> {{ t('editor.publish.passwordTitle') }}</h3>
-      <form class="flex flex-wrap items-end gap-3" @submit.prevent="changePassword">
-        <FormRow :label="t('start.password')" class="w-56"><Input v-model="pw1" type="password" autocomplete="new-password" /></FormRow>
-        <FormRow :label="t('start.passwordRepeat')" class="w-56"><Input v-model="pw2" type="password" autocomplete="new-password" /></FormRow>
-        <Button type="submit" variant="outline">{{ t('editor.publish.changePassword') }}</Button>
-      </form>
-      <p class="text-xs text-muted-foreground">{{ t('editor.publish.passwordHint') }}</p>
+    <section class="flex flex-wrap items-center gap-3 rounded-2xl border bg-card p-5 lg:col-span-2">
+      <KeyRound class="size-4.5 shrink-0" />
+      <div class="mr-auto min-w-0">
+        <h3 class="font-semibold">{{ t('editor.publish.passwordTitle') }}</h3>
+        <p class="text-sm text-muted-foreground">{{ t(data.password ? 'editor.publish.passwordSet' : 'editor.publish.passwordLater') }}</p>
+      </div>
+      <Button v-if="data.password" variant="outline" @click="pwDialog = 'change'">{{ t('editor.publish.changePassword') }}</Button>
     </section>
+
+    <PasswordDialog :open="!!pwDialog" :change="pwDialog === 'change'" @update:open="onPasswordDialog" @set="onPasswordSet" />
   </div>
 </template>

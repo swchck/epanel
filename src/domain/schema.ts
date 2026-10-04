@@ -107,6 +107,8 @@ export const PlanPoint = z.object({
   profile: z.enum(APPLIANCE_PROFILES).optional(),
   // millimetres from finished floor
   heightMm: z.number().nonnegative().optional(),
+  // behind plaster, tiles or a stretch ceiling: reaching it means opening the finish
+  concealed: z.boolean().optional(),
   // multiplies powerW: six spots of 7 W are count 6, a double socket is still one point
   count: z.number().int().positive().default(1),
   // group addresses a room control panel (or sensor) sends to

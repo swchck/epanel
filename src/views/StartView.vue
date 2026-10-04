@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { MIN_PASSWORD_LENGTH } from '@/domain/crypto'
 import { ref } from 'vue'
 import { FilePlus2, FlaskConical, FolderOpen, LoaderCircle, TriangleAlert } from '@lucide/vue'
 import { toast } from 'vue-sonner'
@@ -20,7 +19,6 @@ const { t } = useText()
 const mode = ref<'choose' | 'new' | 'password'>('choose')
 const title = ref('')
 const pw = ref('')
-const pw2 = ref('')
 const pending = ref<OpenedText | null>(null)
 const busy = ref(false)
 const err = ref('')
@@ -56,11 +54,7 @@ async function openWithPassword() {
 }
 
 function create() {
-  if (pw.value.length < MIN_PASSWORD_LENGTH || pw.value !== pw2.value) {
-    err.value = t('start.passwordMismatch')
-    return
-  }
-  data.createNew(title.value || t('start.defaultTitle'), pw.value)
+  data.createNew(title.value || t('start.defaultTitle'))
   router.push('/edit')
 }
 </script>
@@ -114,17 +108,6 @@ function create() {
           <Label for="t">{{ $t('start.name') }}</Label>
           <Input id="t" v-model="title" :placeholder="$t('start.defaultTitle')" />
         </div>
-        <div class="grid gap-4 sm:grid-cols-2">
-          <div class="space-y-2">
-            <Label for="p1">{{ $t('start.password') }}</Label>
-            <Input id="p1" v-model="pw" type="password" autocomplete="new-password" />
-          </div>
-          <div class="space-y-2">
-            <Label for="p2">{{ $t('start.passwordRepeat') }}</Label>
-            <Input id="p2" v-model="pw2" type="password" autocomplete="new-password" />
-          </div>
-        </div>
-        <p class="text-xs text-muted-foreground">{{ $t('start.passwordHint') }}</p>
         <p v-if="err" class="text-sm text-destructive">{{ err }}</p>
         <div class="flex justify-end gap-2">
           <Button type="button" variant="ghost" @click="mode = 'choose'">{{ $t('common.back') }}</Button>

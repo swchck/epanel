@@ -91,7 +91,7 @@
     "create": "Napravi novu tablu",
     "createHint": "Prazan projekat: redovi, osigurači, plan stana",
     "demo": "Otvori demo",
-    "demoHint": "Dvosoban stan, 28 uređaja, 48 tačaka",
+    "demoHint": "Dvosoban stan, 28 uređaja, 51 tačka",
     "name": "Naziv",
     "defaultTitle": "Moj stan",
     "password": "Lozinka",
@@ -229,7 +229,8 @@
       "floor-heating": "Podno grejanje",
       "ev": "Punjač za električni auto"
     },
-    "height": "{mm} mm od poda"
+    "height": "{mm} mm od poda",
+    "concealed": "Skrivena ispod završne obrade"
   },
   "panel": {
     "title": "Električna tabla",
@@ -852,9 +853,10 @@
         "select": "Dodirnite tačku, prostoriju ili fotografiju da je izmenite. Prevucite ručice da pomerite. Točkić ili dva prsta za uvećanje.",
         "room": "Za prostoriju nepravilnog oblika: postavljajte uglove jedan po jedan, zidovi idu pod pravim uglom (Alt za bilo koji ugao). Otkucajte dužinu zida i pritisnite Enter. Dodirnite prvi ugao ili „Gotovo“ da zatvorite.",
         "point": "Izaberite tip i osigurač, pa dodirujte plan. Pored zida tačka sama staje na zid.",
-        "route": "Iscrtajte trasu kabla tačku po tačku i dodirnite „Gotovo“. Oko nje se pojavljuje zona bez bušenja. Delovi se crtaju pod pravim uglom, kako se kablovi zaista polažu. Za kos deo držite Alt. Dužinu dela možete otkucati i pritisnuti Enter.",
+        "route": "Nacrtajte trasu kabla tačku po tačku. Završite ponovnim klikom na poslednju tačku, tasterom Enter ili trakom na dnu plana. Oko trase se pojavljuje zona „ne bušiti”. Deonice idu pod pravim uglom, kako se kablovi zaista polažu; za kosu deonicu držite Alt. Dužinu deonice možete ukucati i pritisnuti Enter.",
         "photo": "Dodirnite mesto gde je fotografija snimljena i izaberite sliku.",
-        "rect": "Dodirnite jedan ugao prostorije, pa suprotni. Ili dodirnite prvi ugao i otkucajte dimenzije, npr. „3.5x4“, pa Enter."
+        "rect": "Dodirnite jedan ugao prostorije, pa suprotni. Ili dodirnite prvi ugao i otkucajte dimenzije, npr. „3.5x4“, pa Enter.",
+        "view3d": "3D prikaz za proveru visina i trasa. Kliknite na tačku ili trasu da biste je izmenili desno. Crtanje radi u 2D."
       },
       "noDevice": "Bez osigurača",
       "finish": "Gotovo",
@@ -908,7 +910,10 @@
       "pullString": "Ima provlakač",
       "wallHeight": "Visina plafona",
       "roomWidth": "Širina",
-      "roomDepth": "Dubina"
+      "roomDepth": "Dubina",
+      "concealed": "Skrivena ispod završne obrade (malter, pločice, spušteni plafon)",
+      "undoPoint": "Ukloni tačku",
+      "backToPlan": "Nazad na plan"
     },
     "media": {
       "photosHint": "Fotografišite zidove pre malterisanja: posle nekoliko godina po tim slikama najlakše ćete videti gde idu kablovi.",
@@ -971,7 +976,10 @@
       "changePassword": "Promeni lozinku",
       "passwordChanged": "Lozinka je promenjena",
       "passwordChangedHint": "Sačuvajte ili objavite podatke, a zatim ponovo odštampajte QR kod.",
-      "passwordHint": "Nova lozinka važi od sledećeg čuvanja ili objavljivanja. Stari QR kodovi prestaće da rade."
+      "passwordHint": "Nova lozinka važi od sledećeg čuvanja ili objavljivanja. Stari QR kodovi prestaće da rade.",
+      "setPassword": "Postavi lozinku",
+      "passwordSet": "Lozinka je postavljena. QR kodovi i fajl se otvaraju njom.",
+      "passwordLater": "Lozinka još nije postavljena. Pitaćemo vas za nju pri prvom šifrovanom čuvanju ili objavljivanju."
     },
     "undo": "Poništi (⌘Z)",
     "redo": "Ponovi (⇧⌘Z)",

@@ -399,6 +399,9 @@ data:
     - { id: h-light, kind: light, room: hallway, x: 600, y: 515, device: QF10, label: { ru: Споты прихожей, en: Hallway spots }, powerW: 7, count: 6 }
     - { id: h-sw, kind: switch, room: hallway, x: 330, y: 620, device: QF10, label: { ru: Блок выключателей у входа, en: Entrance switch block }, heightMm: 900 }
     - { id: h-panel, kind: junction, room: hallway, x: 320, y: 740, label: { ru: Щит ЩК-1, en: Panel DB-1 }, heightMm: 1600 }
+    - { id: jb-living, kind: junction, room: living, x: 275, y: 400, label: { ru: Распредкоробка освещения гостиной, en: Living room lighting junction box, sr: Razvodna kutija rasvete dnevne sobe, es: Caja de registro de la iluminación del salón }, heightMm: 2500 }
+    - { id: jb-hall, kind: junction, room: hallway, x: 890, y: 460, label: { ru: Распредкоробка спальни, en: Bedroom junction box, sr: Razvodna kutija spavaće sobe, es: Caja de registro del dormitorio }, heightMm: 2400 }
+    - { id: jb-bath, kind: junction, room: bathroom, x: 60, y: 745, label: { ru: "Коробка за натяжным потолком у входа", en: Junction box above the stretch ceiling by the door, sr: Kutija iznad spuštenog plafona kod vrata, es: Caja sobre el techo tensado junto a la puerta }, heightMm: 2650, concealed: true }
     - { id: w-s1, kind: socket, room: wardrobe, x: 890, y: 700, device: QF7, label: { ru: Розетка гардероба (утюг), en: Wardrobe socket (iron) }, powerW: 2200, heightMm: 900 }
     - { id: w-net, kind: network, room: wardrobe, x: 750, y: 740, device: QF7, label: { ru: Слаботочный шкаф (роутер), en: Low-voltage cabinet (router) }, powerW: 30, heightMm: 1800 }
     - { id: w-light, kind: light, room: wardrobe, x: 790, y: 665, device: QF10, label: { ru: Свет гардероба, en: Wardrobe light }, powerW: 20 }

@@ -341,7 +341,8 @@ export const useData = defineStore('data', () => {
     return { ok: true }
   }
 
-  function createNew(title: string, pw: string) {
+  // the password is asked on the first encrypted export, not up front
+  function createNew(title: string, pw: string | null = null) {
     adoptBundle(emptyBundle(title), pw, 'new', null)
     startDraft()
   }

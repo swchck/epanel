@@ -91,7 +91,7 @@
     "create": "Create a new panel",
     "createHint": "Empty project: rows, breakers, floor plan",
     "demo": "Open demo",
-    "demoHint": "Two-room apartment, 28 devices, 48 points",
+    "demoHint": "Two-room apartment, 28 devices, 51 points",
     "name": "Name",
     "defaultTitle": "My apartment",
     "password": "Password",
@@ -229,7 +229,8 @@
       "floor-heating": "Floor heating",
       "ev": "EV charger"
     },
-    "height": "{mm} mm above the floor"
+    "height": "{mm} mm above the floor",
+    "concealed": "Concealed behind the finish"
   },
   "panel": {
     "title": "Electrical panel",
@@ -852,9 +853,10 @@
         "select": "Tap a point, room or photo to edit it. Drag the handles to move. Wheel or pinch to zoom.",
         "room": "For an irregular room: place the corners one by one; walls snap to right angles (hold Alt for any angle). Type a wall length and press Enter to draw it exactly. Tap the first corner or \"Done\" to close.",
         "point": "Pick a type and a breaker, then tap the plan. Near a wall, the point lands on the wall.",
-        "route": "Trace the cable route point by point and tap \"Done\". A no-drill zone appears around it. Sections snap to right angles, the way cables are actually laid. Hold Alt for a slanted section. Type a length and press Enter to draw a section exactly.",
+        "route": "Draw the cable run point by point. Finish by clicking the last point again, pressing Enter or using the bar at the bottom of the plan. A no-drill zone appears around the run. Segments go at right angles, the way cables are actually laid; hold Alt for a diagonal. Type a length and press Enter to set a segment exactly.",
         "photo": "Tap where the photo was taken and pick the image.",
-        "rect": "Tap one corner of the room, then the opposite one. Or tap the first corner and type the size, e.g. \"3.5x4\", then Enter."
+        "rect": "Tap one corner of the room, then the opposite one. Or tap the first corner and type the size, e.g. \"3.5x4\", then Enter.",
+        "view3d": "3D view for checking heights and runs. Click a point or run to edit it on the right. Drawing works in 2D."
       },
       "noDevice": "No breaker",
       "finish": "Done",
@@ -908,7 +910,10 @@
       "pullString": "Has a draw wire",
       "wallHeight": "Ceiling height",
       "roomWidth": "Width",
-      "roomDepth": "Depth"
+      "roomDepth": "Depth",
+      "concealed": "Concealed behind the finish (plaster, tiles, stretch ceiling)",
+      "undoPoint": "Remove point",
+      "backToPlan": "Back to plan"
     },
     "media": {
       "photosHint": "Photograph the walls before plastering: years later these photos are the easiest way to see where the cables run.",
@@ -971,7 +976,10 @@
       "changePassword": "Change password",
       "passwordChanged": "Password changed",
       "passwordChangedHint": "Save or publish the data, then reprint the QR code.",
-      "passwordHint": "The new password applies on the next save or publish. Old QR codes will stop working."
+      "passwordHint": "The new password applies on the next save or publish. Old QR codes will stop working.",
+      "setPassword": "Set a password",
+      "passwordSet": "A password is set. QR codes and the file open with it.",
+      "passwordLater": "No password yet. You will be asked for one on the first encrypted save or publish."
     },
     "undo": "Undo (⌘Z)",
     "redo": "Redo (⇧⌘Z)",

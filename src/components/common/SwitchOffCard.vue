@@ -33,6 +33,7 @@ const facts = computed(() => {
   const p = props.point
   const out: string[] = []
   if (p.heightMm !== undefined) out.push(t('point.height', { mm: p.heightMm }))
+  if (p.concealed) out.push(t('point.concealed'))
   if (p.powerW) out.push(p.count > 1 ? `${p.count} × ${p.powerW} W` : `${p.powerW} W`)
   return out
 })

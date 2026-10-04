@@ -38,6 +38,7 @@ const emit = defineEmits<{
   route: [id: string]
   canvas: [x: number, y: number, e: PointerEvent | MouseEvent]
   move: [x: number, y: number]
+  leave: []
 }>()
 
 const store = useData()
@@ -184,6 +185,7 @@ defineExpose({ pz })
       v-on="interactive ? pz.handlers : {}"
       @click.self="onCanvasClick"
       @pointermove="onMove"
+      @pointerleave="emit('leave')"
     >
       <defs>
         <pattern id="plan-grid" :width="d.plan.grid" :height="d.plan.grid" patternUnits="userSpaceOnUse">
@@ -303,6 +305,7 @@ defineExpose({ pz })
           <g class="marker">
             <circle v-if="lit || focus" :r="markerR * 1.6" :fill="POINT_COLORS[p.kind]" class="pulse" />
             <circle :r="focus ? markerR * 1.3 : markerR" :fill="dead ? '#6b7280' : POINT_COLORS[p.kind]" stroke="var(--background)" :stroke-width="markerR * 0.22" />
+            <circle v-if="p.concealed" :r="(focus ? markerR * 1.3 : markerR) + markerR * 0.35" fill="none" :stroke="POINT_COLORS[p.kind]" :stroke-width="markerR * 0.14" :stroke-dasharray="`${markerR * 0.3} ${markerR * 0.25}`" />
             <component
               :is="POINT_ICONS[p.kind]"
               :x="-markerR * 0.58"
