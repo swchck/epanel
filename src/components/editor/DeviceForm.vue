@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { Plus, Trash2 } from '@lucide/vue'
+import { CalendarClock, Plus, Trash2, X } from '@lucide/vue'
 import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -9,6 +9,7 @@ import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
 import { DEVICE_TYPES, SMART_TYPES, type Device } from '@/domain/model'
 import { findItem, renameDevice } from '@/editor/ops'
+import { joinTemplateTask, templateFor } from '@/editor/taskTemplates'
 import { useDraft } from '@/composables/useDraft'
 import { useText } from '@/composables/useText'
 import { useUi } from '@/stores/ui'
@@ -22,6 +23,12 @@ const { d } = useDraft()
 // resolved from the draft instead of passed in, so the form edits the store directly
 const device = computed(() => d.value.devices.find((x) => x.id === props.id)!)
 const placed = computed(() => !!findItem(d.value, props.id))
+const tasks = computed(() => d.value.maintenance.tasks.filter((x) => x.devices.includes(props.id)))
+const template = computed(() => {
+  const tpl = templateFor(device.value.type)
+  return tpl && !tasks.value.some((x) => x.id === tpl.id) ? tpl : undefined
+})
+const templateExists = computed(() => !!template.value && d.value.maintenance.tasks.some((x) => x.id === template.value!.id))
 const ui = useUi()
 const { t, tx } = useText()
 
@@ -181,6 +188,26 @@ function circuit() {
         </FormRow>
       </div>
       <FormRow :label="t('editor.panel.tags')"><Input v-model="tagsText" :placeholder="t('editor.panel.tagsPlaceholder')" /></FormRow>
+    </section>
+
+    <section v-if="tasks.length || template" class="space-y-2">
+      <h3 class="section-title">{{ t('editor.panel.section.maintenance') }}</h3>
+      <div v-for="task in tasks" :key="task.id" class="flex items-center gap-2 rounded-xl border px-3 py-2">
+        <CalendarClock class="size-4 shrink-0 text-muted-foreground" />
+        <span class="min-w-0 flex-1 truncate text-sm">{{ tx(task.title) }}</span>
+        <div class="w-28 shrink-0"><NumberInput v-model="task.intervalDays" integer :suffix="t('units.days')" /></div>
+        <Button variant="ghost" size="icon-sm" :aria-label="t('editor.panel.leaveTask')" @click="task.devices.splice(task.devices.indexOf(device.id), 1)"><X /></Button>
+      </div>
+      <div v-if="template" class="flex items-center gap-3 rounded-xl border border-dashed border-primary/50 bg-primary/5 px-3 py-2.5">
+        <CalendarClock class="size-4 shrink-0 text-primary" />
+        <div class="min-w-0 flex-1 text-sm">
+          <div class="font-medium">{{ tx(template.title) }}</div>
+          <div class="text-xs text-muted-foreground">{{ t('maintenance.every', { n: template.intervalDays }) }} · {{ t('editor.panel.suggestTask') }}</div>
+        </div>
+        <Button size="sm" variant="outline" class="shrink-0" @click="joinTemplateTask(d, template, device.id)">
+          <Plus /> {{ t(templateExists ? 'editor.panel.joinTask' : 'editor.panel.createTask') }}
+        </Button>
+      </div>
     </section>
 
     <section class="space-y-3">

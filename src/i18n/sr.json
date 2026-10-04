@@ -168,7 +168,25 @@
     "notePlaceholder": "Npr. „utičnicu kod prozora zamenili smo duplom“",
     "noteDraftHint": "Ide u nacrt. Objavite ga u uređivaču da bi svi videli.",
     "anonymous": "Anonimno",
-    "noNotes": "Još nema beležaka."
+    "noNotes": "Još nema beležaka.",
+    "typeHint": {
+      "mcb": "Štiti strujno kolo od preopterećenja i kratkog spoja",
+      "rcd": "Isključuje pri struji curenja, štiti ljude. Ide ispred osigurača",
+      "rcbo": "Osigurač i FID u jednom kućištu, za jedno kolo",
+      "voltage-relay": "Isključuje stan pri skokovima napona u mreži",
+      "spd": "Prigušuje udare od groma i prekidanja u mreži",
+      "meter": "Merenje potrošnje struje",
+      "switch": "Ručno isključenje cele table ili grupe",
+      "contactor": "Uključuje potrošač na signal: tajmer, termostat, pametna kuća",
+      "din-socket": "Utičnica u samoj tabli, za ruter ili punjač",
+      "bus": "Nulta ili zaštitna šina, češalj",
+      "terminal": "Kleme za spajanje provodnika na DIN šini",
+      "actuator": "Relej magistrale pametne kuće: svetlo, roletne, grejanje",
+      "bus-psu": "Napaja KNX ili DALI magistralu",
+      "bus-gateway": "Povezuje magistralu sa mrežom i aplikacijom",
+      "bus-io": "Prima signale od tastera i senzora",
+      "other": "Sve što nije na listi"
+    }
   },
   "point": {
     "kind": {
@@ -789,7 +807,8 @@
       "section": {
         "specs": "Karakteristike",
         "wiring": "Napajanje i vod",
-        "passport": "Proizvod"
+        "passport": "Proizvod",
+        "maintenance": "Održavanje"
       },
       "labelPlaceholder": "Kuhinja, utičnice iznad radne ploče",
       "tagsPlaceholder": "kuhinja, utičnice",
@@ -798,7 +817,18 @@
       "unplacedOne": "Nije postavljen u tablu",
       "rcdClass": "Tip FID",
       "location": "Gde se nalazi",
-      "locationPlaceholder": "Ako nije u ovoj tabli: spratna tabla na stepeništu, levo od lifta. Ključ je kod domara."
+      "locationPlaceholder": "Ako nije u ovoj tabli: spratna tabla na stepeništu, levo od lifta. Ključ je kod domara.",
+      "group": {
+        "protection": "Zaštita",
+        "control": "Merenje i upravljanje",
+        "wiring": "Šine i kleme",
+        "smart": "Pametna kuća",
+        "other": "Ostalo"
+      },
+      "suggestTask": "preporučeno",
+      "createTask": "Napravi zadatak",
+      "joinTask": "Dodaj u zadatak",
+      "leaveTask": "Ukloni iz zadatka"
     },
     "smart": {
       "title": "Magistrala pametne kuće",
@@ -898,7 +928,9 @@
       "title": "Zadatak",
       "interval": "Interval",
       "howTo": "Kako",
-      "devices": "Uređaji"
+      "devices": "Uređaji",
+      "logDone": "Upiši izvršenje",
+      "orphans": "Zapisi bez zadatka"
     },
     "publish": {
       "status": "Status",

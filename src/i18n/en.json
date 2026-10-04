@@ -168,7 +168,25 @@
     "notePlaceholder": "E.g. \"replaced the window socket with a double one\"",
     "noteDraftHint": "Goes into the draft. Publish it in the editor so everyone sees it.",
     "anonymous": "Anonymous",
-    "noNotes": "No notes yet."
+    "noNotes": "No notes yet.",
+    "typeHint": {
+      "mcb": "Protects a circuit from overload and short circuit",
+      "rcd": "Trips on leakage current to protect people. Goes before the breakers",
+      "rcbo": "Breaker and RCD in one body, for a single circuit",
+      "voltage-relay": "Cuts the flat off during mains voltage swings",
+      "spd": "Absorbs surges from lightning and grid switching",
+      "meter": "Measures energy use",
+      "switch": "Manual isolation of the whole panel or a group",
+      "contactor": "Switches a load on a signal: timer, thermostat, smart home",
+      "din-socket": "A socket inside the panel, for a router or charger",
+      "bus": "Neutral or earth busbar, comb busbar",
+      "terminal": "DIN-rail terminals for joining wires",
+      "actuator": "Smart-home bus relay: lights, blinds, heating",
+      "bus-psu": "Powers a KNX or DALI bus",
+      "bus-gateway": "Connects the bus to the network and app",
+      "bus-io": "Takes signals from push buttons and sensors",
+      "other": "Anything not on this list"
+    }
   },
   "point": {
     "kind": {
@@ -789,7 +807,8 @@
       "section": {
         "specs": "Specifications",
         "wiring": "Feed and circuit",
-        "passport": "Product"
+        "passport": "Product",
+        "maintenance": "Maintenance"
       },
       "labelPlaceholder": "Kitchen, worktop sockets",
       "tagsPlaceholder": "kitchen, sockets",
@@ -798,7 +817,18 @@
       "unplacedOne": "Not placed in the panel",
       "rcdClass": "RCD type",
       "location": "Where it is",
-      "locationPlaceholder": "If not in this panel: floor box on the landing, left of the lift. The concierge has the key."
+      "locationPlaceholder": "If not in this panel: floor box on the landing, left of the lift. The concierge has the key.",
+      "group": {
+        "protection": "Protection",
+        "control": "Metering and control",
+        "wiring": "Busbars and terminals",
+        "smart": "Smart home",
+        "other": "Other"
+      },
+      "suggestTask": "recommended",
+      "createTask": "Create task",
+      "joinTask": "Add to task",
+      "leaveTask": "Remove from task"
     },
     "smart": {
       "title": "Smart-home bus",
@@ -898,7 +928,9 @@
       "title": "Task",
       "interval": "Interval",
       "howTo": "How to",
-      "devices": "Devices"
+      "devices": "Devices",
+      "logDone": "Log as done",
+      "orphans": "Entries without a task"
     },
     "publish": {
       "status": "Status",

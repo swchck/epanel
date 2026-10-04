@@ -38,6 +38,11 @@ const DEVICE_DEFAULTS: Record<DeviceType, Partial<Device>> = {
   other: { poles: 1 },
 }
 
+export function newDeviceWidth(type: DeviceType): number {
+  const def = DEVICE_DEFAULTS[type]
+  return defaultWidth({ type, poles: def.poles ?? 1, width: def.width })
+}
+
 export function nextDeviceId(d: PanelData, type: DeviceType): string {
   const prefix = ID_PREFIX[type]
   const used = new Set(d.devices.map((x) => x.id))

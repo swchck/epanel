@@ -168,7 +168,25 @@
     "notePlaceholder": "P. ej. «cambiado el enchufe de la ventana por uno doble»",
     "noteDraftHint": "Se guarda en el borrador. Publícalo en el editor para que todos lo vean.",
     "anonymous": "Anónimo",
-    "noNotes": "Aún no hay notas."
+    "noNotes": "Aún no hay notas.",
+    "typeHint": {
+      "mcb": "Protege una línea contra sobrecarga y cortocircuito",
+      "rcd": "Dispara por corriente de fuga, protege a las personas. Va antes de los magnetotérmicos",
+      "rcbo": "Magnetotérmico y diferencial en un solo cuerpo, para una línea",
+      "voltage-relay": "Corta la vivienda cuando la tensión de red se dispara o cae",
+      "spd": "Absorbe picos por rayos y maniobras en la red",
+      "meter": "Mide el consumo de energía",
+      "switch": "Corte manual de todo el cuadro o de un grupo",
+      "contactor": "Conecta una carga por señal: temporizador, termostato, domótica",
+      "din-socket": "Un enchufe dentro del cuadro, para el router o un cargador",
+      "bus": "Barra de neutro o de tierra, peine",
+      "terminal": "Bornes de carril DIN para unir cables",
+      "actuator": "Relé del bus domótico: luces, persianas, calefacción",
+      "bus-psu": "Alimenta un bus KNX o DALI",
+      "bus-gateway": "Conecta el bus con la red y la app",
+      "bus-io": "Recibe señales de pulsadores y sensores",
+      "other": "Cualquier cosa que no esté en la lista"
+    }
   },
   "point": {
     "kind": {
@@ -789,7 +807,8 @@
       "section": {
         "specs": "Características",
         "wiring": "Alimentación y circuito",
-        "passport": "Producto"
+        "passport": "Producto",
+        "maintenance": "Mantenimiento"
       },
       "labelPlaceholder": "Cocina, enchufes de la encimera",
       "tagsPlaceholder": "cocina, enchufes",
@@ -798,7 +817,18 @@
       "unplacedOne": "Sin colocar en el cuadro",
       "rcdClass": "Tipo de diferencial",
       "location": "Dónde está",
-      "locationPlaceholder": "Si no está en este cuadro: cuarto de contadores de la planta, a la izquierda del ascensor. La llave la tiene el conserje."
+      "locationPlaceholder": "Si no está en este cuadro: cuarto de contadores de la planta, a la izquierda del ascensor. La llave la tiene el conserje.",
+      "group": {
+        "protection": "Protección",
+        "control": "Medida y control",
+        "wiring": "Barras y bornes",
+        "smart": "Domótica",
+        "other": "Otros"
+      },
+      "suggestTask": "recomendado",
+      "createTask": "Crear tarea",
+      "joinTask": "Añadir a la tarea",
+      "leaveTask": "Quitar de la tarea"
     },
     "smart": {
       "title": "Bus domótico",
@@ -898,7 +928,9 @@
       "title": "Tarea",
       "interval": "Intervalo",
       "howTo": "Cómo hacerlo",
-      "devices": "Dispositivos"
+      "devices": "Dispositivos",
+      "logDone": "Registrar hecho",
+      "orphans": "Registros sin tarea"
     },
     "publish": {
       "status": "Estado",

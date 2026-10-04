@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { tiny } from '@/domain/__tests__/fixture'
 import { addDevice, addRow, feederAt, findItem, insertBlank, moveItem, moveToRow, nextDeviceId, placeAt, removeDevice, removePoint, removeRoom, renameDevice } from '../ops'
 import { referenceIssues } from '@/domain/model'
+import { joinTemplateTask, templateFor } from '../taskTemplates'
 
 describe('editor ops', () => {
   it('numbers new devices by type prefix', () => {
@@ -86,5 +87,18 @@ describe('editor ops', () => {
     expect(feederAt(d, 0, 2)).toBe('D1')
     expect(feederAt(d, 0, 4)).toBe('D1')
     expect(feederAt(d, 0, 1)).toBeUndefined()
+  })
+
+  it('creates a template task once and lets other devices join it', () => {
+    const d = tiny()
+    const tpl = templateFor('rcd')!
+    joinTemplateTask(d, tpl, 'D1')
+    const extra = addDevice(d, 'rcbo', 0)
+    joinTemplateTask(d, templateFor('rcbo')!, extra.id)
+    joinTemplateTask(d, tpl, 'D1')
+    const created = d.maintenance.tasks.filter((x) => x.id === 'rcd-test')
+    expect(created).toHaveLength(1)
+    expect(created[0]).toMatchObject({ id: 'rcd-test', intervalDays: 30, devices: ['D1', extra.id] })
+    expect(templateFor('mcb')).toBeUndefined()
   })
 })

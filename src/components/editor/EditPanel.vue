@@ -1,18 +1,18 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, Minus, Plus, SquareDashed, Trash2, X } from '@lucide/vue'
+import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, Minus, Plus, SquareDashed, Trash2 } from '@lucide/vue'
 import { Button } from '@/components/ui/button'
 import DeviceChip from '@/components/common/DeviceChip.vue'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import PanelEnclosure from '@/components/panel/PanelEnclosure.vue'
 import PanelViewToggle from '@/components/panel/PanelViewToggle.vue'
-import { TYPE_ACCENT } from '@/components/panel/geometry'
-import { DEVICE_TYPES, type DeviceType } from '@/domain/model'
+import type { DeviceType } from '@/domain/model'
 import { addDevice, addRow, feederAt, findItem, insertBlank, moveItem, moveToRow, placeAt, removeDevice, removeRow } from '@/editor/ops'
 import { useDraft } from '@/composables/useDraft'
 import { useText } from '@/composables/useText'
 import { useUi } from '@/stores/ui'
 import DeviceForm from './DeviceForm.vue'
+import DeviceTypePicker from './DeviceTypePicker.vue'
 import NumberInput from './NumberInput.vue'
 
 const { d, data } = useDraft()
@@ -133,27 +133,7 @@ function used(i: number) {
     </div>
 
     <aside class="space-y-4">
-      <div v-if="slot" class="rounded-2xl border border-primary/50 bg-card p-4">
-        <div class="mb-3 flex items-start gap-2">
-          <div class="mr-auto">
-            <div class="font-medium">{{ t('editor.panel.slotTitle') }}</div>
-            <div class="text-sm text-muted-foreground">{{ t('editor.panel.slotWhere', { row: slot.row + 1, free: slotFree }) }}</div>
-          </div>
-          <Button variant="ghost" size="icon-sm" :aria-label="t('common.cancel')" @click="slot = null"><X /></Button>
-        </div>
-        <div class="grid grid-cols-2 gap-1.5">
-          <button
-            v-for="tp in DEVICE_TYPES"
-            :key="tp"
-            class="flex items-center gap-2 rounded-lg border px-2.5 py-2 text-left text-sm transition hover:border-primary/60 hover:bg-accent"
-            @click="add(tp)"
-          >
-            <span class="size-2.5 shrink-0 rounded-full" :style="{ background: TYPE_ACCENT[tp] }" />
-            <span class="truncate">{{ t(`device.typeShort.${tp}`) }}</span>
-          </button>
-        </div>
-      </div>
-      <div v-else-if="selected" class="rounded-2xl border bg-card p-4">
+      <div v-if="selected" class="rounded-2xl border bg-card p-4">
         <div class="mb-4 flex items-start gap-3">
           <DeviceChip :device="selected" size="lg" />
           <div class="min-w-0 flex-1 pt-0.5">
@@ -189,5 +169,7 @@ function used(i: number) {
         <p>{{ t('editor.panel.pick') }}</p>
       </div>
     </aside>
+
+    <DeviceTypePicker v-if="slot" :open="!!slot" :row="slot.row" :free="slotFree" @update:open="(v) => !v && (slot = null)" @pick="add" />
   </div>
 </template>
