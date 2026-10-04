@@ -33,7 +33,7 @@ export const useUi = defineStore('ui', () => {
     panel: true,
     sensor: true,
     other: true,
-    routes: false,
+    routes: true,
     bus: true,
     lowvoltage: true,
     dimensions: true,
