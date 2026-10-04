@@ -10,6 +10,7 @@ import DeviceChip from '@/components/common/DeviceChip.vue'
 import { isoDay, type TaskStatus } from '@/domain/maintenance'
 import { useText } from '@/composables/useText'
 import { useData } from '@/stores/data'
+import MarkdownText from '@/components/common/MarkdownText.vue'
 
 const data = useData()
 const { t, tx } = useText()
@@ -88,7 +89,7 @@ function deviceOf(id: string) {
             }}
           </span>
         </div>
-        <p v-if="s.task.howTo" class="mt-3 text-sm">{{ tx(s.task.howTo) }}</p>
+        <MarkdownText v-if="s.task.howTo" :text="tx(s.task.howTo)" class="mt-3 text-sm" />
         <div v-if="s.task.devices.length" class="mt-3 flex flex-wrap gap-1.5">
           <template v-for="id in s.task.devices" :key="id">
             <RouterLink v-if="deviceOf(id)" :to="`/d/${id}`"><DeviceChip :device="deviceOf(id)!" size="sm" /></RouterLink>
@@ -107,7 +108,7 @@ function deviceOf(id: string) {
           <span class="absolute top-1.5 -left-[25px] size-2.5 rounded-full bg-primary ring-4 ring-background" />
           <div class="text-sm font-medium">{{ taskTitle(l.task) }}</div>
           <div class="text-xs text-muted-foreground">{{ l.date }}<template v-if="l.author"> · {{ l.author }}</template></div>
-          <p v-if="l.note" class="mt-1 text-sm">{{ l.note }}</p>
+          <MarkdownText v-if="l.note" :text="l.note" class="mt-1 text-sm" />
         </li>
       </ol>
       <p v-else class="text-sm text-muted-foreground">{{ t('maintenance.empty') }}</p>

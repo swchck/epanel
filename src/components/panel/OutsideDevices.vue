@@ -3,6 +3,7 @@ import { MapPin } from '@lucide/vue'
 import DeviceChip from '@/components/common/DeviceChip.vue'
 import { useText } from '@/composables/useText'
 import { useData } from '@/stores/data'
+import MarkdownText from '@/components/common/MarkdownText.vue'
 
 defineProps<{ title?: string; hint?: string }>()
 const data = useData()
@@ -20,7 +21,7 @@ const { t, tx } = useText()
             <DeviceChip :device="dev" size="sm" />
             <span class="min-w-0 truncate text-sm font-medium group-hover:underline">{{ tx(dev.label) || t(`device.type.${dev.type}`) }}</span>
           </div>
-          <p class="mt-1 text-sm whitespace-pre-line text-muted-foreground">{{ tx(dev.location) }}</p>
+          <MarkdownText :text="tx(dev.location)" class="mt-1 text-sm text-muted-foreground" />
           <p v-if="dev.serial" class="mt-0.5 font-mono text-xs text-muted-foreground">№ {{ dev.serial }}</p>
         </RouterLink>
       </li>

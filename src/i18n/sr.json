@@ -975,7 +975,19 @@
     },
     "undo": "Poništi (⌘Z)",
     "redo": "Ponovi (⇧⌘Z)",
-    "translationsHint": "Ako jezik nije popunjen, prikazuje se engleski tekst, a bez njega ruski."
+    "translationsHint": "Ako jezik nije popunjen, prikazuje se engleski tekst, a bez njega ruski.",
+    "md": {
+      "bold": "Podebljano",
+      "italic": "Kurziv",
+      "list": "Lista",
+      "numbered": "Numerisana lista",
+      "link": "Link",
+      "preview": "Pregled",
+      "edit": "Uredi",
+      "boldText": "podebljan tekst",
+      "italicText": "kurziv",
+      "linkText": "tekst linka"
+    }
   },
   "landing": {
     "nav": {

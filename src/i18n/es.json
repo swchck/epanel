@@ -975,7 +975,19 @@
     },
     "undo": "Deshacer (⌘Z)",
     "redo": "Rehacer (⇧⌘Z)",
-    "translationsHint": "Si un idioma está vacío, se muestra el texto en inglés o, si no hay, en ruso."
+    "translationsHint": "Si un idioma está vacío, se muestra el texto en inglés o, si no hay, en ruso.",
+    "md": {
+      "bold": "Negrita",
+      "italic": "Cursiva",
+      "list": "Lista",
+      "numbered": "Lista numerada",
+      "link": "Enlace",
+      "preview": "Vista previa",
+      "edit": "Editar",
+      "boldText": "texto en negrita",
+      "italicText": "cursiva",
+      "linkText": "texto del enlace"
+    }
   },
   "landing": {
     "nav": {

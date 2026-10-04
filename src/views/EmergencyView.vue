@@ -10,6 +10,7 @@ import PanelEnclosure from '@/components/panel/PanelEnclosure.vue'
 import { locate } from '@/domain/layout'
 import { useText } from '@/composables/useText'
 import { useData } from '@/stores/data'
+import MarkdownText from '@/components/common/MarkdownText.vue'
 
 type Scenario = 'partial' | 'all' | 'rcd' | 'smell' | 'flicker'
 type Guide = 'mcb' | 'rcd' | 'relay' | 'all' | 'other'
@@ -228,7 +229,7 @@ const hasAside = computed(() => {
         </div>
         <div v-if="guideScreen.guide === 'relay' && relay" class="rounded-2xl border bg-card p-4 text-sm">
           <RouterLink :to="`/d/${relay.id}`" class="flex items-center gap-2"><DeviceChip :device="relay" size="sm" /> {{ tx(relay.label) }}</RouterLink>
-          <p v-for="(n, i) in relay.notes" :key="i" class="mt-2 text-muted-foreground">{{ n.text }}</p>
+          <MarkdownText v-for="(n, i) in relay.notes" :key="i" :text="n.text" class="mt-2 text-muted-foreground" />
         </div>
       </aside>
     </div>

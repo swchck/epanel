@@ -975,7 +975,19 @@
     },
     "undo": "Undo (⌘Z)",
     "redo": "Redo (⇧⌘Z)",
-    "translationsHint": "An empty language shows the English text, or the Russian one if there is no English."
+    "translationsHint": "An empty language shows the English text, or the Russian one if there is no English.",
+    "md": {
+      "bold": "Bold",
+      "italic": "Italic",
+      "list": "List",
+      "numbered": "Numbered list",
+      "link": "Link",
+      "preview": "Preview",
+      "edit": "Edit",
+      "boldText": "bold text",
+      "italicText": "italic",
+      "linkText": "link text"
+    }
   },
   "landing": {
     "nav": {

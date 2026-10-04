@@ -16,6 +16,7 @@ import type { PlanPoint } from '@/domain/model'
 import { useText } from '@/composables/useText'
 import { useData } from '@/stores/data'
 import { useUi } from '@/stores/ui'
+import MarkdownText from '@/components/common/MarkdownText.vue'
 
 const props = defineProps<{ id: string }>()
 const data = useData()
@@ -106,7 +107,7 @@ function simulateOff() {
         {{ t('device.place', { row: place.rowIndex + 1, pos: place.position }) }}
       </p>
       <p v-else-if="device.location" class="flex gap-1.5 text-sm text-muted-foreground">
-        <MapPin class="mt-0.5 size-4 shrink-0 text-primary" /><span class="whitespace-pre-line">{{ tx(device.location) }}</span>
+        <MapPin class="mt-0.5 size-4 shrink-0 text-primary" /><MarkdownText :text="tx(device.location)" />
       </p>
       <div v-if="device.tags.length" class="flex flex-wrap gap-1.5">
         <button
@@ -231,7 +232,7 @@ function simulateOff() {
             <span class="font-medium">{{ n.author || t('device.anonymous') }}</span>
             <time>{{ n.date }}</time>
           </div>
-          <p class="whitespace-pre-line">{{ n.text }}</p>
+          <MarkdownText :text="n.text" />
         </li>
       </ol>
       <p v-else-if="!noteOpen" class="text-sm text-muted-foreground">{{ t('device.noNotes') }}</p>

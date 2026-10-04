@@ -6,6 +6,7 @@ import { useText } from '@/composables/useText'
 import { useData } from '@/stores/data'
 import DeviceChip from './DeviceChip.vue'
 import { CABLE_COLORS } from './kinds'
+import MarkdownText from '@/components/common/MarkdownText.vue'
 
 const props = defineProps<{ route: Route }>()
 const data = useData()
@@ -63,7 +64,7 @@ const total = computed(() => props.route.cables.reduce((n, c) => n + c.count, 0)
       </p>
     </div>
 
-    <p v-if="route.note" class="text-sm">{{ tx(route.note) }}</p>
+    <MarkdownText v-if="route.note" :text="tx(route.note)" class="text-sm" />
     <p class="text-xs text-muted-foreground">{{ t('route.nodrill', { cm: route.safeWidth }) }}</p>
   </div>
 </template>

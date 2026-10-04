@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
-import { Textarea } from '@/components/ui/textarea'
 import { DEVICE_TYPES, SMART_TYPES, type Device } from '@/domain/model'
 import { findItem, renameDevice } from '@/editor/ops'
 import { joinTemplateTask, templateFor } from '@/editor/taskTemplates'
@@ -15,6 +14,7 @@ import { useText } from '@/composables/useText'
 import { useUi } from '@/stores/ui'
 import FormRow from './FormRow.vue'
 import LocalizedInput from './LocalizedInput.vue'
+import MarkdownTextarea from './MarkdownTextarea.vue'
 import NumberInput from './NumberInput.vue'
 import SmartForm from './SmartForm.vue'
 
@@ -221,7 +221,7 @@ function circuit() {
           <Input v-model="n.date" type="date" class="w-36" />
           <Button variant="ghost" size="icon" class="shrink-0" :aria-label="t('common.delete')" @click="device.notes.splice(i, 1)"><Trash2 /></Button>
         </div>
-        <Textarea v-model="n.text" rows="2" />
+        <MarkdownTextarea v-model="n.text" :rows="2" />
       </div>
     </section>
   </div>
