@@ -25,12 +25,14 @@ const moreOpen = ref(false)
 
 const GROUPS: { key: string; items: NavName[] }[] = [
   { key: 'main', items: ['panel', 'plan', 'find', 'emergency'] },
-  { key: 'engineering', items: ['schema', 'checks'] },
+  { key: 'engineering', items: ['schema', 'checks', 'smart'] },
   { key: 'service', items: ['maintenance', 'photos', 'labels'] },
   { key: 'manage', items: ['edit', 'settings'] },
 ]
 const MOBILE: NavName[] = ['panel', 'plan', 'find', 'emergency']
 const pathOf = (n: NavName) => NAV.find((x) => x.name === n)!.path
+const hasSmart = computed(() => !!data.data && (data.data.devices.some((d) => d.smart) || data.data.points.some((p) => p.kind === 'panel')))
+const visible = (n: NavName) => n !== 'smart' || hasSmart.value
 
 const current = computed<NavName>(() => {
   const n = route.name as string
@@ -88,7 +90,7 @@ whenever(
         <div v-for="g in GROUPS" :key="g.key" class="mb-4">
           <div class="px-2 pb-1.5 text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">{{ t(`nav.group.${g.key}`) }}</div>
           <RouterLink
-            v-for="n in g.items"
+            v-for="n in g.items.filter(visible)"
             :key="n"
             :to="pathOf(n)"
             class="group flex items-center gap-3 rounded-lg px-2.5 py-2 text-sm transition"
@@ -172,7 +174,7 @@ whenever(
         </SheetHeader>
         <div class="grid grid-cols-3 gap-2 px-4 pb-2">
           <RouterLink
-            v-for="n in NAV.map((x) => x.name).filter((x) => !MOBILE.includes(x))"
+            v-for="n in NAV.map((x) => x.name).filter((x) => !MOBILE.includes(x) && visible(x))"
             :key="n"
             :to="pathOf(n)"
             class="relative flex flex-col items-center gap-2 rounded-xl border bg-card px-2 py-4 text-center text-xs"

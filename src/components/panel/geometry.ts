@@ -16,5 +16,9 @@ export const TYPE_ACCENT: Record<string, string> = {
   'din-socket': '#6b7280',
   bus: '#b08d2c',
   terminal: '#64748b',
+  actuator: '#16a34a',
+  'bus-psu': '#15803d',
+  'bus-gateway': '#0f766e',
+  'bus-io': '#65a30d',
   other: '#64748b',
 }

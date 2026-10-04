@@ -109,14 +109,15 @@ export const useData = defineStore('data', () => {
     }
   }
 
-  async function init(opts: { key?: string; demo?: boolean } = {}) {
+  async function init(opts: { key?: string; demo?: boolean | string } = {}) {
     status.value = 'loading'
     error.value = undefined
     try {
       if (opts.demo) {
         source.value = 'demo'
-        envelope.value = await fetchEnvelope('demo.panel')
-        if (!envelope.value) throw new Error('demo.panel not found')
+        const file = opts.demo === 'smart' ? 'demo-smart.panel' : 'demo.panel'
+        envelope.value = await fetchEnvelope(file)
+        if (!envelope.value) throw new Error(`${file} not found`)
         await unlock(DEMO_PASSWORD, false)
         return
       }

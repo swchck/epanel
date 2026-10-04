@@ -78,7 +78,7 @@ async function submit() {
         {{ $t('unlock.hint') }}
       </p>
       <p class="mt-3 text-center text-sm">
-        <a href="#/?demo" class="text-muted-foreground underline-offset-4 hover:text-foreground hover:underline" @click="$router.replace({ query: { demo: null } }).then(() => data.init({ demo: true }))">{{ $t('unlock.demo') }}</a>
+        <button type="button" class="text-muted-foreground underline-offset-4 hover:text-foreground hover:underline" @click="data.init({ demo: true })">{{ $t('unlock.demo') }}</button>
       </p>
     </form>
   </div>

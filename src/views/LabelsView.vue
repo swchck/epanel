@@ -1,3 +1,111 @@
+<script setup lang="ts">
+import { computed, ref } from 'vue'
+import { Printer, TriangleAlert } from '@lucide/vue'
+import { Button } from '@/components/ui/button'
+import { Switch } from '@/components/ui/switch'
+import QrCode from '@/components/common/QrCode.vue'
+import { useText } from '@/composables/useText'
+import { appUrl } from '@/lib/appUrl'
+import { useData } from '@/stores/data'
+
+const data = useData()
+const { t, tx } = useText()
+const withKey = ref(true)
+const perDeviceQr = ref(false)
+const showLabels = ref(true)
+// millimetres; one DIN module is 17.5 mm
+const MODULE_MM = 17.5
+const labelHeight = ref(14)
+
+const mainUrl = computed(() => appUrl(data.data?.meta.publicUrl, '/', withKey.value ? data.password : null))
+const deviceUrl = (id: string) => appUrl(data.data?.meta.publicUrl, `/d/${id}`, withKey.value ? data.password : null)
+const noBase = computed(() => !mainUrl.value.startsWith('http'))
+
+function print() {
+  window.print()
+}
+
+function rating(id: string) {
+  const d = data.graph?.byId.get(id)
+  if (!d?.rating) return ''
+  return `${d.curve ?? ''}${d.rating}${d.leakage ? ` ${d.leakage}mA` : ''}`
+}
+</script>
+
 <template>
-  <div class="p-8">Labels</div>
+  <div class="mx-auto max-w-6xl px-4 pt-5 lg:px-8 lg:pt-8">
+    <div class="no-print">
+      <h1 class="text-2xl font-semibold tracking-tight lg:text-3xl">{{ t('labels.title') }}</h1>
+      <p class="mt-1 text-muted-foreground">{{ t('labels.subtitle') }}</p>
+
+      <div class="mt-5 flex flex-wrap items-center gap-x-6 gap-y-3 rounded-2xl border bg-card p-4">
+        <label class="flex items-center gap-2 text-sm"><Switch v-model="withKey" /> {{ t('qr.withPassword') }}</label>
+        <label class="flex items-center gap-2 text-sm"><Switch v-model="showLabels" /> {{ t('labels.strips') }}</label>
+        <label class="flex items-center gap-2 text-sm"><Switch v-model="perDeviceQr" /> {{ t('labels.perDevice') }}</label>
+        <label class="flex items-center gap-2 text-sm">
+          {{ t('labels.height') }}
+          <input v-model.number="labelHeight" type="number" min="8" max="30" class="w-16 rounded-md border bg-transparent px-2 py-1 text-sm" />
+          {{ t('units.mm') }}
+        </label>
+        <div class="flex-1" />
+        <Button @click="print"><Printer /> {{ t('labels.print') }}</Button>
+      </div>
+      <p v-if="noBase" class="mt-3 flex gap-2 rounded-xl bg-warn/15 p-3 text-sm"><TriangleAlert class="size-4 shrink-0 text-warn" />{{ t('qr.noPublicUrl') }}</p>
+      <p class="mt-3 text-xs text-muted-foreground">{{ t('labels.printHint') }}</p>
+    </div>
+
+    <div class="print-area mt-6 space-y-8">
+      <!-- main sticker for the inside of the door -->
+      <section class="sticker mx-auto flex w-[90mm] flex-col items-center gap-[3mm] rounded-[4mm] border-[0.6mm] border-black bg-white p-[5mm] text-black">
+        <div class="text-center text-[4.2mm] leading-tight font-semibold">{{ tx(data.data?.meta.title) }}</div>
+        <div class="size-[60mm]"><QrCode :value="mainUrl" :margin="0" /></div>
+        <div class="text-center text-[3mm] leading-snug">{{ t('labels.scan') }}</div>
+        <div class="flex w-full justify-between text-[2.4mm] text-neutral-600">
+          <span>⚡ {{ t('labels.emergencyLine') }}</span>
+          <span v-if="data.data?.meta.contacts[0]?.phone">{{ data.data.meta.contacts[0].phone }}</span>
+        </div>
+      </section>
+
+      <!-- label strips at true scale -->
+      <section v-if="showLabels" class="space-y-[6mm]">
+        <div v-for="(row, ri) in data.layout" :key="row.id" class="strip-wrap">
+          <div class="no-print mb-1 text-xs text-muted-foreground">{{ t('labels.row', { n: ri + 1 }) }}</div>
+          <div class="flex overflow-x-auto bg-white text-black" :style="{ width: `${row.modules * MODULE_MM}mm` }">
+            <div
+              v-for="item in row.items"
+              :key="item.device?.id ?? `b${item.start}`"
+              class="flex shrink-0 flex-col items-center justify-center overflow-hidden border-[0.25mm] border-black/70 px-[0.6mm] text-center"
+              :style="{ width: `${item.width * MODULE_MM}mm`, height: `${labelHeight}mm` }"
+            >
+              <template v-if="item.device">
+                <div class="font-mono text-[2.8mm] leading-none font-bold">{{ item.device.id }}</div>
+                <div class="mt-[0.5mm] line-clamp-2 text-[1.9mm] leading-[1.1]">{{ tx(item.device.label) }}</div>
+                <div class="font-mono text-[1.8mm] leading-none text-neutral-600">{{ rating(item.device.id) }}</div>
+              </template>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- per-device QR stickers -->
+      <section v-if="perDeviceQr" class="grid grid-cols-[repeat(auto-fill,minmax(28mm,1fr))] gap-[3mm]">
+        <div v-for="d in data.data?.devices.filter((x) => x.type !== 'bus' && x.type !== 'terminal')" :key="d.id" class="flex flex-col items-center gap-[1mm] rounded-[2mm] border-[0.3mm] border-black bg-white p-[2mm] text-black">
+          <div class="size-[22mm]"><QrCode :value="deviceUrl(d.id)" :margin="0" /></div>
+          <div class="font-mono text-[2.8mm] font-bold">{{ d.id }}</div>
+        </div>
+      </section>
+    </div>
+  </div>
 </template>
+
+<style scoped>
+@media print {
+  .print-area {
+    margin: 0;
+  }
+  .sticker,
+  .strip-wrap {
+    break-inside: avoid;
+  }
+}
+</style>

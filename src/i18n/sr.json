@@ -1,1 +1,841 @@
-{}
+{
+  "app": {
+    "name": "Električna tabla",
+    "tagline": "Interaktivna mapa razvodne table"
+  },
+  "common": {
+    "loading": "Učitavanje…",
+    "back": "Nazad",
+    "close": "Zatvori",
+    "save": "Sačuvaj",
+    "cancel": "Otkaži",
+    "delete": "Obriši",
+    "add": "Dodaj",
+    "prev": "Prethodno",
+    "next": "Sledeće",
+    "noRoom": "Bez prostorije"
+  },
+  "units": {
+    "m2": "m²",
+    "mm2": "mm²",
+    "m": "m",
+    "cm": "cm",
+    "mm": "mm",
+    "kw": "kW",
+    "days": "dana"
+  },
+  "nav": {
+    "panel": "Tabla",
+    "plan": "Plan stana",
+    "find": "Šta isključiti?",
+    "emergency": "Nešto je izbacilo",
+    "schema": "Jednopolna šema",
+    "checks": "Provere",
+    "smart": "Pametna kuća",
+    "maintenance": "Održavanje",
+    "photos": "Fotografije i dokumenti",
+    "labels": "Nalepnice i QR",
+    "edit": "Uređivač",
+    "settings": "Podešavanja",
+    "more": "Još",
+    "group": {
+      "main": "Glavno",
+      "engineering": "Instalacije",
+      "service": "Servis",
+      "manage": "Upravljanje"
+    },
+    "short": {
+      "panel": "Tabla",
+      "plan": "Plan",
+      "find": "Nađi",
+      "emergency": "Izbacilo"
+    }
+  },
+  "banner": {
+    "demo": "Ovo je demo stan. Podaci su izmišljeni i izmene se nigde ne čuvaju.",
+    "draft": "Imate neobjavljene izmene i gledate nacrt.",
+    "draftAction": "Objavi"
+  },
+  "search": {
+    "open": "Pretraga",
+    "placeholder": "Osigurač, prostorija, utičnica, uređaj…",
+    "placeholderShort": "Pretraga",
+    "empty": "Ništa nije pronađeno",
+    "room": "Prostorija"
+  },
+  "unlock": {
+    "title": "Potrebna je lozinka",
+    "subtitle": "Podaci o stanu su šifrovani. Unesite lozinku da biste ih otvorili.",
+    "password": "Lozinka",
+    "show": "Prikaži lozinku",
+    "hide": "Sakrij lozinku",
+    "remember": "Zapamti na ovom uređaju",
+    "submit": "Otvori",
+    "wrong": "Pogrešna lozinka",
+    "hint": "Lozinka je ugrađena u QR kod na vratima table. Skenirajte ga kamerom i sajt će se sam otvoriti.",
+    "demo": "Pogledaj demo stan"
+  },
+  "start": {
+    "title": "Još nema podataka",
+    "titleDesktop": "Uređivač table",
+    "subtitle": "Otvorite fajl od električara, opišite tablu od nule ili pogledajte demo.",
+    "open": "Otvori fajl",
+    "openHint": ".panel, .json ili .yaml: šta god je električar poslao",
+    "create": "Napravi novu tablu",
+    "createHint": "Prazan projekat: redovi, osigurači, plan stana",
+    "demo": "Otvori demo",
+    "demoHint": "Dvosoban stan, 27 uređaja, 44 tačke",
+    "name": "Naziv",
+    "defaultTitle": "Moj stan",
+    "password": "Lozinka",
+    "passwordRepeat": "Ponovite lozinku",
+    "passwordHint": "Lozinka šifruje sve podatke. Bez nje se fajl ne može otvoriti, a ne može se ni povratiti.",
+    "passwordMismatch": "Lozinke se ne poklapaju ili su kraće od 4 znaka",
+    "createSubmit": "Napravi",
+    "encrypted": "„{name}“ je šifrovan. Unesite lozinku.",
+    "invalid": "Fajl nije moguće pročitati"
+  },
+  "device": {
+    "type": {
+      "mcb": "Automatski osigurač",
+      "rcd": "FID sklopka",
+      "rcbo": "FID osigurač",
+      "voltage-relay": "Naponski relej",
+      "spd": "Prenaponska zaštita",
+      "meter": "Brojilo",
+      "switch": "Glavni prekidač",
+      "contactor": "Kontaktor",
+      "din-socket": "Utičnica za DIN šinu",
+      "bus": "Šina",
+      "terminal": "Kleme",
+      "actuator": "Aktuator na magistrali",
+      "bus-psu": "Napajanje magistrale",
+      "bus-gateway": "Gejtvej magistrale",
+      "bus-io": "Ulazni modul",
+      "other": "Ostalo"
+    },
+    "typeShort": {
+      "mcb": "Osigurač",
+      "rcd": "FID",
+      "rcbo": "FID osig.",
+      "voltage-relay": "U relej",
+      "spd": "Prenapon",
+      "meter": "Brojilo",
+      "switch": "Prekidač",
+      "contactor": "Kontaktor",
+      "din-socket": "Utičnica",
+      "bus": "Šina",
+      "terminal": "Kleme",
+      "actuator": "Aktuator",
+      "bus-psu": "Napajanje",
+      "bus-gateway": "Gejtvej",
+      "bus-io": "Ulazi",
+      "other": "Ostalo"
+    },
+    "field": {
+      "rating": "Nazivna struja",
+      "poles": "Polovi",
+      "leakage": "Diferencijalna struja",
+      "class": "tip",
+      "cable": "Kabl",
+      "section": "Presek",
+      "length": "Dužina strujnog kola",
+      "model": "Model",
+      "phase": "Faza",
+      "rcd": "FID zaštita"
+    },
+    "place": "Red {row}, {pos}. sleva",
+    "showOnPlan": "Na planu",
+    "simulate": "Šta ostaje bez struje?",
+    "specs": "Karakteristike",
+    "load": "Opterećenje",
+    "loadHint": "Procenjena snaga {demand} kW od {nameplate} kW priključenih uređaja (uz faktor istovremenosti).",
+    "powers": "Napaja tačaka: {n}",
+    "fedFrom": "Napaja se iz",
+    "feeds": "Napaja",
+    "notes": "Beleške",
+    "addNote": "Dodaj belešku",
+    "noteAuthor": "Vaše ime",
+    "notePlaceholder": "Npr. „utičnicu kod prozora zamenili smo duplom“",
+    "noteDraftHint": "Ide u nacrt. Objavite ga u uređivaču da bi svi videli.",
+    "anonymous": "Anonimno",
+    "noNotes": "Još nema beležaka."
+  },
+  "point": {
+    "kind": {
+      "socket": "Utičnica",
+      "light": "Svetiljka",
+      "switch": "Prekidač",
+      "appliance": "Uređaj",
+      "heating": "Grejanje",
+      "ac": "Klima uređaj",
+      "junction": "Razvodna kutija",
+      "network": "Slaba struja",
+      "panel": "Kontrolni panel",
+      "sensor": "Senzor",
+      "other": "Tačka"
+    },
+    "kinds": {
+      "socket": "Utičnice",
+      "light": "Svetla",
+      "switch": "Prekidači",
+      "appliance": "Uređaji",
+      "heating": "Grejanje",
+      "ac": "Klima uređaji",
+      "junction": "Kutije i table",
+      "network": "Slaba struja",
+      "panel": "Kontrolni paneli",
+      "sensor": "Senzori",
+      "other": "Ostalo"
+    },
+    "profile": {
+      "generic": "Običan uređaj",
+      "washer": "Mašina za veš",
+      "dishwasher": "Mašina za sudove",
+      "oven": "Rerna",
+      "cooktop": "Ploča za kuvanje",
+      "fridge": "Frižider",
+      "boiler": "Bojler",
+      "inverter-ac": "Inverter klima",
+      "floor-heating": "Podno grejanje",
+      "ev": "Punjač za električni auto"
+    },
+    "height": "{mm} mm od poda"
+  },
+  "panel": {
+    "title": "Električna tabla",
+    "stat": {
+      "groups": "strujnih kola",
+      "rcds": "FID sklopki i FID osigurača",
+      "points": "tačaka",
+      "modules": "zauzetih modula",
+      "errors": "greške",
+      "warnings": "upozorenja"
+    },
+    "allRooms": "Sve prostorije",
+    "allTags": "Sve oznake",
+    "onlyIssues": "Sa problemima",
+    "clearFilters": "Poništi",
+    "simulate": "Simulacija",
+    "zoom": "Uvećanje",
+    "simHint": "Dodirujte uređaje da ih „isključite“ i vidite šta ostaje bez struje.",
+    "simStatus": "Isključeno uređaja: {devices}. Tačaka bez struje: {points}.",
+    "simShowPlan": "Na planu",
+    "simReset": "Uključi sve",
+    "legend": {
+      "on": "indikator: uključen",
+      "off": "indikator: isključen",
+      "live": "pod naponom",
+      "issue": "ima problem",
+      "tap": "Dodirnite uređaj za detalje"
+    },
+    "pickHint": "Izaberite osigurač na tabli da vidite šta napaja, njegovo opterećenje i beleške.",
+    "details": "Detalji uređaja"
+  },
+  "plan": {
+    "layers": "Slojevi",
+    "layer": {
+      "routes": "Kablovi i zone bez bušenja",
+      "bus": "Magistrala pametne kuće",
+      "photos": "Fotografije zidova",
+      "labels": "Oznake osigurača",
+      "background": "Podloga plana"
+    },
+    "zoomIn": "Uvećaj",
+    "zoomOut": "Umanji",
+    "fit": "Prikaži celo",
+    "hint": "Dodirnite utičnicu ili uređaj da vidite koji ga osigurač isključuje",
+    "sideHint": "Dodirnite bilo koju tačku na planu da vidite kojim osiguračem se isključuje. Dodirnite prostoriju da vidite njena strujna kola.",
+    "simHint": "Simulacija: dodirujte tačke da isključite njihov osigurač.",
+    "simStatus": "Tačaka bez struje: {n}. Isključeni:",
+    "deviceHighlight": "Označeno tačaka: {n}",
+    "roomDevices": "Strujna kola u ovoj prostoriji",
+    "wet": "vlažna prostorija"
+  },
+  "find": {
+    "title": "Šta isključiti?",
+    "subtitle": "Pronađite utičnicu, svetlo ili uređaj, a ja ću vam reći koji osigurač da isključite.",
+    "placeholder": "Npr. utičnica kod kreveta, bojler, svetlo u kupatilu",
+    "pickRoom": "Ili izaberite prostoriju",
+    "pointsCount": "Tačaka: {n}",
+    "switchOff": "Isključite",
+    "unknown": "Ova tačka nije povezana sa osiguračem. Za svaki slučaj isključite glavni osigurač.",
+    "alsoCuts": "Isključuje je i:",
+    "openInPanel": "Prikaži na tabli",
+    "everything": "Isključi struju u celom stanu",
+    "everythingHint": "Glavni osigurač",
+    "controlledBy": "Upravlja se preko",
+    "controlledByHint": "Ovo je relej pametne kuće i ne prekida strujno kolo pouzdano. Pre rada na instalaciji isključite osigurač iznad njega."
+  },
+  "emergency": {
+    "title": "Nešto je izbacilo",
+    "subtitle": "Bez panike. Odgovorite na par pitanja i rešićemo to.",
+    "scenario": {
+      "partial": {
+        "title": "Deo stana je ostao bez struje",
+        "hint": "Ne rade utičnice ili svetla u jednoj ili dve prostorije"
+      },
+      "rcd": {
+        "title": "Izbacila je FID sklopka ili FID osigurač",
+        "hint": "Spuštena je plava ili ljubičasta poluga sa tasterom „T“"
+      },
+      "all": {
+        "title": "Ceo stan je bez struje",
+        "hint": "Ništa ne radi nigde u stanu"
+      },
+      "flicker": {
+        "title": "Svetla trepere, uređaji se sami gase i pale",
+        "hint": "Liči na skokove napona"
+      },
+      "smell": {
+        "title": "Miris paljevine, varnice, tabla je vruća",
+        "hint": "Opasno: reagujte odmah"
+      }
+    },
+    "pick": "Pronađite spuštenu polugu na tabli i dodirnite taj uređaj na slici:",
+    "pickRcd": "Koja FID sklopka ili FID osigurač je izbacio? Dodirnite ga na slici:",
+    "pickHint": "Poluga dole i zelena oznaka u prozorčiću znače da je isključen.",
+    "guide": {
+      "mcb": {
+        "title": "Izbacio je osigurač",
+        "why": "Osigurač izbacuje zbog preopterećenja (previše jakih uređaja na jednom strujnom kolu) ili zbog kratkog spoja (neispravan uređaj ili instalacija).",
+        "steps": [
+          "Isključite iz utičnica jake uređaje na ovom strujnom kolu: kuvalo za vodu, grejalicu, peglu, fen.",
+          "Podignite polugu osigurača dok ne klikne.",
+          "Ako drži, vraćajte uređaje jedan po jedan, ne sve odjednom.",
+          "Ako odmah izbaci čak i kada ništa nije uključeno, u pitanju je kratak spoj. Ostavite ga isključenog i pozovite električara.",
+          "Ako izbaci kada uključite određeni uređaj, taj uređaj je neispravan."
+        ]
+      },
+      "rcd": {
+        "title": "Izbacila je FID sklopka",
+        "why": "FID sklopka prekida strujno kolo kada struja curi: vlaga, oštećena izolacija, neispravan uređaj. Ona štiti od strujnog udara, zato je ne ignorišite.",
+        "steps": [
+          "Isključite iz utičnica sve uređaje na strujnim kolima iza ove FID sklopke (spisak je ispod).",
+          "Podignite polugu FID sklopke.",
+          "Ako drži, uključujte uređaje jedan po jedan, počevši od sumnjivih: mašina za veš, bojler, kuvalo, sve što je blizu vode.",
+          "Uređaj zbog kog FID sklopka izbacuje je neispravan. Ne koristite ga.",
+          "Ako FID sklopka izbacuje i kada je sve isključeno, problem je u instalaciji. Pozovite električara."
+        ]
+      },
+      "relay": {
+        "title": "Izbacio je naponski relej",
+        "why": "Relej isključuje stan kada napon u mreži izađe iz bezbednog opsega i tako štiti vaše uređaje od skokova napona.",
+        "steps": [
+          "Pogledajte displej releja da vidite napon.",
+          "Sačekajte: kada se napon vrati u normalu, relej sam vraća struju (obično za 30–60 sekundi).",
+          "Ne dirajte druge osigurače i ne pokušavajte da zaobiđete relej.",
+          "Ako se to često dešava, javite upravniku zgrade: problem je u napajanju zgrade."
+        ]
+      },
+      "all": {
+        "title": "Ceo stan je bez struje",
+        "why": "Tri moguća uzroka: izbacio je glavni osigurač, izbacio je naponski relej ili je cela zgrada ostala bez struje.",
+        "steps": [
+          "Proverite da li komšije i stepenište imaju svetlo. Ako nemaju, nestalo je struje u zgradi: pozovite upravnika ili distribuciju.",
+          "Pogledajte naponski relej. Crtice ili cifre koje trepću znače da treba sačekati, sam će se uključiti.",
+          "Ako je glavni osigurač spušten, isključite jake uređaje i podignite ga.",
+          "Ako glavni osigurač ponovo izbaci, nemojte više pokušavati. Pozovite električara."
+        ]
+      },
+      "other": {
+        "title": "Ovaj uređaj obično ne „izbacuje“",
+        "why": "Izgleda da je izabran pogrešan uređaj. Pronađite spuštenu polugu na osiguraču, FID sklopki ili FID osiguraču.",
+        "steps": [
+          "Vratite se i izaberite osigurač čija je poluga spuštena.",
+          "Ako nijedna poluga nije spuštena, proverite naponski relej."
+        ]
+      }
+    },
+    "rcdLines": "Strujna kola iza ove FID sklopke",
+    "suspects": "Najjači uređaji na ovom strujnom kolu",
+    "suspectsLeak": "Prvo proverite ove uređaje",
+    "danger": {
+      "title": "Opasnost: reagujte odmah",
+      "s1": "Ako možete bezbedno, isključite glavni osigurač",
+      "s2": "Ne dirajte tablu mokrim rukama i ne otvarajte je ako ima dima.",
+      "s3": "Ako ima dima ili vatre, izađite iz stana i zatvorite vrata.",
+      "s4": "Pozovite 112 i prijavite požar na električnoj instalaciji."
+    },
+    "never": "Nikada ne držite polugu rukom da bi „ostala gore“ i nikada ne lepite osigurače trakom. Time isključujete zaštitu od požara i strujnog udara.",
+    "contacts": "Koga pozvati"
+  },
+  "contact": {
+    "role": {
+      "electrician": "Električar",
+      "management": "Upravnik zgrade",
+      "emergency": "Hitna služba",
+      "utility": "Elektrodistribucija",
+      "other": "Kontakt"
+    }
+  },
+  "schema": {
+    "title": "Jednopolna šema",
+    "subtitle": "Napravljena automatski iz opisa table: od napajanja do svakog strujnog kola.",
+    "grid": "Mreža {v} V",
+    "hint": "Dodirnite uređaj da otvorite njegovu karticu. Uključite simulaciju da „isključujete“ uređaje na šemi."
+  },
+  "checks": {
+    "title": "Provere",
+    "subtitle": "Automatska provera table prema osnovnim pravilima elektroinstalacija.",
+    "level": {
+      "error": "greške",
+      "warn": "upozorenja",
+      "info": "saveti"
+    },
+    "totalLoad": "Procenjeno opterećenje stana",
+    "totalHint": "Uz faktor istovremenosti. Ukupna snaga svih uređaja: {nameplate} kW.",
+    "issues": "Nalazi",
+    "showInfo": "Prikaži savete",
+    "allGood": "Nema problema. Tabla je uredno složena.",
+    "circuits": "Opterećenje po strujnim kolima",
+    "rulesTitle": "Šta se proverava i kako",
+    "disclaimer": "Ove provere su pojednostavljene i ne zamenjuju projekat ni pregled električara. Bakar, polaganje pod malter, napon iz podešavanja.",
+    "code": {
+      "cycle": {
+        "title": "Petlja u lancu napajanja",
+        "hint": "{device} na kraju napaja sam sebe preko drugih uređaja. Proverite polje „Napaja se iz“."
+      },
+      "cable-overload": {
+        "title": "Osigurač prevelik za kabl",
+        "hint": "{rating} A na kablu od {section} mm²: kabl će se pregrejati pre nego što osigurač izbaci. Za ovaj presek granica je {max} A."
+      },
+      "cable-marginal": {
+        "title": "Osigurač na granici za kabl",
+        "hint": "{rating} A na {section} mm² prihvatljivo je samo u dobrim uslovima polaganja. Preporučuje se {max} A."
+      },
+      "cable-unknown": {
+        "title": "Presek kabla nije unet",
+        "hint": "Bez preseka nije moguće proveriti da li osigurač odgovara."
+      },
+      "load-over": {
+        "title": "Strujno kolo je preopterećeno",
+        "hint": "Procenjena struja {current} A veća je od nazivne {rating} A. Osigurač će izbacivati."
+      },
+      "load-high": {
+        "title": "Strujno kolo opterećeno preko 80%",
+        "hint": "Procenjena struja {current} A na osiguraču od {rating} A. Rezerve skoro da nema."
+      },
+      "selectivity-over": {
+        "title": "Narušena selektivnost",
+        "hint": "{rating} A stoji iza {upstream} od {upRating} A. Pri preopterećenju će izbaciti pogrešna zaštita."
+      },
+      "selectivity-equal": {
+        "title": "Ista nazivna struja kao uređaj iznad",
+        "hint": "Pri preopterećenju umesto ovog kola može da izbaci {upstream} i isključi više nego što treba."
+      },
+      "rcd-underrated": {
+        "title": "FID sklopka možda nema zaštitu od preopterećenja",
+        "hint": "FID sklopka od {rating} A stoji iza {upstream} od {upRating} A, a osigurači ispod nje zajedno prelaze njenu nazivnu struju."
+      },
+      "rcd-cascade": {
+        "title": "FID iza FID-a bez selektivnosti",
+        "hint": "{leakage} mA stoji iza {upstream} od {upLeakage} mA. Pri curenju mogu da izbace obe. Iznad stavite selektivnu (S) od 100 mA ili više."
+      },
+      "rating-missing": {
+        "title": "Nazivna struja nije uneta",
+        "hint": "Unesite nazivnu struju da bi provere radile."
+      },
+      "empty-circuit": {
+        "title": "Nijedna tačka nije povezana sa ovim kolom",
+        "hint": "Označite na planu šta ovaj osigurač napaja, da bude jasno šta isključuje."
+      },
+      "unplaced": {
+        "title": "Uređaj nije postavljen na tablu",
+        "hint": "Dodajte ga u red u uređivaču."
+      },
+      "point-unassigned": {
+        "title": "Tačka bez osigurača",
+        "hint": "„{point}“ nije povezana sa osiguračem."
+      },
+      "wet-no-rcd": {
+        "title": "Vlažna prostorija bez FID zaštite",
+        "hint": "„{point}“ je u vlažnoj prostoriji, ali ispred nje nema FID sklopke ni FID osigurača od 30 mA ili manje. To je obavezno."
+      },
+      "socket-no-rcd": {
+        "title": "Utičnica bez FID zaštite",
+        "hint": "„{point}“ nije zaštićena FID sklopkom od 30 mA. Za strujna kola utičnica ona je obavezna."
+      },
+      "rcd-class": {
+        "title": "FID tipa AC ispred inverterskih uređaja",
+        "hint": "{profile} može da stvara pulsirajuću struju curenja koju FID tipa AC ne vidi. Potreban je tip A."
+      },
+      "input-power": {
+        "title": "Procenjena snaga premašuje odobrenu",
+        "hint": "{kw} kW, a odobreno je {max} kW."
+      },
+      "phase-imbalance": {
+        "title": "Neravnoteža faza",
+        "hint": "L1 {L1} W · L2 {L2} W · L3 {L3} W. Rasporedite opterećenje ravnomernije."
+      },
+      "bus-no-psu": {
+        "title": "Nema napajanja KNX magistrale",
+        "hint": "Uređaji na magistrali ne rade bez napajanja linije."
+      },
+      "bus-dup-address": {
+        "title": "Dupla fizička adresa",
+        "hint": "Adresu {address} već koristi {other}. Uređaji će biti u konfliktu."
+      },
+      "channel-unlinked": {
+        "title": "Kanal {channel} ničim ne upravlja",
+        "hint": "Povežite tačke sa plana sa kanalom ili ga označite kao rezervni."
+      },
+      "channel-mismatch": {
+        "title": "Kanal upravlja tačkom na drugom kolu",
+        "hint": "Kanal {channel} je povezan sa „{point}“, ali tu tačku ne napaja ovaj aktuator."
+      },
+      "ga-unknown": {
+        "title": "Grupna adresa ne vodi nikuda",
+        "hint": "„{point}“ šalje na {group}, ali nijedan kanal aktuatora je ne sluša."
+      }
+    },
+    "rules": {
+      "cable": {
+        "title": "Presek kabla i nazivna struja osigurača",
+        "body": "Osigurač štiti kabl, a ne uređaj. Bakar u zidu: 1,5 mm² do 10 A, 2,5 mm² do 16 A, 4 mm² do 25 A, 6 mm² do 32 A. Veći osigurač dozvoljava da se kabl pregreje."
+      },
+      "load": {
+        "title": "Opterećenje strujnog kola",
+        "body": "Struja se računa iz snage uređaja uz faktore istovremenosti: utičnice 0,3, svetla 1, uređaji 0,7–1. Za celu tablu dodaje se i opšti faktor prema broju strujnih kola."
+      },
+      "selectivity": {
+        "title": "Selektivnost",
+        "body": "Osigurač niže u lancu mora imati manju nazivnu struju od onog iznad, da kvar isključi jedno kolo, a ne ceo stan."
+      },
+      "rcd": {
+        "title": "FID sklopke i kaskade",
+        "body": "FID sklopka od 30 mA štiti ljude. Dve FID sklopke u nizu bez selektivnosti izbacuju zajedno, zato ona iznad treba da bude selektivna (S) od 100–300 mA."
+      },
+      "wet": {
+        "title": "Vlažne prostorije",
+        "body": "Sve u kupatilima i toaletima mora biti iza FID sklopke ili FID osigurača od 10–30 mA."
+      },
+      "class": {
+        "title": "Tip FID sklopke",
+        "body": "Mašine za veš i sudove, indukcione ploče i inverter klime stvaraju pulsirajuće struje curenja. Za njih je potreban tip A; tip AC ih ne vidi."
+      },
+      "input": {
+        "title": "Odobrena snaga",
+        "body": "Procenjena snaga se poredi sa odobrenom snagom iz ugovora, koju možete uneti u opštim podešavanjima uređivača."
+      }
+    }
+  },
+  "smart": {
+    "title": "Pametna kuća",
+    "subtitle": "Uređaji na magistrali (KNX i drugi), njihove adrese i šta čime upravlja.",
+    "empty": "Ova tabla nema uređaja na magistrali. Ako imate KNX, DALI ili Modbus, dodajte aktuatore, napajanje magistrale i kontrolne panele u uređivaču.",
+    "openDemo": "Pogledaj KNX demo",
+    "safety": "Kanali aktuatora su releji kojima upravlja softver. Svetlo ugašeno sa panela nije bez napona. Pre rada na instalaciji isključite osigurač.",
+    "topology": "Uređaji na magistrali",
+    "address": "Adresa",
+    "device": "Uređaj",
+    "channels": "Kanali",
+    "channel": "kanal",
+    "groups": "Grupne adrese",
+    "group": "Adresa",
+    "output": "Uključuje",
+    "controlledFrom": "Upravlja se sa",
+    "noOutput": "nema aktuatora",
+    "panels": "Paneli i senzori",
+    "panelControls": "Upravlja",
+    "system": {
+      "knx": "KNX",
+      "dali": "DALI",
+      "modbus": "Modbus",
+      "zigbee": "Zigbee",
+      "other": "Druga magistrala"
+    },
+    "fn": {
+      "switch": "Uklj./isklj.",
+      "dimmer": "Dimer",
+      "blind": "Roletne",
+      "heating": "Grejanje",
+      "hvac": "Klima",
+      "input": "Ulaz",
+      "other": "Ostalo"
+    }
+  },
+  "maintenance": {
+    "title": "Održavanje",
+    "subtitle": "Šta i koliko često proveravati da bi zaštita radila kada zatreba.",
+    "every": "Svakih {n} dana",
+    "last": "poslednji put {date}",
+    "state": {
+      "overdue": "kasni {n} dana",
+      "never": "nikad urađeno",
+      "soon": "uskoro: {date}",
+      "ok": "do {date}"
+    },
+    "markDone": "Označi kao urađeno",
+    "markHint": "Ovo dodaje unos u dnevnik.",
+    "date": "Datum",
+    "note": "Komentar",
+    "saved": "Dodato u dnevnik",
+    "journal": "Dnevnik",
+    "empty": "Još nema unosa."
+  },
+  "photos": {
+    "title": "Fotografije i dokumenti",
+    "subtitle": "Zidovi pre malterisanja, da znate gde idu kablovi, plus atesti, šeme i uputstva.",
+    "untitled": "Bez naziva",
+    "empty": "Još nema fotografija. Dodajte ih u uređivaču.",
+    "documents": "Dokumenti",
+    "noDocs": "Još nema dokumenata."
+  },
+  "docKind": {
+    "act": "Atest",
+    "scheme": "Šema",
+    "passport": "Uputstvo",
+    "warranty": "Garancija",
+    "invoice": "Račun",
+    "other": "Dokument"
+  },
+  "labels": {
+    "title": "Nalepnice i QR",
+    "subtitle": "QR nalepnica za vrata i oznake za osigurače u stvarnoj veličini.",
+    "strips": "Oznake redova",
+    "perDevice": "QR za svaki uređaj",
+    "height": "Visina trake",
+    "print": "Štampaj",
+    "printHint": "Štampajte u razmeri 100% bez opcije „prilagodi stranici“. Svaka ćelija je 17,5 mm po modulu.",
+    "scan": "Usmerite kameru telefona ovde: videćete koji osigurač šta isključuje i šta da radite ako nešto izbaci.",
+    "emergencyLine": "Izbacilo? Skeniraj me",
+    "row": "Red {n}"
+  },
+  "qr": {
+    "description": "Skenirajte kamerom telefona.",
+    "withPassword": "Ugradi lozinku",
+    "withPasswordHint": "Ko skenira kod, otvara podatke bez kucanja lozinke. Lozinka ide posle #, pa nikad ne stiže do servera.",
+    "noPublicUrl": "Adresa sajta nije podešena. Dodajte je u uređivaču (Opšte → Adresa sajta), inače se QR neće otvoriti na telefonu.",
+    "copy": "Kopiraj",
+    "copied": "Link je kopiran"
+  },
+  "pwa": {
+    "offline": "Oflajn",
+    "ready": "Spremno za oflajn",
+    "readyHint": "Sajt je sačuvan na ovom uređaju i otvara se i bez interneta i bez struje.",
+    "update": "Ažuriraj"
+  },
+  "settings": {
+    "language": "Jezik",
+    "themeTitle": "Izgled",
+    "theme": {
+      "auto": "Kao sistem",
+      "light": "Svetla",
+      "dark": "Tamna"
+    },
+    "lock": "Zaključaj",
+    "lockHint": "Zaboravi lozinku na ovom uređaju",
+    "lockAction": "Zaboravi",
+    "draft": "Nacrt",
+    "draftHint": "Neobjavljene izmene na ovom uređaju",
+    "discard": "Odbaci izmene",
+    "draftDiscarded": "Nacrt je odbačen",
+    "offline": "Oflajn režim",
+    "offlineNotYet": "Još se čuva…",
+    "clearCache": "Obriši keš",
+    "cacheCleared": "Keš je obrisan, ponovo učitavam",
+    "version": "Verzija",
+    "dataSource": "Podaci",
+    "updated": "Ažurirano",
+    "encryption": "Šifrovanje",
+    "source": {
+      "published": "sa sajta",
+      "demo": "demo",
+      "file": "iz fajla",
+      "new": "novi projekat"
+    }
+  },
+  "editor": {
+    "title": "Uređivač",
+    "subtitle": "Izmene se čuvaju kao nacrt na ovom uređaju. Kada završite, sačuvajte fajl ili objavite.",
+    "draftBadge": "Nacrt",
+    "translations": "Prevodi",
+    "auto": "auto",
+    "refIssues": "neispravne reference",
+    "tab": {
+      "general": "Opšte",
+      "panel": "Tabla",
+      "plan": "Plan",
+      "media": "Fotografije i dokumenti",
+      "maintenance": "Održavanje",
+      "publish": "Sačuvaj i objavi"
+    },
+    "general": {
+      "title": "Naziv",
+      "location": "Gde je tabla",
+      "locationHint": "Da se nađe i u mraku: „hodnik, iza ogledala“",
+      "enclosure": "Kućište",
+      "address": "Adresa",
+      "addressHint": "Opciono. Čuva se samo šifrovano.",
+      "publicUrl": "Adresa sajta",
+      "publicUrlHint": "Gde je aplikacija objavljena. Potrebno za QR kodove.",
+      "supply": "Napajanje",
+      "phases": "Faze",
+      "voltage": "Napon",
+      "maxPower": "Odobrena snaga",
+      "input": "Glavni uređaj",
+      "role": "Ko",
+      "name": "Ime",
+      "phone": "Telefon",
+      "contactNote": "Komentar"
+    },
+    "panel": {
+      "palette": "Dodaj u red {row}",
+      "used": "{used} od {total} modula",
+      "mod": "mod.",
+      "blank": "prazno",
+      "narrower": "Uže",
+      "wider": "Šire",
+      "addRow": "Dodaj red",
+      "unplaced": "Nije postavljeno na tablu",
+      "pick": "Izaberite uređaj na tabli ili dodajte novi iz palete.",
+      "left": "Pomeri levo",
+      "right": "Pomeri desno",
+      "rowUp": "Red iznad",
+      "rowDown": "Red ispod",
+      "blankBefore": "Prazno ispred",
+      "place": "Postavi",
+      "id": "Oznaka",
+      "idHint": "Kao na šemi: QF1, QD2…",
+      "idTaken": "Ta oznaka već postoji",
+      "type": "Tip",
+      "label": "Natpis",
+      "labelHint": "Jasno svakome: „Kuhinja — utičnice iznad radne ploče“",
+      "curve": "Karakteristika",
+      "width": "Širina, mod.",
+      "widthHint": "Prazno: prema tipu",
+      "selective": "Selektivna (S)",
+      "upstream": "Napaja se iz",
+      "upstreamHint": "Uređaj iznad njega u lancu",
+      "noUpstream": "— napajanje —",
+      "circuit": "Strujno kolo",
+      "brand": "Proizvođač",
+      "model": "Model",
+      "tags": "Oznake",
+      "tagsHint": "Odvojeno zarezima: kuhinja, utičnice"
+    },
+    "smart": {
+      "title": "Magistrala pametne kuće",
+      "system": "Sistem",
+      "address": "Fizička adresa",
+      "addressHint": "Za KNX: oblast.linija.uređaj",
+      "addChannel": "Dodaj kanal",
+      "channelsHint": "Kanal, funkcija, grupna adresa i tačke na planu kojima upravlja.",
+      "noPoints": "Nema odgovarajućih tačaka. Prvo ih dodajte na plan."
+    },
+    "plan": {
+      "mode": {
+        "select": "Izbor",
+        "room": "Prostorija",
+        "point": "Tačka",
+        "route": "Kabl",
+        "photo": "Foto"
+      },
+      "hint": {
+        "select": "Dodirnite tačku, prostoriju ili fotografiju da je izmenite. Prevucite ručice da pomerite. Točkić ili dva prsta za uvećanje.",
+        "room": "Postavljajte uglove prostorije jedan po jedan. Dodirnite prvi ugao ili „Gotovo“ da je zatvorite.",
+        "point": "Izaberite tip i osigurač, pa dodirujte plan da postavite tačke.",
+        "route": "Iscrtajte trasu kabla tačku po tačku i dodirnite „Gotovo“. Oko nje se pojavljuje zona bez bušenja.",
+        "photo": "Dodirnite mesto gde je fotografija snimljena i izaberite sliku."
+      },
+      "noDevice": "Bez osigurača",
+      "finish": "Gotovo",
+      "background": "Podloga",
+      "bgLoaded": "Podloga je učitana",
+      "bgFailed": "Podlogu nije moguće učitati",
+      "width": "Širina plana",
+      "height": "Visina plana",
+      "grid": "Korak mreže",
+      "opacity": "Providnost podloge",
+      "kind": "Tip",
+      "label": "Natpis",
+      "device": "Osigurač",
+      "room": "Prostorija",
+      "power": "Snaga",
+      "count": "Broj",
+      "heightMm": "Visina",
+      "profile": "Profil uređaja",
+      "profileHint": "Koristi se za procenu opterećenja i proveru tipa FID sklopke",
+      "controls": "Grupne adrese",
+      "controlsHint": "Odvojeno zarezima: 1/1/1, 3/1/1",
+      "roomN": "Prostorija {n}",
+      "roomName": "Naziv prostorije",
+      "wet": "Vlažna prostorija (kupatilo, toalet)",
+      "roomHint": "Prevucite ručice u uglovima da podesite oblik.",
+      "routeKind": "Tip kabla",
+      "routeKinds": {
+        "power": "Energetski",
+        "bus": "Magistrala pametne kuće",
+        "low": "Slaba struja"
+      },
+      "routeNote": "Kako je položen",
+      "safeWidth": "Zona bez bušenja",
+      "caption": "Opis",
+      "replace": "Zameni",
+      "summary": "Na planu",
+      "rooms": "Prostorije",
+      "routes": "Trase"
+    },
+    "media": {
+      "photosHint": "Fotografišite zidove pre malterisanja: za nekoliko godina to će biti najbolja mapa instalacije koju imate.",
+      "addPhotos": "Dodaj fotografije",
+      "added": "Dodato fotografija: {n}",
+      "notOnPlan": "Nije označeno na planu (kartica Plan → Foto)",
+      "addDoc": "Otpremi dokument",
+      "addLink": "Link",
+      "tooBig": "Fajl je veći od {mb} MB",
+      "docTitle": "Naziv",
+      "docKind": "Tip",
+      "link": "Link"
+    },
+    "maintenance": {
+      "tasks": "Raspored",
+      "title": "Zadatak",
+      "interval": "Interval",
+      "howTo": "Kako",
+      "devices": "Uređaji"
+    },
+    "publish": {
+      "status": "Status",
+      "draftLocal": "Nacrt je sačuvan na ovom uređaju",
+      "noChanges": "Nema izmena",
+      "savedAt": "automatski sačuvano u {time}",
+      "refIssues": "Postoje neispravne reference; ispravite ih pre objavljivanja",
+      "checkErrors": "Provere su našle grešaka: {n}. Možete objaviti, ali prvo pogledajte.",
+      "fileTitle": "Fajl",
+      "fileHint": "Šifrovani .panel fajl. Pošaljite ga vlasniku ili električaru; otvara se u veb aplikaciji i u desktop aplikaciji.",
+      "save": "Sačuvaj",
+      "saveAs": "Sačuvaj kao…",
+      "saved": "Fajl je sačuvan",
+      "downloadPanel": "Preuzmi .panel",
+      "import": "Uvezi fajl",
+      "importPassword": "Lozinka fajla",
+      "imported": "Fajl je učitan u nacrt",
+      "plain": "Izvezi bez šifrovanja",
+      "plainWarn": "Nešifrovani fajl sadrži plan stana i trase kablova. Nemojte ga objavljivati.",
+      "siteTitle": "Objavi na sajtu",
+      "siteHint": "Šalje šifrovani fajl u GitHub repozitorijum; sajt se ažurira za par minuta.",
+      "owner": "Vlasnik",
+      "repo": "Repozitorijum",
+      "branch": "Grana",
+      "path": "Putanja fajla",
+      "token": "GitHub token",
+      "tokenHint": "Fine-grained token sa dozvolom Contents: Read and write samo za ovaj repozitorijum.",
+      "rememberToken": "Zapamti token na ovom uređaju",
+      "publish": "Objavi",
+      "published": "Objavljeno",
+      "publishedHint": "Sajt se ažurira kada GitHub Actions završi.",
+      "commit": "Komit",
+      "failed": "Objavljivanje nije uspelo",
+      "badToken": "Token nije ispravan ili nema pravo upisa",
+      "notFound": "Repozitorijum ili grana nisu pronađeni",
+      "manual": "Možete i ručno: preuzmite panel.enc.json i zamenite public/app/panel.enc.json u repozitorijumu.",
+      "passwordTitle": "Lozinka",
+      "changePassword": "Promeni lozinku",
+      "passwordChanged": "Lozinka je promenjena",
+      "passwordChangedHint": "Sačuvajte ili objavite podatke, a zatim ponovo odštampajte QR kod.",
+      "passwordHint": "Nova lozinka važi od sledećeg čuvanja ili objavljivanja. Stari QR kodovi prestaće da rade."
+    }
+  }
+}

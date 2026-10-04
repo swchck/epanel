@@ -17,7 +17,7 @@ export const useUi = defineStore('ui', () => {
   const simulate = ref(false)
   const off = ref<Set<string>>(new Set())
 
-  const planLayers = ref<Record<PointKind | 'routes' | 'photos' | 'labels' | 'background', boolean>>({
+  const planLayers = ref<Record<PointKind | 'routes' | 'bus' | 'photos' | 'labels' | 'background', boolean>>({
     socket: true,
     light: true,
     switch: true,
@@ -26,8 +26,11 @@ export const useUi = defineStore('ui', () => {
     ac: true,
     junction: true,
     network: true,
+    panel: true,
+    sensor: true,
     other: true,
     routes: false,
+    bus: true,
     photos: true,
     labels: true,
     background: true,

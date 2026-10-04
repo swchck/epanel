@@ -209,7 +209,7 @@ describe('bundle and crypto', () => {
   it('round-trips through encryption', async () => {
     const b = makeBundle(tiny(), { x: 'data:text/plain;base64,aGk=' })
     const env = await encryptJson(b, 'secret', 1000)
-    expect(env.data).not.toContain('Q0')
+    expect(atob(env.data)).not.toContain('devices')
     expect(await decryptJson(env, 'secret')).toEqual(b)
     await expect(decryptJson(env, 'wrong')).rejects.toBeInstanceOf(WrongPasswordError)
   })
@@ -228,5 +228,44 @@ describe('bundle and crypto', () => {
     expect(Object.keys(b.assets)).toEqual(['a'])
     expect(resolveAsset('asset:a', b.assets)).toBe('data:a')
     expect(resolveAsset('https://x/y.png', b.assets)).toBe('https://x/y.png')
+  })
+})
+
+describe('bus systems', () => {
+  const smart = () =>
+    tiny({
+      devices: [
+        ...tiny().devices,
+        {
+          id: 'QA1',
+          type: 'actuator',
+          upstream: 'A1',
+          smart: { system: 'knx', address: '1.1.2', channels: [{ id: 'A', function: 'heating', group: '3/1/1', points: ['p1'] }, { id: 'B', function: 'switch' }] },
+        },
+        { id: 'KF1', type: 'bus-gateway', smart: { system: 'knx', address: '1.1.2' } },
+      ],
+      points: [
+        { id: 'p1', kind: 'heating', device: 'QA1', x: 0, y: 0, powerW: 800 },
+        { id: 'pan', kind: 'panel', x: 0, y: 0, controls: ['3/1/1', '9/9/9'] },
+      ],
+    })
+
+  it('flags a missing bus PSU, duplicate addresses and loose channels', () => {
+    const d = smart()
+    const r = runChecks(d, buildGraph(d)).map((c) => `${c.level}:${c.code}`)
+    expect(r).toContain('error:bus-no-psu')
+    expect(r).toContain('error:bus-dup-address')
+    expect(r).toContain('info:channel-unlinked')
+    expect(r).toContain('info:ga-unknown')
+    expect(r).not.toContain('info:point-unassigned')
+  })
+
+  it('never offers a bus actuator as the thing to switch off', () => {
+    const d = smart()
+    const g = buildGraph(d)
+    const a = whatToSwitchOff(g, layoutPanel(d), d.points[0]!)!
+    expect(a.device.id).toBe('A1')
+    expect(a.controlledBy?.id).toBe('QA1')
+    expect(a.alternatives.map((x) => x.id)).toEqual(['D1', 'Q0'])
   })
 })

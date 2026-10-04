@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
-import type { Device } from '@/domain/schema'
+import { SMART_TYPES, type Device } from '@/domain/schema'
 import { HEIGHT, MODULE } from './geometry'
 
 const props = defineProps<{
@@ -25,10 +25,13 @@ const rating = computed(() => {
 })
 const isBreakerLike = computed(() => ['mcb', 'rcd', 'rcbo', 'switch'].includes(t.value))
 const leverPoles = computed(() => (t.value === 'rcd' || t.value === 'rcbo' ? 1 : poles.value))
-const leverX = computed(() => {
-  if (t.value === 'rcd' || t.value === 'rcbo') return 4
-  return 4
-})
+const leverX = 4
+const isSmart = computed(() => SMART_TYPES.includes(t.value))
+const channels = computed(() => props.device.smart?.channels.slice(0, Math.max(2, Math.floor(props.width * 2))) ?? [])
+function channelX(i: number) {
+  const n = Math.max(1, channels.value.length)
+  return 8 + (i + 0.5) * ((W.value - 16) / n)
+}
 const leverW = computed(() => leverPoles.value * MODULE - 8)
 const leverColor = computed(() => {
   if (t.value === 'switch') return 'url(#lever-red)'
@@ -193,6 +196,36 @@ const busColor = computed(() => {
       </g>
     </template>
 
+    <!-- bus devices (KNX and friends): bus terminal, channel LEDs, manual buttons -->
+    <template v-else-if="isSmart">
+      <text x="8" y="54" class="brand" text-anchor="start">{{ (device.smart?.system ?? 'knx').toUpperCase() }}</text>
+      <g :transform="`translate(${W - 22}, 45)`">
+        <rect width="16" height="10" rx="1.5" fill="#c62828" />
+        <rect x="8" width="8" height="10" rx="1.5" fill="#222" />
+      </g>
+      <template v-if="t === 'actuator' || t === 'bus-io'">
+        <g v-for="(ch, i) in channels" :key="ch.id" :transform="`translate(${channelX(i)}, 66)`">
+          <circle cx="0" cy="0" r="3.2" :fill="energized ? (t === 'actuator' ? '#f59e0b' : '#22c55e') : '#3a3a3a'" :class="{ 'led-on': energized }" />
+          <rect x="-5" y="8" width="10" height="7" rx="1.5" fill="#d8d8d0" stroke="#999" stroke-width="0.6" />
+          <text y="27" text-anchor="middle" class="tiny">{{ ch.id }}</text>
+        </g>
+      </template>
+      <template v-else-if="t === 'bus-gateway'">
+        <rect :x="W / 2 - 11" y="66" width="22" height="18" rx="1.5" fill="#2a2a28" />
+        <rect :x="W / 2 - 7" y="70" width="14" height="10" fill="#111" />
+        <circle :cx="W / 2 - 7" cy="92" r="2.4" :fill="energized ? '#22c55e' : '#3a3a3a'" :class="{ blink: energized }" />
+        <circle :cx="W / 2 + 7" cy="92" r="2.4" :fill="energized ? '#f59e0b' : '#3a3a3a'" />
+        <text :x="W / 2" y="110" text-anchor="middle" class="tiny">IP</text>
+      </template>
+      <template v-else>
+        <circle cx="14" cy="74" r="3.2" :fill="energized ? '#22c55e' : '#3a3a3a'" />
+        <text x="22" y="77" class="tiny" text-anchor="start">run</text>
+        <circle cx="14" cy="88" r="3.2" fill="#3a3a3a" />
+        <text x="22" y="91" class="tiny" text-anchor="start">I&gt;Imax</text>
+        <text :x="W / 2" y="112" text-anchor="middle" class="small">640 mA</text>
+      </template>
+      <text :x="W / 2" y="128" text-anchor="middle" class="small">{{ device.smart?.address ?? device.model ?? '' }}</text>
+    </template>
     <template v-else>
       <text :x="W / 2" y="92" text-anchor="middle" class="rating">{{ rating || device.id }}</text>
     </template>
@@ -244,6 +277,9 @@ const busColor = computed(() => {
 }
 .blink {
   animation: blink 0.9s steps(2) infinite;
+}
+.led-on {
+  filter: drop-shadow(0 0 2px currentColor);
 }
 .dead {
   transition: opacity 0.3s ease;

@@ -11,6 +11,8 @@ const KIND_FACTOR: Record<PointKind, number> = {
   ac: 1,
   junction: 0,
   network: 1,
+  panel: 1,
+  sensor: 1,
   other: 0.5,
 }
 

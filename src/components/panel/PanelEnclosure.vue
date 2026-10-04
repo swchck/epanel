@@ -8,20 +8,21 @@ import DeviceModule from './DeviceModule.vue'
 import PanelDefs from './PanelDefs.vue'
 import { HEIGHT, MODULE, RAIL_PAD, ROW_GAP } from './geometry'
 
-const props = withDefaults(defineProps<{ interactive?: boolean; compact?: boolean }>(), { interactive: true, compact: false })
+const props = withDefaults(defineProps<{ interactive?: boolean; focus?: string | null; onlyRow?: number }>(), { interactive: true, focus: null, onlyRow: undefined })
 const emit = defineEmits<{ select: [id: string] }>()
 
 const data = useData()
 const ui = useUi()
 const { locale } = useI18n()
 
-const maxModules = computed(() => Math.max(12, ...data.layout.map((r) => r.modules)))
+const rows = computed(() => (props.onlyRow === undefined ? data.layout : data.layout.filter((_, i) => i === props.onlyRow)))
+const maxModules = computed(() => Math.max(12, ...rows.value.map((r) => r.modules)))
 const LABEL_H = 22
 const rowPitch = HEIGHT + ROW_GAP
 const frame = 26
 const innerW = computed(() => maxModules.value * MODULE + RAIL_PAD * 2)
 const width = computed(() => innerW.value + frame * 2)
-const height = computed(() => data.layout.length * rowPitch + frame * 2 + 30)
+const height = computed(() => rows.value.length * rowPitch + frame * 2 + 30)
 
 const issueByDevice = computed(() => {
   const m = new Map<string, 'error' | 'warn'>()
@@ -32,7 +33,8 @@ const issueByDevice = computed(() => {
   return m
 })
 
-const anyFocus = computed(() => ui.highlighted.size > 0)
+const focusSet = computed(() => (props.focus ? new Set([props.focus]) : ui.highlighted))
+const anyFocus = computed(() => focusSet.value.size > 0)
 
 function rowY(i: number) {
   return frame + 30 + i * rowPitch + 8
@@ -47,8 +49,13 @@ function isEnergized(id: string) {
 }
 
 function isDimmed(id: string) {
+  if (props.focus) return id !== props.focus
   if (!ui.matchesFilter(id)) return true
-  return anyFocus.value && !ui.highlighted.has(id)
+  return anyFocus.value && !focusSet.value.has(id)
+}
+
+function isSelected(id: string) {
+  return props.focus ? props.focus === id : ui.selectedDevice === id
 }
 
 function activate(id: string) {
@@ -81,7 +88,7 @@ function label(id: string) {
       <text x="8" y="14" class="nameplate">{{ tr(data.data?.meta.title, locale) }}</text>
     </g>
 
-    <g v-for="(row, ri) in data.layout" :key="row.id" :transform="`translate(${frame + RAIL_PAD}, ${rowY(ri)})`">
+    <g v-for="(row, ri) in rows" :key="row.id" :transform="`translate(${frame + RAIL_PAD}, ${rowY(ri)})`">
       <!-- DIN rail -->
       <rect :x="-RAIL_PAD + 6" :y="HEIGHT / 2 - 17" :width="row.modules * MODULE + RAIL_PAD * 2 - 12" height="34" rx="2" fill="url(#rail)" />
       <g v-for="s in Math.floor((row.modules * MODULE + RAIL_PAD * 2) / 40)" :key="'slot' + s">
@@ -89,7 +96,7 @@ function label(id: string) {
       </g>
       <!-- module grid ghost so empty slots read as space -->
       <rect x="0" y="0" :width="row.modules * MODULE" :height="HEIGHT" fill="none" stroke="#000" stroke-opacity="0.08" stroke-dasharray="3 5" rx="4" />
-      <text :x="-RAIL_PAD + 4" :y="-10" class="rowno">{{ ri + 1 }}</text>
+      <text :x="-RAIL_PAD + 4" :y="-10" class="rowno">{{ (onlyRow ?? ri) + 1 }}</text>
 
       <template v-for="item in row.items" :key="item.device?.id ?? `blank-${item.start}`">
         <g v-if="item.kind === 'blank'" :transform="`translate(${item.start * MODULE}, 0)`">
@@ -117,9 +124,9 @@ function label(id: string) {
           @click="activate(item.device.id)"
           @keydown.enter.prevent="activate(item.device.id)"
           @keydown.space.prevent="activate(item.device.id)"
-          @mouseenter="ui.hoverDevice = item.device.id"
+          @mouseenter="interactive && (ui.hoverDevice = item.device.id)"
           @mouseleave="ui.hoverDevice = null"
-          @focus="ui.hoverDevice = item.device.id"
+          @focus="interactive && (ui.hoverDevice = item.device.id)"
           @blur="ui.hoverDevice = null"
         >
           <DeviceModule
@@ -127,7 +134,7 @@ function label(id: string) {
             :width="item.width"
             :on="isOn(item.device.id)"
             :energized="isEnergized(item.device.id)"
-            :selected="ui.selectedDevice === item.device.id"
+            :selected="isSelected(item.device.id)"
             :dimmed="isDimmed(item.device.id)"
             :issue="issueByDevice.get(item.device.id)"
           />

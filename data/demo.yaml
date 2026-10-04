@@ -352,7 +352,7 @@ data:
     - { id: k-hood, kind: socket, room: kitchen, x: 1100, y: 60, device: QF1, label: { ru: Вытяжка, en: Hood }, powerW: 200, heightMm: 2100 }
     - { id: k-oven, kind: appliance, profile: oven, room: kitchen, x: 1080, y: 380, device: QF2, label: { ru: Духовой шкаф, en: Oven }, powerW: 3500, heightMm: 300 }
     - { id: k-dw, kind: appliance, profile: dishwasher, room: kitchen, x: 1080, y: 440, device: QF3, label: { ru: Посудомойка, en: Dishwasher }, powerW: 2000, heightMm: 300 }
-    - { id: k-fridge, kind: appliance, profile: fridge, room: kitchen, x: 920, y: 80, device: QF4, label: { ru: Холодильник, en: Fridge }, powerW: 300, heightMm: 300 }
+    - { id: k-fridge, kind: appliance, profile: fridge, room: kitchen, x: 920, y: 170, device: QF4, label: { ru: Холодильник, en: Fridge }, powerW: 300, heightMm: 300 }
     - { id: k-hob, kind: appliance, profile: cooktop, room: kitchen, x: 1110, y: 270, device: QFD1, label: { ru: Индукционная варочная панель, en: Induction cooktop }, powerW: 7200, heightMm: 600 }
     - { id: k-light, kind: light, room: kitchen, x: 1025, y: 250, device: QF10, label: { ru: Свет кухни, en: Kitchen light }, powerW: 60 }
     - { id: k-sw, kind: switch, room: kitchen, x: 910, y: 420, device: QF10, label: { ru: Выключатель кухни, en: Kitchen switch }, heightMm: 900 }
@@ -365,7 +365,7 @@ data:
     - { id: l-s3, kind: socket, room: living, x: 250, y: 60, device: QF5, label: { ru: Розетка у окна, en: Window socket }, powerW: 0, heightMm: 300 }
     - { id: l-ac, kind: ac, profile: inverter-ac, room: living, x: 150, y: 60, device: QF11, label: { ru: Кондиционер, en: Air conditioner }, powerW: 1200, heightMm: 2400 }
     - { id: l-light, kind: light, room: living, x: 275, y: 250, device: QF9, label: { ru: Люстра, en: Chandelier }, powerW: 100 }
-    - { id: l-light2, kind: light, room: living, x: 80, y: 80, device: QF9, label: { ru: Трековые светильники, en: Track lights }, powerW: 60, count: 4 }
+    - { id: l-light2, kind: light, room: living, x: 120, y: 170, device: QF9, label: { ru: Трековые светильники, en: Track lights }, powerW: 60, count: 4 }
     - { id: l-sw, kind: switch, room: living, x: 320, y: 440, device: QF9, label: { ru: Выключатель гостиной, en: Living room switch }, heightMm: 900 }
 
     # bedroom

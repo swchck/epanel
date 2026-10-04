@@ -1,4 +1,4 @@
-import { AirVent, Cable, CircleDot, Heater, Lightbulb, Plug, Router, ToggleLeft, WashingMachine } from '@lucide/vue'
+import { AirVent, Cable, CircleDot, Heater, Lightbulb, Plug, Radar, Router, TabletSmartphone, ToggleLeft, WashingMachine } from '@lucide/vue'
 import type { Component } from 'vue'
 import type { PointKind } from '@/domain/schema'
 
@@ -11,6 +11,8 @@ export const POINT_ICONS: Record<PointKind, Component> = {
   ac: AirVent,
   junction: Cable,
   network: Router,
+  panel: TabletSmartphone,
+  sensor: Radar,
   other: CircleDot,
 }
 
@@ -23,5 +25,7 @@ export const POINT_COLORS: Record<PointKind, string> = {
   ac: '#0891b2',
   junction: '#475569',
   network: '#059669',
+  panel: '#16a34a',
+  sensor: '#0d9488',
   other: '#6b7280',
 }

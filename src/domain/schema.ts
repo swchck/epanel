@@ -18,12 +18,41 @@ export const DEVICE_TYPES = [
   'din-socket',
   'bus',
   'terminal',
+  'actuator',
+  'bus-psu',
+  'bus-gateway',
+  'bus-io',
   'other',
 ] as const
 export type DeviceType = (typeof DEVICE_TYPES)[number]
 
 export const PROTECTIVE_TYPES: readonly DeviceType[] = ['mcb', 'rcd', 'rcbo', 'switch', 'voltage-relay']
 export const RCD_TYPES: readonly DeviceType[] = ['rcd', 'rcbo']
+// devices that physically break the circuit and are safe to rely on before touching wires;
+// bus actuators and contactors are software-driven relays and never count as isolation
+export const ISOLATING_TYPES: readonly DeviceType[] = ['mcb', 'rcd', 'rcbo', 'switch']
+export const SMART_TYPES: readonly DeviceType[] = ['actuator', 'bus-psu', 'bus-gateway', 'bus-io']
+
+export const BUS_SYSTEMS = ['knx', 'dali', 'modbus', 'zigbee', 'other'] as const
+export const CHANNEL_FUNCTIONS = ['switch', 'dimmer', 'blind', 'heating', 'hvac', 'input', 'other'] as const
+
+export const Channel = z.object({
+  id: z.string(),
+  label: LocalizedText.optional(),
+  function: z.enum(CHANNEL_FUNCTIONS).default('switch'),
+  // KNX group address like 1/2/3; other systems use whatever addressing they have
+  group: z.string().optional(),
+  points: z.array(z.string()).default([]),
+})
+export type Channel = z.infer<typeof Channel>
+
+export const Smart = z.object({
+  system: z.enum(BUS_SYSTEMS).default('knx'),
+  // KNX physical address area.line.device, e.g. 1.1.5
+  address: z.string().optional(),
+  channels: z.array(Channel).default([]),
+})
+export type Smart = z.infer<typeof Smart>
 
 export const Note = z.object({
   author: z.string().default(''),
@@ -63,6 +92,7 @@ export const Device = z.object({
   tags: z.array(z.string()).default([]),
   notes: z.array(Note).default([]),
   photos: z.array(z.string()).default([]),
+  smart: Smart.optional(),
   // reserved for a future live-data adapter (e.g. a Home Assistant entity id)
   entity: z.string().optional(),
 })
@@ -99,6 +129,8 @@ export const POINT_KINDS = [
   'ac',
   'junction',
   'network',
+  'panel',
+  'sensor',
   'other',
 ] as const
 export type PointKind = (typeof POINT_KINDS)[number]
@@ -132,6 +164,8 @@ export const PlanPoint = z.object({
   heightMm: z.number().nonnegative().optional(),
   // multiplies powerW: six spots of 7 W are count 6, a double socket is still one point
   count: z.number().int().positive().default(1),
+  // group addresses a room control panel (or sensor) sends to
+  controls: z.array(z.string()).default([]),
 })
 export type PlanPoint = z.infer<typeof PlanPoint>
 
@@ -140,6 +174,7 @@ export const Route = z.object({
   device: z.string().optional(),
   points: z.array(Point2).min(2),
   note: LocalizedText.optional(),
+  kind: z.enum(['power', 'bus', 'low']).default('power'),
   // the strip around the route that must not be drilled, in plan units
   safeWidth: z.number().positive().default(15),
 })
@@ -254,6 +289,14 @@ export function defaultWidth(d: Pick<Device, 'type' | 'poles' | 'width'>): numbe
       return d.poles >= 3 ? 4 : 2
     case 'bus':
       return 4
+    case 'actuator':
+      return d.poles >= 3 ? 4 : d.poles >= 2 ? 4 : 2
+    case 'bus-psu':
+      return 4
+    case 'bus-gateway':
+      return 2
+    case 'bus-io':
+      return 2
     case 'rcd':
       return d.poles >= 3 ? 4 : 2
     case 'rcbo':

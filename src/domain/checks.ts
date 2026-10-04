@@ -1,7 +1,7 @@
 import type { PowerGraph } from './graph'
 import { aggregateLoad, deviceLoad, pointsLoad } from './load'
 import type { Device, PanelData } from './schema'
-import { RCD_TYPES } from './schema'
+import { RCD_TYPES, SMART_TYPES } from './schema'
 
 export type CheckLevel = 'error' | 'warn' | 'info'
 
@@ -102,12 +102,14 @@ export function runChecks(data: PanelData, g: PowerGraph): CheckResult[] {
   const wetRooms = new Set(data.rooms.filter((r) => r.wet).map((r) => r.id))
   for (const p of data.points) {
     if (!p.device) {
-      if (p.kind !== 'junction' && p.kind !== 'switch') out.push({ level: 'info', code: 'point-unassigned', point: p.id, params: {} })
+      if (!['junction', 'switch', 'panel', 'sensor'].includes(p.kind)) out.push({ level: 'info', code: 'point-unassigned', point: p.id, params: {} })
       continue
     }
     const chain = g.rcdChain(p.device)
     const minLeak = Math.min(...chain.map((c) => c.leakage ?? Infinity))
-    if (p.room && wetRooms.has(p.room) && p.kind !== 'switch' && minLeak > 30)
+    // panels and sensors sit on the SELV bus, switches carry no exposed live parts
+    const selv = p.kind === 'switch' || p.kind === 'panel' || p.kind === 'sensor'
+    if (p.room && wetRooms.has(p.room) && !selv && minLeak > 30)
       out.push({ level: 'error', code: 'wet-no-rcd', point: p.id, device: p.device, params: {} })
     else if (p.kind === 'socket' && minLeak > 30)
       out.push({ level: 'warn', code: 'socket-no-rcd', point: p.id, device: p.device, params: {} })
@@ -115,6 +117,8 @@ export function runChecks(data: PanelData, g: PowerGraph): CheckResult[] {
     if (p.profile && INVERTER_PROFILES.has(p.profile) && chain[0]?.rcdClass === 'AC')
       out.push({ level: 'warn', code: 'rcd-class', point: p.id, device: chain[0].id, params: { profile: p.profile } })
   }
+
+  checkBus(data, out)
 
   const total = aggregateLoad(g, g.roots)
   if (data.supply.maxPowerKw) {
@@ -137,6 +141,42 @@ export function runChecks(data: PanelData, g: PowerGraph): CheckResult[] {
   }
 
   return out.sort((a, b) => LEVEL_ORDER[a.level] - LEVEL_ORDER[b.level])
+}
+
+function checkBus(data: PanelData, out: CheckResult[]) {
+  const smart = data.devices.filter((d) => d.smart || SMART_TYPES.includes(d.type))
+  if (!smart.length) return
+  const knx = smart.filter((d) => (d.smart?.system ?? 'knx') === 'knx')
+  if (knx.length && !knx.some((d) => d.type === 'bus-psu')) out.push({ level: 'error', code: 'bus-no-psu', params: {} })
+
+  const seen = new Map<string, string>()
+  for (const d of smart) {
+    const addr = d.smart?.address
+    if (!addr) continue
+    const key = `${d.smart?.system ?? 'knx'}:${addr}`
+    const other = seen.get(key)
+    if (other) out.push({ level: 'error', code: 'bus-dup-address', device: d.id, params: { address: addr, other } })
+    else seen.set(key, d.id)
+  }
+
+  const pointById = new Map(data.points.map((p) => [p.id, p]))
+  const groups = new Set<string>()
+  for (const d of smart) {
+    for (const ch of d.smart?.channels ?? []) {
+      if (ch.group) groups.add(ch.group)
+      if (!ch.points.length && ch.function !== 'input')
+        out.push({ level: 'info', code: 'channel-unlinked', device: d.id, params: { channel: ch.id } })
+      for (const pid of ch.points) {
+        const p = pointById.get(pid)
+        if (p && p.device !== d.id) out.push({ level: 'warn', code: 'channel-mismatch', device: d.id, point: pid, params: { channel: ch.id } })
+      }
+    }
+  }
+  for (const p of data.points) {
+    for (const ga of p.controls) {
+      if (!groups.has(ga)) out.push({ level: 'info', code: 'ga-unknown', point: p.id, params: { group: ga } })
+    }
+  }
 }
 
 function round1(n: number): number {

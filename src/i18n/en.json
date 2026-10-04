@@ -1,1 +1,841 @@
-{}
+{
+  "app": {
+    "name": "Electrical panel",
+    "tagline": "Interactive panel map"
+  },
+  "common": {
+    "loading": "Loading…",
+    "back": "Back",
+    "close": "Close",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "add": "Add",
+    "prev": "Previous",
+    "next": "Next",
+    "noRoom": "No room"
+  },
+  "units": {
+    "m2": "m²",
+    "mm2": "mm²",
+    "m": "m",
+    "cm": "cm",
+    "mm": "mm",
+    "kw": "kW",
+    "days": "days"
+  },
+  "nav": {
+    "panel": "Panel",
+    "plan": "Floor plan",
+    "find": "What to switch off?",
+    "emergency": "Something tripped",
+    "schema": "Single-line diagram",
+    "checks": "Checks",
+    "smart": "Smart home",
+    "maintenance": "Maintenance",
+    "photos": "Photos & documents",
+    "labels": "Labels & QR",
+    "edit": "Editor",
+    "settings": "Settings",
+    "more": "More",
+    "group": {
+      "main": "Main",
+      "engineering": "Engineering",
+      "service": "Service",
+      "manage": "Manage"
+    },
+    "short": {
+      "panel": "Panel",
+      "plan": "Plan",
+      "find": "Find",
+      "emergency": "Tripped"
+    }
+  },
+  "banner": {
+    "demo": "This is a demo apartment. The data is made up and nothing you change is saved anywhere.",
+    "draft": "You have unpublished changes and are looking at a draft.",
+    "draftAction": "Publish"
+  },
+  "search": {
+    "open": "Search",
+    "placeholder": "Breaker, room, socket, appliance…",
+    "placeholderShort": "Search",
+    "empty": "Nothing found",
+    "room": "Room"
+  },
+  "unlock": {
+    "title": "Password required",
+    "subtitle": "The apartment data is encrypted. Enter the password to open it.",
+    "password": "Password",
+    "show": "Show password",
+    "hide": "Hide password",
+    "remember": "Remember on this device",
+    "submit": "Open",
+    "wrong": "Wrong password",
+    "hint": "The password is built into the QR code on the panel door. Scan it with your camera and the site opens by itself.",
+    "demo": "View the demo apartment"
+  },
+  "start": {
+    "title": "No data yet",
+    "titleDesktop": "Panel editor",
+    "subtitle": "Open a file from your electrician, describe a panel from scratch, or look at the demo.",
+    "open": "Open file",
+    "openHint": ".panel, .json or .yaml: whatever the electrician sent",
+    "create": "Create a new panel",
+    "createHint": "Empty project: rows, breakers, floor plan",
+    "demo": "Open demo",
+    "demoHint": "Two-room apartment, 27 devices, 44 points",
+    "name": "Name",
+    "defaultTitle": "My apartment",
+    "password": "Password",
+    "passwordRepeat": "Repeat password",
+    "passwordHint": "The password encrypts all data. Without it the file cannot be opened and it cannot be recovered.",
+    "passwordMismatch": "Passwords don't match or are shorter than 4 characters",
+    "createSubmit": "Create",
+    "encrypted": "“{name}” is encrypted. Enter the password.",
+    "invalid": "Could not read the file"
+  },
+  "device": {
+    "type": {
+      "mcb": "Circuit breaker",
+      "rcd": "RCD",
+      "rcbo": "RCBO",
+      "voltage-relay": "Voltage relay",
+      "spd": "Surge protector",
+      "meter": "Energy meter",
+      "switch": "Main switch",
+      "contactor": "Contactor",
+      "din-socket": "DIN rail socket",
+      "bus": "Busbar",
+      "terminal": "Terminals",
+      "actuator": "Bus actuator",
+      "bus-psu": "Bus power supply",
+      "bus-gateway": "Bus gateway",
+      "bus-io": "Input module",
+      "other": "Other"
+    },
+    "typeShort": {
+      "mcb": "Breaker",
+      "rcd": "RCD",
+      "rcbo": "RCBO",
+      "voltage-relay": "U relay",
+      "spd": "SPD",
+      "meter": "Meter",
+      "switch": "Switch",
+      "contactor": "Contactor",
+      "din-socket": "Socket",
+      "bus": "Busbar",
+      "terminal": "Terminals",
+      "actuator": "Actuator",
+      "bus-psu": "Bus PSU",
+      "bus-gateway": "Gateway",
+      "bus-io": "Inputs",
+      "other": "Other"
+    },
+    "field": {
+      "rating": "Rating",
+      "poles": "Poles",
+      "leakage": "Residual current",
+      "class": "type",
+      "cable": "Cable",
+      "section": "Cross-section",
+      "length": "Circuit length",
+      "model": "Model",
+      "phase": "Phase",
+      "rcd": "RCD protection"
+    },
+    "place": "Row {row}, #{pos} from the left",
+    "showOnPlan": "On the plan",
+    "simulate": "What goes dark?",
+    "specs": "Specifications",
+    "load": "Load",
+    "loadHint": "Estimated demand {demand} kW out of {nameplate} kW connected (diversity applied).",
+    "powers": "Points supplied: {n}",
+    "fedFrom": "Fed from",
+    "feeds": "Feeds",
+    "notes": "Notes",
+    "addNote": "Add note",
+    "noteAuthor": "Your name",
+    "notePlaceholder": "E.g. “replaced the window socket with a double one”",
+    "noteDraftHint": "Goes into the draft. Publish it in the editor so everyone sees it.",
+    "anonymous": "Anonymous",
+    "noNotes": "No notes yet."
+  },
+  "point": {
+    "kind": {
+      "socket": "Socket",
+      "light": "Light",
+      "switch": "Switch",
+      "appliance": "Appliance",
+      "heating": "Heating",
+      "ac": "Air conditioner",
+      "junction": "Junction box",
+      "network": "Low voltage",
+      "panel": "Control panel",
+      "sensor": "Sensor",
+      "other": "Point"
+    },
+    "kinds": {
+      "socket": "Sockets",
+      "light": "Lights",
+      "switch": "Switches",
+      "appliance": "Appliances",
+      "heating": "Heating",
+      "ac": "Air conditioners",
+      "junction": "Boxes & panels",
+      "network": "Low voltage",
+      "panel": "Control panels",
+      "sensor": "Sensors",
+      "other": "Other"
+    },
+    "profile": {
+      "generic": "Generic appliance",
+      "washer": "Washing machine",
+      "dishwasher": "Dishwasher",
+      "oven": "Oven",
+      "cooktop": "Cooktop",
+      "fridge": "Fridge",
+      "boiler": "Water heater",
+      "inverter-ac": "Inverter air conditioner",
+      "floor-heating": "Floor heating",
+      "ev": "EV charger"
+    },
+    "height": "{mm} mm above the floor"
+  },
+  "panel": {
+    "title": "Electrical panel",
+    "stat": {
+      "groups": "circuits",
+      "rcds": "RCDs & RCBOs",
+      "points": "points",
+      "modules": "modules used",
+      "errors": "errors",
+      "warnings": "warnings"
+    },
+    "allRooms": "All rooms",
+    "allTags": "All tags",
+    "onlyIssues": "With issues",
+    "clearFilters": "Reset",
+    "simulate": "Simulation",
+    "zoom": "Zoom",
+    "simHint": "Tap devices to “switch them off” and see what loses power.",
+    "simStatus": "Devices off: {devices}. Points without power: {points}.",
+    "simShowPlan": "On the plan",
+    "simReset": "Turn everything on",
+    "legend": {
+      "on": "flag: on",
+      "off": "flag: off",
+      "live": "energised",
+      "issue": "has an issue",
+      "tap": "Tap a device for details"
+    },
+    "pickHint": "Pick a breaker on the panel to see what it supplies, its load and notes.",
+    "details": "Device details"
+  },
+  "plan": {
+    "layers": "Layers",
+    "layer": {
+      "routes": "Cables & no-drill zones",
+      "bus": "Smart-home bus",
+      "photos": "Wall photos",
+      "labels": "Breaker labels",
+      "background": "Plan underlay"
+    },
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "fit": "Fit",
+    "hint": "Tap a socket or appliance to see which breaker cuts it",
+    "sideHint": "Tap any point on the plan to see which breaker de-energises it. Tap a room to see its circuits.",
+    "simHint": "Simulation: tap points to switch their breaker off.",
+    "simStatus": "Points without power: {n}. Switched off:",
+    "deviceHighlight": "Points highlighted: {n}",
+    "roomDevices": "Circuits in this room",
+    "wet": "wet zone"
+  },
+  "find": {
+    "title": "What to switch off?",
+    "subtitle": "Find a socket, light or appliance and I'll tell you which breaker to turn off.",
+    "placeholder": "E.g. bedside socket, water heater, bathroom light",
+    "pickRoom": "Or pick a room",
+    "pointsCount": "Points: {n}",
+    "switchOff": "Switch off",
+    "unknown": "This point isn't linked to a breaker. To be safe, switch off the main breaker.",
+    "alsoCuts": "Also cut by:",
+    "openInPanel": "Show in the panel",
+    "everything": "Cut power to the whole apartment",
+    "everythingHint": "Main breaker",
+    "controlledBy": "Controlled via",
+    "controlledByHint": "This is a smart-home relay and does not reliably isolate the circuit. Switch off the breaker above it before touching wires."
+  },
+  "emergency": {
+    "title": "Something tripped",
+    "subtitle": "Stay calm. Answer a couple of questions and we'll sort it out.",
+    "scenario": {
+      "partial": {
+        "title": "Part of the apartment went dark",
+        "hint": "Sockets or lights stopped working in one or two rooms"
+      },
+      "rcd": {
+        "title": "An RCD or RCBO tripped",
+        "hint": "A blue or purple lever with a “T” button is down"
+      },
+      "all": {
+        "title": "Everything went dark",
+        "hint": "Nothing works anywhere in the apartment"
+      },
+      "flicker": {
+        "title": "Lights flicker, appliances switch off and on by themselves",
+        "hint": "Looks like voltage swings"
+      },
+      "smell": {
+        "title": "Burning smell, sparks, hot panel",
+        "hint": "Dangerous: act right away"
+      }
+    },
+    "pick": "Find the lever that is down in the panel and tap that device on the picture:",
+    "pickRcd": "Which RCD or RCBO tripped? Tap it on the picture:",
+    "pickHint": "Lever down and a green flag in the window means it's off.",
+    "guide": {
+      "mcb": {
+        "title": "A breaker tripped",
+        "why": "A breaker trips on overload (too many powerful appliances on one circuit) or on a short circuit (a faulty appliance or wiring).",
+        "steps": [
+          "Unplug the powerful appliances on this circuit: kettle, heater, iron, hair dryer.",
+          "Push the breaker lever up until it clicks.",
+          "If it stays on, plug appliances back one at a time, not all at once.",
+          "If it trips immediately even with nothing plugged in, it's a short circuit. Leave it off and call an electrician.",
+          "If it trips when you switch on one particular appliance, that appliance is faulty."
+        ]
+      },
+      "rcd": {
+        "title": "An RCD tripped",
+        "why": "An RCD cuts the circuit when current leaks: moisture, damaged insulation, a faulty appliance. It protects against electric shock, so don't ignore it.",
+        "steps": [
+          "Unplug every appliance on the circuits behind this RCD (listed below).",
+          "Push the RCD lever up.",
+          "If it holds, switch appliances back on one by one, starting with the suspects: washer, water heater, kettle, anything near water.",
+          "The appliance that makes the RCD trip is faulty. Don't use it.",
+          "If the RCD trips with everything unplugged, the wiring is the problem. Call an electrician."
+        ]
+      },
+      "relay": {
+        "title": "The voltage relay tripped",
+        "why": "The relay disconnects the apartment when grid voltage leaves the safe range, protecting your appliances from surges.",
+        "steps": [
+          "Look at the relay display to see the voltage.",
+          "Wait: when the voltage is back to normal the relay restores power by itself (usually in 30–60 seconds).",
+          "Don't flip other breakers or try to bypass the relay.",
+          "If it happens often, tell the building management: the problem is in the building's supply."
+        ]
+      },
+      "all": {
+        "title": "The whole apartment is dark",
+        "why": "Three likely causes: the main breaker tripped, the voltage relay tripped, or the whole building lost power.",
+        "steps": [
+          "Check whether neighbours and the stairwell have light. If not, it's a building outage: call the management company.",
+          "Look at the voltage relay. Dashes or blinking digits mean wait, it will turn back on by itself.",
+          "If the main breaker is down, unplug powerful appliances and push it up.",
+          "If the main breaker trips again, don't keep trying. Call an electrician."
+        ]
+      },
+      "other": {
+        "title": "This device doesn't usually “trip”",
+        "why": "Looks like the wrong device was picked. Find the lever that is down on a breaker, RCD or RCBO.",
+        "steps": [
+          "Go back and pick the breaker whose lever is down.",
+          "If no lever is down, check the voltage relay."
+        ]
+      }
+    },
+    "rcdLines": "Circuits behind this RCD",
+    "suspects": "The most powerful appliances on this circuit",
+    "suspectsLeak": "Check these appliances first",
+    "danger": {
+      "title": "Danger: act now",
+      "s1": "If you can do it safely, switch off the main breaker",
+      "s2": "Don't touch the panel with wet hands and don't open it if there is smoke.",
+      "s3": "If there is smoke or fire, leave the apartment and close the door.",
+      "s4": "Call 112 and report an electrical fire."
+    },
+    "never": "Never hold a lever up by hand so it “stays on”, and never tape breakers. That disables protection against fire and electric shock.",
+    "contacts": "Who to call"
+  },
+  "contact": {
+    "role": {
+      "electrician": "Electrician",
+      "management": "Building management",
+      "emergency": "Emergency service",
+      "utility": "Utility company",
+      "other": "Contact"
+    }
+  },
+  "schema": {
+    "title": "Single-line diagram",
+    "subtitle": "Built automatically from the panel description: from the supply to every circuit.",
+    "grid": "Grid {v} V",
+    "hint": "Tap a device to open its card. Turn on simulation to “switch off” devices on the diagram."
+  },
+  "checks": {
+    "title": "Checks",
+    "subtitle": "An automatic review of the panel against the basic wiring rules.",
+    "level": {
+      "error": "errors",
+      "warn": "warnings",
+      "info": "hints"
+    },
+    "totalLoad": "Estimated apartment load",
+    "totalHint": "With diversity applied. Total power of all appliances: {nameplate} kW.",
+    "issues": "Findings",
+    "showInfo": "Show hints",
+    "allGood": "No issues. The panel is put together neatly.",
+    "circuits": "Load per circuit",
+    "rulesTitle": "What is checked and how",
+    "disclaimer": "These checks are simplified and do not replace a design or an inspection by an electrician. Copper, concealed installation, voltage from settings.",
+    "code": {
+      "cycle": {
+        "title": "Loop in the supply chain",
+        "hint": "{device} ends up feeding itself through other devices. Check the “Fed from” field."
+      },
+      "cable-overload": {
+        "title": "Breaker too large for the cable",
+        "hint": "{rating} A on a {section} mm² cable: the cable overheats before the breaker trips. The limit for this size is {max} A."
+      },
+      "cable-marginal": {
+        "title": "Breaker at the cable's limit",
+        "hint": "{rating} A on {section} mm² is only acceptable in good installation conditions. {max} A is recommended."
+      },
+      "cable-unknown": {
+        "title": "Cable size not set",
+        "hint": "Without the cross-section the breaker size can't be checked."
+      },
+      "load-over": {
+        "title": "Circuit overloaded",
+        "hint": "Estimated current {current} A exceeds the {rating} A rating. The breaker will trip."
+      },
+      "load-high": {
+        "title": "Circuit loaded above 80%",
+        "hint": "Estimated current {current} A on a {rating} A breaker. Almost no headroom."
+      },
+      "selectivity-over": {
+        "title": "Selectivity broken",
+        "hint": "{rating} A sits behind {upstream} rated {upRating} A. On overload the wrong protection trips."
+      },
+      "selectivity-equal": {
+        "title": "Same rating as the upstream device",
+        "hint": "On overload {upstream} may trip instead of this circuit and cut more than needed."
+      },
+      "rcd-underrated": {
+        "title": "RCD may lack overload protection",
+        "hint": "A {rating} A RCD sits behind {upstream} rated {upRating} A, and the breakers under it add up to more than its rating."
+      },
+      "rcd-cascade": {
+        "title": "RCD behind RCD without selectivity",
+        "hint": "{leakage} mA sits behind {upstream} at {upLeakage} mA. A leak can trip both. Use a selective (S) device of 100 mA or more upstream."
+      },
+      "rating-missing": {
+        "title": "Rating not set",
+        "hint": "Set the rating so the checks can work."
+      },
+      "empty-circuit": {
+        "title": "No points linked to this circuit",
+        "hint": "Mark on the plan what this breaker supplies so it's clear what it cuts."
+      },
+      "unplaced": {
+        "title": "Device not placed in the panel",
+        "hint": "Add it to a row in the editor."
+      },
+      "point-unassigned": {
+        "title": "Point without a breaker",
+        "hint": "“{point}” isn't linked to a breaker."
+      },
+      "wet-no-rcd": {
+        "title": "Wet zone without RCD",
+        "hint": "“{point}” is in a wet room but has no RCD or RCBO of 30 mA or less in front of it. This is mandatory."
+      },
+      "socket-no-rcd": {
+        "title": "Socket without RCD",
+        "hint": "“{point}” isn't protected by a 30 mA RCD. Socket circuits require one."
+      },
+      "rcd-class": {
+        "title": "Type AC RCD in front of inverter equipment",
+        "hint": "A {profile} can produce pulsating leakage that a type AC RCD doesn't see. Type A is needed."
+      },
+      "input-power": {
+        "title": "Estimated power exceeds the allowed",
+        "hint": "{kw} kW against {max} kW allowed."
+      },
+      "phase-imbalance": {
+        "title": "Phase imbalance",
+        "hint": "L1 {L1} W · L2 {L2} W · L3 {L3} W. Redistribute the load."
+      },
+      "bus-no-psu": {
+        "title": "No KNX bus power supply",
+        "hint": "Bus devices don't work without a line power supply."
+      },
+      "bus-dup-address": {
+        "title": "Duplicate physical address",
+        "hint": "Address {address} is already used by {other}. The devices will conflict."
+      },
+      "channel-unlinked": {
+        "title": "Channel {channel} controls nothing",
+        "hint": "Link points on the plan to the channel or label it as spare."
+      },
+      "channel-mismatch": {
+        "title": "Channel controls a point on another circuit",
+        "hint": "Channel {channel} is linked to “{point}”, but that point isn't fed by this actuator."
+      },
+      "ga-unknown": {
+        "title": "Group address leads nowhere",
+        "hint": "“{point}” sends to {group}, but no actuator channel listens to it."
+      }
+    },
+    "rules": {
+      "cable": {
+        "title": "Cable size and breaker rating",
+        "body": "A breaker protects the cable, not the appliance. Copper in walls: 1.5 mm² up to 10 A, 2.5 mm² up to 16 A, 4 mm² up to 25 A, 6 mm² up to 32 A. A larger breaker lets the cable overheat."
+      },
+      "load": {
+        "title": "Circuit load",
+        "body": "Current is derived from appliance power with demand factors: sockets 0.3, lights 1, appliances 0.7–1. The whole panel also gets an overall factor based on the number of circuits."
+      },
+      "selectivity": {
+        "title": "Selectivity",
+        "body": "A downstream breaker must be rated lower than the upstream one, so a fault cuts one circuit rather than the whole apartment."
+      },
+      "rcd": {
+        "title": "RCDs and cascades",
+        "body": "A 30 mA RCD protects people. Two RCDs in series without selectivity trip together, so the upstream one should be selective (S) at 100–300 mA."
+      },
+      "wet": {
+        "title": "Wet zones",
+        "body": "Everything in bathrooms and toilets must be behind an RCD or RCBO of 10–30 mA."
+      },
+      "class": {
+        "title": "RCD type",
+        "body": "Washers, dishwashers, induction hobs and inverter ACs produce pulsating leakage currents. They need type A; type AC can't see them."
+      },
+      "input": {
+        "title": "Supply capacity",
+        "body": "Estimated demand is compared with the contracted capacity, which you can set in the editor's general settings."
+      }
+    }
+  },
+  "smart": {
+    "title": "Smart home",
+    "subtitle": "Bus devices (KNX and others), their addresses and what controls what.",
+    "empty": "This panel has no bus devices. If you have KNX, DALI or Modbus, add actuators, a bus power supply and control panels in the editor.",
+    "openDemo": "View the KNX demo",
+    "safety": "Actuator channels are relays driven by software. A light switched off from a panel is not de-energised. Switch off the breaker before touching wires.",
+    "topology": "Devices on the bus",
+    "address": "Address",
+    "device": "Device",
+    "channels": "Channels",
+    "channel": "channel",
+    "groups": "Group addresses",
+    "group": "Address",
+    "output": "Switches",
+    "controlledFrom": "Controlled from",
+    "noOutput": "no actuator",
+    "panels": "Panels & sensors",
+    "panelControls": "Controls",
+    "system": {
+      "knx": "KNX",
+      "dali": "DALI",
+      "modbus": "Modbus",
+      "zigbee": "Zigbee",
+      "other": "Other bus"
+    },
+    "fn": {
+      "switch": "On/off",
+      "dimmer": "Dimmer",
+      "blind": "Blinds",
+      "heating": "Heating",
+      "hvac": "Climate",
+      "input": "Input",
+      "other": "Other"
+    }
+  },
+  "maintenance": {
+    "title": "Maintenance",
+    "subtitle": "What to check and how often, so the protection works when you need it.",
+    "every": "Every {n} days",
+    "last": "last done {date}",
+    "state": {
+      "overdue": "{n} days overdue",
+      "never": "never done",
+      "soon": "soon: {date}",
+      "ok": "until {date}"
+    },
+    "markDone": "Mark as done",
+    "markHint": "This adds an entry to the log.",
+    "date": "Date",
+    "note": "Comment",
+    "saved": "Added to the log",
+    "journal": "Log",
+    "empty": "No entries yet."
+  },
+  "photos": {
+    "title": "Photos & documents",
+    "subtitle": "Walls before plastering, so you know where the cables run, plus certificates, diagrams and manuals.",
+    "untitled": "Untitled",
+    "empty": "No photos yet. Add them in the editor.",
+    "documents": "Documents",
+    "noDocs": "No documents yet."
+  },
+  "docKind": {
+    "act": "Certificate",
+    "scheme": "Diagram",
+    "passport": "Manual",
+    "warranty": "Warranty",
+    "invoice": "Receipt",
+    "other": "Document"
+  },
+  "labels": {
+    "title": "Labels & QR",
+    "subtitle": "A QR sticker for the door and true-to-scale labels for the breakers.",
+    "strips": "Row labels",
+    "perDevice": "QR for every device",
+    "height": "Strip height",
+    "print": "Print",
+    "printHint": "Print at 100% scale without “fit to page”. Each cell is 17.5 mm per module.",
+    "scan": "Point your phone camera here: see which breaker cuts what and what to do if something trips.",
+    "emergencyLine": "Tripped? Scan me",
+    "row": "Row {n}"
+  },
+  "qr": {
+    "description": "Scan with your phone camera.",
+    "withPassword": "Embed the password",
+    "withPasswordHint": "Whoever scans the code opens the data without typing the password. It travels after #, so it never reaches the server.",
+    "noPublicUrl": "The site address isn't set. Add it in the editor (General → Site address) or the QR won't open on a phone.",
+    "copy": "Copy",
+    "copied": "Link copied"
+  },
+  "pwa": {
+    "offline": "Offline",
+    "ready": "Offline ready",
+    "readyHint": "The site is saved on this device and opens even without internet or power.",
+    "update": "Update"
+  },
+  "settings": {
+    "language": "Language",
+    "themeTitle": "Appearance",
+    "theme": {
+      "auto": "System",
+      "light": "Light",
+      "dark": "Dark"
+    },
+    "lock": "Lock",
+    "lockHint": "Forget the password on this device",
+    "lockAction": "Forget",
+    "draft": "Draft",
+    "draftHint": "Unpublished changes on this device",
+    "discard": "Discard changes",
+    "draftDiscarded": "Draft discarded",
+    "offline": "Offline mode",
+    "offlineNotYet": "Still saving…",
+    "clearCache": "Clear cache",
+    "cacheCleared": "Cache cleared, reloading",
+    "version": "Version",
+    "dataSource": "Data",
+    "updated": "Updated",
+    "encryption": "Encryption",
+    "source": {
+      "published": "from the site",
+      "demo": "demo",
+      "file": "from a file",
+      "new": "new project"
+    }
+  },
+  "editor": {
+    "title": "Editor",
+    "subtitle": "Changes are saved as a draft on this device. When you're done, save a file or publish.",
+    "draftBadge": "Draft",
+    "translations": "Translations",
+    "auto": "auto",
+    "refIssues": "broken references",
+    "tab": {
+      "general": "General",
+      "panel": "Panel",
+      "plan": "Plan",
+      "media": "Photos & documents",
+      "maintenance": "Maintenance",
+      "publish": "Save & publish"
+    },
+    "general": {
+      "title": "Name",
+      "location": "Where the panel is",
+      "locationHint": "So it can be found in the dark: “hallway, behind the mirror”",
+      "enclosure": "Enclosure",
+      "address": "Address",
+      "addressHint": "Optional. Stored only encrypted.",
+      "publicUrl": "Site address",
+      "publicUrlHint": "Where the app is published. Needed for QR codes.",
+      "supply": "Supply",
+      "phases": "Phases",
+      "voltage": "Voltage",
+      "maxPower": "Allowed capacity",
+      "input": "Main device",
+      "role": "Who",
+      "name": "Name",
+      "phone": "Phone",
+      "contactNote": "Comment"
+    },
+    "panel": {
+      "palette": "Add to row {row}",
+      "used": "{used} of {total} modules",
+      "mod": "mod.",
+      "blank": "blank",
+      "narrower": "Narrower",
+      "wider": "Wider",
+      "addRow": "Add row",
+      "unplaced": "Not placed in the panel",
+      "pick": "Pick a device on the panel or add a new one from the palette.",
+      "left": "Move left",
+      "right": "Move right",
+      "rowUp": "Row up",
+      "rowDown": "Row down",
+      "blankBefore": "Blank before",
+      "place": "Place",
+      "id": "Designation",
+      "idHint": "As on the diagram: QF1, QD2…",
+      "idTaken": "That designation already exists",
+      "type": "Type",
+      "label": "Label",
+      "labelHint": "Clear to anyone: “Kitchen — worktop sockets”",
+      "curve": "Curve",
+      "width": "Width, mod.",
+      "widthHint": "Empty: by type",
+      "selective": "Selective (S)",
+      "upstream": "Fed from",
+      "upstreamHint": "The device above it in the chain",
+      "noUpstream": "— supply —",
+      "circuit": "Circuit",
+      "brand": "Manufacturer",
+      "model": "Model",
+      "tags": "Tags",
+      "tagsHint": "Comma-separated: kitchen, sockets"
+    },
+    "smart": {
+      "title": "Smart-home bus",
+      "system": "System",
+      "address": "Physical address",
+      "addressHint": "For KNX: area.line.device",
+      "addChannel": "Add channel",
+      "channelsHint": "Channel, function, group address and the plan points it controls.",
+      "noPoints": "No suitable points. Add them to the plan first."
+    },
+    "plan": {
+      "mode": {
+        "select": "Select",
+        "room": "Room",
+        "point": "Point",
+        "route": "Cable",
+        "photo": "Photo"
+      },
+      "hint": {
+        "select": "Tap a point, room or photo to edit it. Drag the handles to move. Wheel or pinch to zoom.",
+        "room": "Place the room corners one by one. Tap the first corner or “Done” to close it.",
+        "point": "Pick a type and a breaker, then tap the plan to place points.",
+        "route": "Trace the cable route point by point and tap “Done”. A no-drill zone appears around it.",
+        "photo": "Tap where the photo was taken and pick the image."
+      },
+      "noDevice": "No breaker",
+      "finish": "Done",
+      "background": "Underlay",
+      "bgLoaded": "Underlay loaded",
+      "bgFailed": "Could not load the underlay",
+      "width": "Plan width",
+      "height": "Plan height",
+      "grid": "Grid step",
+      "opacity": "Underlay opacity",
+      "kind": "Type",
+      "label": "Label",
+      "device": "Breaker",
+      "room": "Room",
+      "power": "Power",
+      "count": "Count",
+      "heightMm": "Height",
+      "profile": "Appliance profile",
+      "profileHint": "Used for load estimates and RCD type checks",
+      "controls": "Group addresses",
+      "controlsHint": "Comma-separated: 1/1/1, 3/1/1",
+      "roomN": "Room {n}",
+      "roomName": "Room name",
+      "wet": "Wet zone (bathroom, toilet)",
+      "roomHint": "Drag the corner handles to adjust the shape.",
+      "routeKind": "Cable type",
+      "routeKinds": {
+        "power": "Power",
+        "bus": "Smart-home bus",
+        "low": "Low voltage"
+      },
+      "routeNote": "How it runs",
+      "safeWidth": "No-drill zone",
+      "caption": "Caption",
+      "replace": "Replace",
+      "summary": "On the plan",
+      "rooms": "Rooms",
+      "routes": "Routes"
+    },
+    "media": {
+      "photosHint": "Photograph walls before plastering: years later it's the best wiring map you'll have.",
+      "addPhotos": "Add photos",
+      "added": "Photos added: {n}",
+      "notOnPlan": "Not marked on the plan (Plan tab → Photo)",
+      "addDoc": "Upload document",
+      "addLink": "Link",
+      "tooBig": "File is larger than {mb} MB",
+      "docTitle": "Title",
+      "docKind": "Type",
+      "link": "Link"
+    },
+    "maintenance": {
+      "tasks": "Schedule",
+      "title": "Task",
+      "interval": "Interval",
+      "howTo": "How to",
+      "devices": "Devices"
+    },
+    "publish": {
+      "status": "Status",
+      "draftLocal": "Draft saved on this device",
+      "noChanges": "No changes",
+      "savedAt": "autosaved at {time}",
+      "refIssues": "There are broken references; fix them before publishing",
+      "checkErrors": "Checks found errors: {n}. You can publish, but take a look first.",
+      "fileTitle": "File",
+      "fileHint": "An encrypted .panel file. Send it to the owner or the electrician; it opens in the web app and in the desktop app.",
+      "save": "Save",
+      "saveAs": "Save as…",
+      "saved": "File saved",
+      "downloadPanel": "Download .panel",
+      "import": "Import file",
+      "importPassword": "File password",
+      "imported": "File loaded into the draft",
+      "plain": "Export without encryption",
+      "plainWarn": "An unencrypted file contains the floor plan and cable routes. Don't publish it.",
+      "siteTitle": "Publish to the site",
+      "siteHint": "Sends the encrypted file to the GitHub repository; the site updates in a couple of minutes.",
+      "owner": "Owner",
+      "repo": "Repository",
+      "branch": "Branch",
+      "path": "File path",
+      "token": "GitHub token",
+      "tokenHint": "A fine-grained token with Contents: Read and write on this repository only.",
+      "rememberToken": "Remember the token on this device",
+      "publish": "Publish",
+      "published": "Published",
+      "publishedHint": "The site updates once GitHub Actions finishes.",
+      "commit": "Commit",
+      "failed": "Publishing failed",
+      "badToken": "The token is invalid or lacks write access",
+      "notFound": "Repository or branch not found",
+      "manual": "You can also do it by hand: download panel.enc.json and replace public/app/panel.enc.json in the repository.",
+      "passwordTitle": "Password",
+      "changePassword": "Change password",
+      "passwordChanged": "Password changed",
+      "passwordChangedHint": "Save or publish the data, then reprint the QR code.",
+      "passwordHint": "The new password applies on the next save or publish. Old QR codes will stop working."
+    }
+  }
+}

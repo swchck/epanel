@@ -12,7 +12,7 @@
     "typecheck": "vue-tsc -b",
     "validate": "tsx scripts/validate.ts",
     "seed": "tsx scripts/seed.ts",
-    "seed:demo": "PANEL_PASSWORD=demo tsx scripts/seed.ts data/demo.yaml public/app/demo.panel"
+    "seed:demo": "tsx scripts/make-smart-demo.ts && PANEL_PASSWORD=demo tsx scripts/seed.ts data/demo.yaml public/app/demo.panel && PANEL_PASSWORD=demo tsx scripts/seed.ts data/demo-smart.yaml public/app/demo-smart.panel"
   },
   "dependencies": {
     "@fontsource/ibm-plex-mono": "^5.3.0",

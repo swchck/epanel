@@ -128,6 +128,20 @@ function simulateOff() {
       <CheckItem v-for="(c, i) in checks" :key="i" :check="c" compact />
     </section>
 
+    <section v-if="device.smart">
+      <h3 class="section-title">{{ t('smart.title') }} · {{ t(`smart.system.${device.smart.system}`) }}<template v-if="device.smart.address"> · {{ device.smart.address }}</template></h3>
+      <div v-if="device.smart.channels.length" class="divide-y rounded-xl border">
+        <div v-for="ch in device.smart.channels" :key="ch.id" class="flex items-start gap-3 px-3.5 py-2.5 text-sm">
+          <span class="w-6 font-mono font-semibold">{{ ch.id }}</span>
+          <div class="min-w-0 flex-1">
+            <div>{{ tx(ch.label) || ch.points.map((pid) => tx(data.data?.points.find((p) => p.id === pid)?.label, pid)).join(', ') || '—' }}</div>
+            <div class="text-xs text-muted-foreground">{{ t(`smart.fn.${ch.function}`) }}</div>
+          </div>
+          <span v-if="ch.group" class="font-mono text-xs text-green-700 dark:text-green-400">{{ ch.group }}</span>
+        </div>
+      </div>
+    </section>
+
     <section v-if="specs.length">
       <h3 class="section-title">{{ t('device.specs') }}</h3>
       <dl class="divide-y rounded-xl border">
@@ -160,7 +174,7 @@ function simulateOff() {
     <section v-if="points.length">
       <h3 class="section-title">{{ t('device.powers', { n: points.length }) }}</h3>
       <div class="mb-3 aspect-[3/2] overflow-hidden rounded-xl border bg-muted/30">
-        <FloorPlan :highlight-points="pointIds" :interactive="false" mini all-layers @point="(pid) => router.push({ path: '/plan', query: { point: pid } })" />
+        <FloorPlan :highlight-points="pointIds" :interactive="false" mini all-layers :show-routes="false" @point="(pid) => router.push({ path: '/plan', query: { point: pid } })" />
       </div>
       <div class="space-y-3">
         <div v-for="g in byRoom" :key="g.room">

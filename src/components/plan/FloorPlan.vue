@@ -24,8 +24,10 @@ const props = withDefaults(
     // render every layer regardless of ui toggles (editor, print)
     allLayers?: boolean
     cursor?: string
+    // rooms let clicks fall through to the canvas (editor placement modes)
+    passRooms?: boolean
   }>(),
-  { interactive: true, mini: false, showRoutes: undefined, allLayers: false, cursor: undefined },
+  { interactive: true, mini: false, showRoutes: undefined, allLayers: false, cursor: undefined, passRooms: false },
 )
 const emit = defineEmits<{
   point: [id: string]
@@ -53,7 +55,13 @@ const hasHighlight = computed(() => (props.highlightPoints?.size ?? 0) > 0)
 const roomLabels = computed(() =>
   d.value.rooms
     .filter((r) => r.polygon.length >= 3)
-    .map((r) => ({ room: r, c: polygonCentroid(r.polygon), area: areaM2(r.polygon) })),
+    .map((r) => {
+      // corner placement: fixtures usually sit in the middle of a room, labels there collide with them
+      const xs = r.polygon.map((p) => p[0])
+      const ys = r.polygon.map((p) => p[1])
+      const c = props.mini ? polygonCentroid(r.polygon) : ([Math.min(...xs) + 16, Math.min(...ys) + 34] as const)
+      return { room: r, c, area: areaM2(r.polygon) }
+    }),
 )
 
 const markerR = computed(() => (props.mini ? 15 : 13) / Math.sqrt(Math.max(1, pz.scale.value)))
@@ -152,24 +160,26 @@ defineExpose({ pz })
           stroke-linejoin="round"
           class="transition-[fill-opacity,opacity] duration-300"
           :class="{ 'opacity-40': highlightRoom && highlightRoom !== r.id }"
+          :pointer-events="passRooms ? 'none' : undefined"
           @click="!pz.wasDrag() && emit('room', r.id)"
         />
       </g>
       <g pointer-events="none">
         <g v-for="l in roomLabels" :key="l.room.id" :transform="`translate(${l.c[0]}, ${l.c[1]})`">
-          <text text-anchor="middle" class="room-name" :class="{ 'room-name-mini': mini }">{{ tx(l.room.name) }}</text>
-          <text v-if="!mini" y="20" text-anchor="middle" class="room-area">{{ l.area.toFixed(1) }} {{ t('units.m2') }}</text>
+          <text :text-anchor="mini ? 'middle' : 'start'" class="room-name" :class="{ 'room-name-mini': mini }">{{ tx(l.room.name) }}</text>
+          <text v-if="!mini" y="20" text-anchor="start" class="room-area">{{ l.area.toFixed(1) }} {{ t('units.m2') }}</text>
         </g>
       </g>
 
       <!-- cable routes and no-drill strips -->
-      <g v-if="routesVisible" pointer-events="none">
-        <g v-for="r in d.routes" :key="r.id">
-          <polyline :points="r.points.map((p) => p.join(',')).join(' ')" fill="none" stroke="url(#nodrill)" :stroke-width="r.safeWidth * 2" stroke-linecap="round" stroke-linejoin="round" />
+      <g pointer-events="none">
+        <g v-for="r in d.routes.filter((x) => (x.kind === 'power' ? routesVisible : layer('bus') || routesVisible))" :key="r.id">
+          <polyline v-if="routesVisible" :points="r.points.map((p) => p.join(',')).join(' ')" fill="none" stroke="url(#nodrill)" :stroke-width="r.safeWidth * 2" stroke-linecap="round" stroke-linejoin="round" />
           <polyline
             :points="r.points.map((p) => p.join(',')).join(' ')"
             fill="none"
-            :stroke="routeColor(r.device)"
+            :stroke="r.kind === 'bus' ? '#16a34a' : r.kind === 'low' ? '#64748b' : routeColor(r.device)"
+            :stroke-dasharray="r.kind === 'power' ? undefined : '10 7'"
             :stroke-width="routeLit(r.device) ? 5 : 3"
             stroke-linecap="round"
             stroke-linejoin="round"

@@ -40,7 +40,7 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,png,ico,woff2,webmanifest}', 'app/demo.panel'],
+        globPatterns: ['**/*.{js,css,html,svg,png,ico,woff2,webmanifest}', 'app/demo*.panel'],
         // the PDF worker is 1.2 MB and only the editor's plan import needs it
         globIgnores: ['**/pdf.worker*'],
         maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,

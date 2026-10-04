@@ -3,7 +3,7 @@ import type { PowerGraph } from './graph'
 import type { PlacedItem, RowLayout } from './layout'
 import { locate } from './layout'
 import type { Device, PanelData, PlanPoint, Room } from './schema'
-import { LOCALES, tr } from './schema'
+import { ISOLATING_TYPES, LOCALES, tr } from './schema'
 
 export type SearchHit =
   | { kind: 'device'; id: string; device: Device }
@@ -45,18 +45,28 @@ export function buildSearch(data: PanelData) {
 }
 
 export interface SwitchOffAnswer {
-  // the closest device whose only job here is cutting this point; flipping it disturbs the fewest other points
+  // the closest isolating device: flipping it disturbs the fewest other points
   device: Device
   place?: PlacedItem
-  // devices further up the chain that also cut this point, nearest first
+  // isolating devices further up the chain that also cut this point, nearest first
   alternatives: Device[]
+  // a bus actuator or contactor that switches the point but does not isolate it
+  controlledBy?: Device
 }
 
 export function whatToSwitchOff(g: PowerGraph, layout: RowLayout[], point: PlanPoint): SwitchOffAnswer | undefined {
   if (!point.device) return undefined
-  const device = g.byId.get(point.device)
+  const feed = g.byId.get(point.device)
+  if (!feed) return undefined
+  const chain = [feed, ...g.ancestors(feed.id)].filter((d) => ISOLATING_TYPES.includes(d.type))
+  const device = chain[0]
   if (!device) return undefined
-  return { device, place: locate(layout, device.id), alternatives: g.ancestors(device.id) }
+  return {
+    device,
+    place: locate(layout, device.id),
+    alternatives: chain.slice(1),
+    controlledBy: ISOLATING_TYPES.includes(feed.type) ? undefined : feed,
+  }
 }
 
 export function devicesForRoom(g: PowerGraph, data: PanelData, roomId: string): Device[] {
