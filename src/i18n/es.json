@@ -1,1 +1,939 @@
-{}
+{
+  "app": {
+    "name": "Cuadro eléctrico",
+    "tagline": "Mapa interactivo del cuadro"
+  },
+  "common": {
+    "loading": "Cargando…",
+    "back": "Atrás",
+    "close": "Cerrar",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "add": "Añadir",
+    "prev": "Anterior",
+    "next": "Siguiente",
+    "noRoom": "Sin estancia"
+  },
+  "units": {
+    "m2": "m²",
+    "mm2": "mm²",
+    "m": "m",
+    "cm": "cm",
+    "mm": "mm",
+    "kw": "kW",
+    "days": "días"
+  },
+  "nav": {
+    "panel": "Cuadro",
+    "plan": "Plano",
+    "find": "¿Qué desconecto?",
+    "emergency": "Ha saltado algo",
+    "schema": "Esquema unifilar",
+    "checks": "Revisión",
+    "smart": "Domótica",
+    "maintenance": "Mantenimiento",
+    "photos": "Fotos y documentos",
+    "labels": "Etiquetas y QR",
+    "edit": "Editor",
+    "settings": "Ajustes",
+    "more": "Más",
+    "group": {
+      "main": "Principal",
+      "engineering": "Instalación",
+      "service": "Servicio",
+      "manage": "Gestión"
+    },
+    "short": {
+      "panel": "Cuadro",
+      "plan": "Plano",
+      "find": "Buscar",
+      "emergency": "Saltó"
+    }
+  },
+  "banner": {
+    "demo": "Este es un piso de demostración. Los datos son inventados y los cambios no se guardan en ningún sitio.",
+    "draft": "Tienes cambios sin publicar y estás viendo un borrador.",
+    "draftAction": "Publicar"
+  },
+  "search": {
+    "open": "Buscar",
+    "placeholder": "Magnetotérmico, estancia, enchufe, aparato…",
+    "placeholderShort": "Buscar",
+    "empty": "No se ha encontrado nada",
+    "room": "Estancia"
+  },
+  "unlock": {
+    "title": "Se necesita contraseña",
+    "subtitle": "Los datos del piso están cifrados. Introduce la contraseña para abrirlos.",
+    "password": "Contraseña",
+    "show": "Mostrar contraseña",
+    "hide": "Ocultar contraseña",
+    "remember": "Recordar en este dispositivo",
+    "submit": "Abrir",
+    "wrong": "Contraseña incorrecta",
+    "hint": "La contraseña va incluida en el código QR de la puerta del cuadro. Escanéalo con la cámara y la web se abrirá sola.",
+    "demo": "Ver el piso de demostración"
+  },
+  "start": {
+    "title": "Aún no hay datos",
+    "titleDesktop": "Editor del cuadro",
+    "subtitle": "Abre un archivo de tu electricista, describe un cuadro desde cero o echa un vistazo a la demo.",
+    "open": "Abrir archivo",
+    "openHint": ".panel, .json o .yaml: lo que te haya enviado el electricista",
+    "create": "Crear un cuadro nuevo",
+    "createHint": "Proyecto vacío: filas, magnetotérmicos, plano",
+    "demo": "Abrir demo",
+    "demoHint": "Piso de dos dormitorios, 27 dispositivos, 44 puntos",
+    "name": "Nombre",
+    "defaultTitle": "Mi piso",
+    "password": "Contraseña",
+    "passwordRepeat": "Repite la contraseña",
+    "passwordHint": "La contraseña cifra todos los datos. Sin ella el archivo no se puede abrir ni recuperar.",
+    "passwordMismatch": "Las contraseñas no coinciden o tienen menos de 4 caracteres",
+    "createSubmit": "Crear",
+    "encrypted": "«{name}» está cifrado. Introduce la contraseña.",
+    "invalid": "No se ha podido leer el archivo"
+  },
+  "device": {
+    "type": {
+      "mcb": "Magnetotérmico",
+      "rcd": "Diferencial",
+      "rcbo": "Diferencial combinado (RCBO)",
+      "voltage-relay": "Relé de tensión",
+      "spd": "Protector de sobretensiones",
+      "meter": "Contador",
+      "switch": "Interruptor general",
+      "contactor": "Contactor",
+      "din-socket": "Enchufe para carril DIN",
+      "bus": "Barra",
+      "terminal": "Bornas",
+      "actuator": "Actuador de bus",
+      "bus-psu": "Fuente de alimentación del bus",
+      "bus-gateway": "Pasarela de bus",
+      "bus-io": "Módulo de entradas",
+      "other": "Otro"
+    },
+    "typeShort": {
+      "mcb": "Automático",
+      "rcd": "Diferencial",
+      "rcbo": "RCBO",
+      "voltage-relay": "Relé U",
+      "spd": "Sobreten.",
+      "meter": "Contador",
+      "switch": "IGA",
+      "contactor": "Contactor",
+      "din-socket": "Enchufe",
+      "bus": "Barra",
+      "terminal": "Bornas",
+      "actuator": "Actuador",
+      "bus-psu": "Fuente bus",
+      "bus-gateway": "Pasarela",
+      "bus-io": "Entradas",
+      "other": "Otro"
+    },
+    "field": {
+      "rating": "Calibre",
+      "poles": "Polos",
+      "leakage": "Sensibilidad",
+      "class": "tipo",
+      "cable": "Cable",
+      "section": "Sección",
+      "length": "Longitud del circuito",
+      "model": "Modelo",
+      "phase": "Fase",
+      "rcd": "Protección diferencial"
+    },
+    "place": "Fila {row}, n.º {pos} desde la izquierda",
+    "showOnPlan": "En el plano",
+    "simulate": "¿Qué se queda sin luz?",
+    "specs": "Características",
+    "load": "Carga",
+    "loadHint": "Demanda estimada de {demand} kW sobre {nameplate} kW conectados (con coeficiente de simultaneidad).",
+    "powers": "Puntos que alimenta: {n}",
+    "fedFrom": "Alimentado desde",
+    "feeds": "Alimenta",
+    "notes": "Notas",
+    "addNote": "Añadir nota",
+    "noteAuthor": "Tu nombre",
+    "notePlaceholder": "P. ej. «cambiado el enchufe de la ventana por uno doble»",
+    "noteDraftHint": "Se guarda en el borrador. Publícalo en el editor para que todos lo vean.",
+    "anonymous": "Anónimo",
+    "noNotes": "Aún no hay notas."
+  },
+  "point": {
+    "kind": {
+      "socket": "Enchufe",
+      "light": "Luz",
+      "switch": "Interruptor",
+      "appliance": "Aparato",
+      "heating": "Calefacción",
+      "ac": "Aire acondicionado",
+      "junction": "Caja de registro",
+      "network": "Baja tensión",
+      "panel": "Panel de control",
+      "sensor": "Sensor",
+      "other": "Punto"
+    },
+    "kinds": {
+      "socket": "Enchufes",
+      "light": "Luces",
+      "switch": "Interruptores",
+      "appliance": "Aparatos",
+      "heating": "Calefacción",
+      "ac": "Aires acondicionados",
+      "junction": "Cajas y cuadros",
+      "network": "Baja tensión",
+      "panel": "Paneles de control",
+      "sensor": "Sensores",
+      "other": "Otros"
+    },
+    "profile": {
+      "generic": "Aparato genérico",
+      "washer": "Lavadora",
+      "dishwasher": "Lavavajillas",
+      "oven": "Horno",
+      "cooktop": "Placa de cocina",
+      "fridge": "Frigorífico",
+      "boiler": "Termo eléctrico",
+      "inverter-ac": "Aire acondicionado inverter",
+      "floor-heating": "Suelo radiante",
+      "ev": "Cargador de coche eléctrico"
+    },
+    "height": "A {mm} mm del suelo"
+  },
+  "panel": {
+    "title": "Cuadro eléctrico",
+    "stat": {
+      "groups": "circuitos",
+      "rcds": "diferenciales y RCBO",
+      "points": "puntos",
+      "modules": "módulos ocupados",
+      "errors": "errores",
+      "warnings": "avisos"
+    },
+    "allRooms": "Todas las estancias",
+    "allTags": "Todas las etiquetas",
+    "onlyIssues": "Con incidencias",
+    "clearFilters": "Restablecer",
+    "simulate": "Simulación",
+    "zoom": "Zoom",
+    "simHint": "Toca los dispositivos para «apagarlos» y ver qué se queda sin corriente.",
+    "simStatus": "Dispositivos apagados: {devices}. Puntos sin corriente: {points}.",
+    "simShowPlan": "En el plano",
+    "simReset": "Encender todo",
+    "legend": {
+      "on": "indicador: conectado",
+      "off": "indicador: desconectado",
+      "live": "con tensión",
+      "issue": "tiene una incidencia",
+      "tap": "Toca un dispositivo para ver los detalles"
+    },
+    "pickHint": "Elige un magnetotérmico del cuadro para ver qué alimenta, su carga y sus notas.",
+    "details": "Detalles del dispositivo"
+  },
+  "plan": {
+    "layers": "Capas",
+    "layer": {
+      "routes": "Cables y zonas sin taladrar",
+      "bus": "Bus domótico",
+      "photos": "Fotos de las paredes",
+      "labels": "Etiquetas de los automáticos",
+      "background": "Fondo del plano"
+    },
+    "zoomIn": "Acercar",
+    "zoomOut": "Alejar",
+    "fit": "Ajustar",
+    "hint": "Toca un enchufe o un aparato para ver qué automático lo corta",
+    "sideHint": "Toca cualquier punto del plano para ver qué automático lo deja sin tensión. Toca una estancia para ver sus circuitos.",
+    "simHint": "Simulación: toca los puntos para apagar su automático.",
+    "simStatus": "Puntos sin corriente: {n}. Apagados:",
+    "deviceHighlight": "Puntos resaltados: {n}",
+    "roomDevices": "Circuitos de esta estancia",
+    "wet": "zona húmeda"
+  },
+  "find": {
+    "title": "¿Qué desconecto?",
+    "subtitle": "Busca un enchufe, una luz o un aparato y te diré qué automático tienes que bajar.",
+    "placeholder": "P. ej. enchufe de la mesilla, termo, luz del baño",
+    "pickRoom": "O elige una estancia",
+    "pointsCount": "Puntos: {n}",
+    "switchOff": "Baja",
+    "unknown": "Este punto no está vinculado a ningún automático. Por seguridad, baja el interruptor general.",
+    "alsoCuts": "También lo cortan:",
+    "openInPanel": "Ver en el cuadro",
+    "everything": "Cortar la corriente de todo el piso",
+    "everythingHint": "Interruptor general",
+    "controlledBy": "Controlado mediante",
+    "controlledByHint": "Es un relé domótico y no corta el circuito de forma fiable. Baja el automático que tiene por encima antes de tocar cables."
+  },
+  "emergency": {
+    "title": "Ha saltado algo",
+    "subtitle": "Tranquilidad. Responde un par de preguntas y lo resolvemos.",
+    "scenario": {
+      "partial": {
+        "title": "Se ha ido la luz en parte del piso",
+        "hint": "Los enchufes o las luces han dejado de funcionar en una o dos estancias"
+      },
+      "rcd": {
+        "title": "Ha saltado un diferencial o un RCBO",
+        "hint": "Hay una palanca azul o morada con un botón «T» bajada"
+      },
+      "all": {
+        "title": "Se ha ido la luz en todo el piso",
+        "hint": "No funciona nada en ningún sitio del piso"
+      },
+      "flicker": {
+        "title": "Las luces parpadean, los aparatos se apagan y se encienden solos",
+        "hint": "Parece que la tensión sube y baja"
+      },
+      "smell": {
+        "title": "Olor a quemado, chispas, el cuadro está caliente",
+        "hint": "Peligro: actúa ya"
+      }
+    },
+    "pick": "Busca en el cuadro la palanca que está bajada y toca ese dispositivo en el dibujo:",
+    "pickRcd": "¿Qué diferencial o RCBO ha saltado? Tócalo en el dibujo:",
+    "pickHint": "Palanca abajo y un indicador verde en la ventanita significa que está desconectado.",
+    "guide": {
+      "mcb": {
+        "title": "Ha saltado un magnetotérmico",
+        "why": "Un magnetotérmico salta por sobrecarga (demasiados aparatos potentes en un mismo circuito) o por cortocircuito (un aparato o la instalación están averiados).",
+        "steps": [
+          "Desenchufa los aparatos potentes de este circuito: hervidor, estufa, plancha, secador.",
+          "Sube la palanca del magnetotérmico hasta que haga clic.",
+          "Si aguanta, vuelve a enchufar los aparatos de uno en uno, no todos a la vez.",
+          "Si salta enseguida aunque no haya nada enchufado, es un cortocircuito. Déjalo bajado y llama a un electricista.",
+          "Si salta al encender un aparato concreto, ese aparato está averiado."
+        ]
+      },
+      "rcd": {
+        "title": "Ha saltado un diferencial",
+        "why": "El diferencial corta el circuito cuando hay una fuga de corriente: humedad, aislamiento dañado, un aparato averiado. Protege contra descargas eléctricas, así que no lo ignores.",
+        "steps": [
+          "Desenchufa todos los aparatos de los circuitos que cuelgan de este diferencial (lista abajo).",
+          "Sube la palanca del diferencial.",
+          "Si aguanta, vuelve a encender los aparatos de uno en uno, empezando por los sospechosos: lavadora, termo, hervidor, cualquier cosa cerca del agua.",
+          "El aparato que hace saltar el diferencial está averiado. No lo uses.",
+          "Si el diferencial salta con todo desenchufado, el problema está en la instalación. Llama a un electricista."
+        ]
+      },
+      "relay": {
+        "title": "Ha saltado el relé de tensión",
+        "why": "El relé desconecta el piso cuando la tensión de la red se sale del rango seguro, para proteger tus aparatos de los picos.",
+        "steps": [
+          "Mira la pantalla del relé para ver la tensión.",
+          "Espera: cuando la tensión vuelva a la normalidad, el relé restablecerá la corriente solo (normalmente en 30–60 segundos).",
+          "No toques otros automáticos ni intentes puentear el relé.",
+          "Si pasa a menudo, avisa a la comunidad o al administrador: el problema está en el suministro del edificio."
+        ]
+      },
+      "all": {
+        "title": "Todo el piso está sin luz",
+        "why": "Hay tres causas probables: ha saltado el interruptor general, ha saltado el relé de tensión o se ha ido la luz en todo el edificio.",
+        "steps": [
+          "Comprueba si los vecinos y la escalera tienen luz. Si no, es un corte en el edificio: llama a la distribuidora o al administrador.",
+          "Mira el relé de tensión. Si ves guiones o cifras parpadeando, espera: volverá a conectar solo.",
+          "Si el interruptor general está bajado, desenchufa los aparatos potentes y súbelo.",
+          "Si el general vuelve a saltar, no insistas. Llama a un electricista."
+        ]
+      },
+      "other": {
+        "title": "Este dispositivo no suele «saltar»",
+        "why": "Parece que has elegido un dispositivo equivocado. Busca la palanca bajada en un magnetotérmico, un diferencial o un RCBO.",
+        "steps": [
+          "Vuelve atrás y elige el automático que tiene la palanca bajada.",
+          "Si no hay ninguna palanca bajada, revisa el relé de tensión."
+        ]
+      }
+    },
+    "rcdLines": "Circuitos que cuelgan de este diferencial",
+    "suspects": "Los aparatos más potentes de este circuito",
+    "suspectsLeak": "Revisa primero estos aparatos",
+    "danger": {
+      "title": "Peligro: actúa ya",
+      "s1": "Si puedes hacerlo sin riesgo, baja el interruptor general",
+      "s2": "No toques el cuadro con las manos mojadas y no lo abras si sale humo.",
+      "s3": "Si hay humo o fuego, sal del piso y cierra la puerta.",
+      "s4": "Llama al 112 e informa de un incendio eléctrico."
+    },
+    "never": "Nunca sujetes una palanca con la mano para que «aguante» ni fijes los automáticos con cinta. Eso anula la protección contra incendios y descargas eléctricas.",
+    "contacts": "A quién llamar"
+  },
+  "contact": {
+    "role": {
+      "electrician": "Electricista",
+      "management": "Administrador de fincas",
+      "emergency": "Servicio de emergencias",
+      "utility": "Compañía eléctrica",
+      "other": "Contacto"
+    }
+  },
+  "schema": {
+    "title": "Esquema unifilar",
+    "subtitle": "Generado automáticamente a partir de la descripción del cuadro: desde la acometida hasta cada circuito.",
+    "grid": "Red {v} V",
+    "hint": "Toca un dispositivo para abrir su ficha. Activa la simulación para «apagar» dispositivos en el esquema."
+  },
+  "checks": {
+    "title": "Revisión",
+    "subtitle": "Una revisión automática del cuadro según las reglas básicas de instalación eléctrica.",
+    "level": {
+      "error": "errores",
+      "warn": "avisos",
+      "info": "consejos"
+    },
+    "totalLoad": "Carga estimada del piso",
+    "totalHint": "Con coeficiente de simultaneidad. Potencia total de todos los aparatos: {nameplate} kW.",
+    "issues": "Resultados",
+    "showInfo": "Mostrar consejos",
+    "allGood": "Sin incidencias. El cuadro está bien montado.",
+    "circuits": "Carga por circuito",
+    "rulesTitle": "Qué se revisa y cómo",
+    "disclaimer": "Estas comprobaciones son simplificadas y no sustituyen a un proyecto ni a la revisión de un electricista. Cobre, instalación empotrada, tensión según los ajustes.",
+    "code": {
+      "cycle": {
+        "title": "Bucle en la cadena de alimentación",
+        "hint": "{device} acaba alimentándose a sí mismo a través de otros dispositivos. Revisa el campo «Alimentado desde»."
+      },
+      "cable-overload": {
+        "title": "Automático demasiado grande para el cable",
+        "hint": "{rating} A en un cable de {section} mm²: el cable se sobrecalienta antes de que salte el automático. El límite para esta sección es {max} A."
+      },
+      "cable-marginal": {
+        "title": "Automático al límite del cable",
+        "hint": "{rating} A en {section} mm² solo es aceptable en buenas condiciones de instalación. Se recomiendan {max} A."
+      },
+      "cable-unknown": {
+        "title": "Sección del cable sin indicar",
+        "hint": "Sin la sección no se puede comprobar el calibre del automático."
+      },
+      "load-over": {
+        "title": "Circuito sobrecargado",
+        "hint": "La corriente estimada de {current} A supera el calibre de {rating} A. El automático saltará."
+      },
+      "load-high": {
+        "title": "Circuito cargado por encima del 80 %",
+        "hint": "Corriente estimada de {current} A en un automático de {rating} A. Casi no queda margen."
+      },
+      "selectivity-over": {
+        "title": "Selectividad rota",
+        "hint": "{rating} A está detrás de {upstream} de {upRating} A. Con una sobrecarga saltará la protección equivocada."
+      },
+      "selectivity-equal": {
+        "title": "Mismo calibre que el dispositivo de arriba",
+        "hint": "Con una sobrecarga puede saltar {upstream} en lugar de este circuito y cortar más de lo necesario."
+      },
+      "rcd-underrated": {
+        "title": "El diferencial puede quedar sin protección contra sobrecarga",
+        "hint": "Un diferencial de {rating} A está detrás de {upstream} de {upRating} A, y los automáticos que cuelgan de él suman más que su calibre."
+      },
+      "rcd-cascade": {
+        "title": "Diferencial tras diferencial sin selectividad",
+        "hint": "{leakage} mA está detrás de {upstream} de {upLeakage} mA. Una fuga puede hacer saltar los dos. Pon aguas arriba uno selectivo (S) de 100 mA o más."
+      },
+      "rating-missing": {
+        "title": "Calibre sin indicar",
+        "hint": "Indica el calibre para que funcionen las comprobaciones."
+      },
+      "empty-circuit": {
+        "title": "No hay puntos vinculados a este circuito",
+        "hint": "Marca en el plano qué alimenta este automático para que quede claro qué corta."
+      },
+      "unplaced": {
+        "title": "Dispositivo sin colocar en el cuadro",
+        "hint": "Añádelo a una fila en el editor."
+      },
+      "point-unassigned": {
+        "title": "Punto sin automático",
+        "hint": "«{point}» no está vinculado a ningún automático."
+      },
+      "wet-no-rcd": {
+        "title": "Zona húmeda sin diferencial",
+        "hint": "«{point}» está en una zona húmeda, pero no tiene delante un diferencial o RCBO de 30 mA o menos. Es obligatorio."
+      },
+      "socket-no-rcd": {
+        "title": "Enchufe sin diferencial",
+        "hint": "«{point}» no está protegido por un diferencial de 30 mA. Los circuitos de enchufes lo necesitan."
+      },
+      "rcd-class": {
+        "title": "Diferencial tipo AC delante de equipos inverter",
+        "hint": "Un aparato «{profile}» puede generar fugas pulsantes que un diferencial tipo AC no detecta. Hace falta tipo A."
+      },
+      "input-power": {
+        "title": "La potencia estimada supera la contratada",
+        "hint": "{kw} kW frente a {max} kW contratados."
+      },
+      "phase-imbalance": {
+        "title": "Desequilibrio de fases",
+        "hint": "L1 {L1} W · L2 {L2} W · L3 {L3} W. Reparte mejor la carga."
+      },
+      "bus-no-psu": {
+        "title": "Falta la fuente de alimentación del bus KNX",
+        "hint": "Los dispositivos de bus no funcionan sin una fuente de alimentación de línea."
+      },
+      "bus-dup-address": {
+        "title": "Dirección física duplicada",
+        "hint": "La dirección {address} ya la usa {other}. Los dispositivos entrarán en conflicto."
+      },
+      "channel-unlinked": {
+        "title": "El canal {channel} no controla nada",
+        "hint": "Vincula puntos del plano al canal o márcalo como reserva."
+      },
+      "channel-mismatch": {
+        "title": "El canal controla un punto de otro circuito",
+        "hint": "El canal {channel} está vinculado a «{point}», pero ese punto no se alimenta desde este actuador."
+      },
+      "ga-unknown": {
+        "title": "La dirección de grupo no lleva a ningún sitio",
+        "hint": "«{point}» envía a {group}, pero ningún canal de actuador la escucha."
+      }
+    },
+    "rules": {
+      "cable": {
+        "title": "Sección del cable y calibre del automático",
+        "body": "El automático protege el cable, no el aparato. Cobre empotrado: 1,5 mm² hasta 10 A, 2,5 mm² hasta 16 A, 4 mm² hasta 25 A, 6 mm² hasta 32 A. Un automático mayor deja que el cable se sobrecaliente."
+      },
+      "load": {
+        "title": "Carga del circuito",
+        "body": "La corriente se calcula a partir de la potencia de los aparatos con coeficientes de simultaneidad: enchufes 0,3, luces 1, aparatos 0,7–1. Al cuadro entero se le aplica además un coeficiente general según el número de circuitos."
+      },
+      "selectivity": {
+        "title": "Selectividad",
+        "body": "Un automático aguas abajo debe tener un calibre menor que el de aguas arriba, para que una avería corte un solo circuito y no todo el piso."
+      },
+      "rcd": {
+        "title": "Diferenciales y cascadas",
+        "body": "Un diferencial de 30 mA protege a las personas. Dos diferenciales en serie sin selectividad saltan a la vez, así que el de arriba debe ser selectivo (S) de 100–300 mA."
+      },
+      "wet": {
+        "title": "Zonas húmedas",
+        "body": "Todo lo que hay en baños y aseos debe estar detrás de un diferencial o RCBO de 10–30 mA."
+      },
+      "class": {
+        "title": "Tipo de diferencial",
+        "body": "Lavadoras, lavavajillas, placas de inducción y aires acondicionados inverter generan corrientes de fuga pulsantes. Necesitan tipo A; el tipo AC no las detecta."
+      },
+      "input": {
+        "title": "Potencia contratada",
+        "body": "La demanda estimada se compara con la potencia contratada, que puedes indicar en los ajustes generales del editor."
+      }
+    }
+  },
+  "smart": {
+    "title": "Domótica",
+    "subtitle": "Dispositivos de bus (KNX y otros), sus direcciones y qué controla qué.",
+    "empty": "Este cuadro no tiene dispositivos de bus. Si tienes KNX, DALI o Modbus, añade en el editor los actuadores, la fuente de alimentación del bus y los paneles de control.",
+    "openDemo": "Ver la demo de KNX",
+    "safety": "Los canales de los actuadores son relés controlados por software. Una luz apagada desde un panel no está sin tensión. Baja el automático antes de tocar cables.",
+    "topology": "Dispositivos en el bus",
+    "address": "Dirección",
+    "device": "Dispositivo",
+    "channels": "Canales",
+    "channel": "canal",
+    "groups": "Direcciones de grupo",
+    "group": "Dirección",
+    "output": "Conmuta",
+    "controlledFrom": "Se controla desde",
+    "noOutput": "sin actuador",
+    "panels": "Paneles y sensores",
+    "panelControls": "Controla",
+    "system": {
+      "knx": "KNX",
+      "dali": "DALI",
+      "modbus": "Modbus",
+      "zigbee": "Zigbee",
+      "other": "Otro bus"
+    },
+    "fn": {
+      "switch": "Encendido/apagado",
+      "dimmer": "Regulador",
+      "blind": "Persianas",
+      "heating": "Calefacción",
+      "hvac": "Climatización",
+      "input": "Entrada",
+      "other": "Otro"
+    }
+  },
+  "maintenance": {
+    "title": "Mantenimiento",
+    "subtitle": "Qué revisar y cada cuánto, para que las protecciones funcionen cuando hagan falta.",
+    "every": "Cada {n} días",
+    "last": "última vez: {date}",
+    "state": {
+      "overdue": "{n} días de retraso",
+      "never": "nunca hecho",
+      "soon": "pronto: {date}",
+      "ok": "hasta el {date}"
+    },
+    "markDone": "Marcar como hecho",
+    "markHint": "Se añadirá una entrada al registro.",
+    "date": "Fecha",
+    "note": "Comentario",
+    "saved": "Añadido al registro",
+    "journal": "Registro",
+    "empty": "Aún no hay entradas."
+  },
+  "photos": {
+    "title": "Fotos y documentos",
+    "subtitle": "Las paredes antes de enlucir, para saber por dónde van los cables, además de certificados, esquemas y manuales.",
+    "untitled": "Sin título",
+    "empty": "Aún no hay fotos. Añádelas en el editor.",
+    "documents": "Documentos",
+    "noDocs": "Aún no hay documentos."
+  },
+  "docKind": {
+    "act": "Certificado",
+    "scheme": "Esquema",
+    "passport": "Manual",
+    "warranty": "Garantía",
+    "invoice": "Factura",
+    "other": "Documento"
+  },
+  "labels": {
+    "title": "Etiquetas y QR",
+    "subtitle": "Una pegatina con QR para la puerta y etiquetas a escala real para los automáticos.",
+    "strips": "Etiquetas de fila",
+    "perDevice": "QR para cada dispositivo",
+    "height": "Altura de la tira",
+    "print": "Imprimir",
+    "printHint": "Imprime al 100 % sin «ajustar a la página». Cada celda mide 17,5 mm por módulo.",
+    "scan": "Apunta aquí con la cámara del móvil: verás qué automático corta qué y qué hacer si salta algo.",
+    "emergencyLine": "¿Ha saltado? Escanéame",
+    "row": "Fila {n}"
+  },
+  "qr": {
+    "description": "Escanéalo con la cámara del móvil.",
+    "withPassword": "Incluir la contraseña",
+    "withPasswordHint": "Quien escanee el código abrirá los datos sin escribir la contraseña. Va después de #, así que nunca llega al servidor.",
+    "noPublicUrl": "No se ha configurado la dirección web. Añádela en el editor (General → Dirección web) o el QR no se abrirá en el móvil.",
+    "copy": "Copiar",
+    "copied": "Enlace copiado"
+  },
+  "pwa": {
+    "offline": "Sin conexión",
+    "ready": "Listo sin conexión",
+    "readyHint": "La web está guardada en este dispositivo y se abre incluso sin internet ni luz.",
+    "update": "Actualizar"
+  },
+  "settings": {
+    "language": "Idioma",
+    "themeTitle": "Apariencia",
+    "theme": {
+      "auto": "Sistema",
+      "light": "Claro",
+      "dark": "Oscuro"
+    },
+    "lock": "Bloquear",
+    "lockHint": "Olvidar la contraseña en este dispositivo",
+    "lockAction": "Olvidar",
+    "draft": "Borrador",
+    "draftHint": "Cambios sin publicar en este dispositivo",
+    "discard": "Descartar cambios",
+    "draftDiscarded": "Borrador descartado",
+    "offline": "Modo sin conexión",
+    "offlineNotYet": "Guardando todavía…",
+    "clearCache": "Borrar caché",
+    "cacheCleared": "Caché borrada, recargando",
+    "version": "Versión",
+    "dataSource": "Datos",
+    "updated": "Actualizado",
+    "encryption": "Cifrado",
+    "source": {
+      "published": "desde la web",
+      "demo": "demo",
+      "file": "desde un archivo",
+      "new": "proyecto nuevo"
+    }
+  },
+  "editor": {
+    "title": "Editor",
+    "subtitle": "Los cambios se guardan como borrador en este dispositivo. Cuando termines, guarda un archivo o publica.",
+    "draftBadge": "Borrador",
+    "translations": "Traducciones",
+    "auto": "auto",
+    "refIssues": "referencias rotas",
+    "tab": {
+      "general": "General",
+      "panel": "Cuadro",
+      "plan": "Plano",
+      "media": "Fotos y documentos",
+      "maintenance": "Mantenimiento",
+      "publish": "Guardar y publicar"
+    },
+    "general": {
+      "title": "Nombre",
+      "location": "Dónde está el cuadro",
+      "locationHint": "Para encontrarlo a oscuras: «recibidor, detrás del espejo»",
+      "enclosure": "Envolvente",
+      "address": "Dirección",
+      "addressHint": "Opcional. Solo se guarda cifrada.",
+      "publicUrl": "Dirección web",
+      "publicUrlHint": "Dónde está publicada la app. Necesaria para los códigos QR.",
+      "supply": "Suministro",
+      "phases": "Fases",
+      "voltage": "Tensión",
+      "maxPower": "Potencia contratada",
+      "input": "Dispositivo general",
+      "role": "Quién",
+      "name": "Nombre",
+      "phone": "Teléfono",
+      "contactNote": "Comentario"
+    },
+    "panel": {
+      "palette": "Añadir a la fila {row}",
+      "used": "{used} de {total} módulos",
+      "mod": "mód.",
+      "blank": "hueco",
+      "narrower": "Más estrecho",
+      "wider": "Más ancho",
+      "addRow": "Añadir fila",
+      "unplaced": "Sin colocar en el cuadro",
+      "pick": "Elige un dispositivo del cuadro o añade uno nuevo desde la paleta.",
+      "left": "Mover a la izquierda",
+      "right": "Mover a la derecha",
+      "rowUp": "Fila de arriba",
+      "rowDown": "Fila de abajo",
+      "blankBefore": "Hueco delante",
+      "place": "Colocar",
+      "id": "Referencia",
+      "idHint": "Como en el esquema: QF1, QD2…",
+      "idTaken": "Esa referencia ya existe",
+      "type": "Tipo",
+      "label": "Etiqueta",
+      "labelHint": "Que lo entienda cualquiera: «Cocina — enchufes de la encimera»",
+      "curve": "Curva",
+      "width": "Ancho, mód.",
+      "widthHint": "Vacío: según el tipo",
+      "selective": "Selectivo (S)",
+      "upstream": "Alimentado desde",
+      "upstreamHint": "El dispositivo que tiene por encima en la cadena",
+      "noUpstream": "— acometida —",
+      "circuit": "Circuito",
+      "brand": "Fabricante",
+      "model": "Modelo",
+      "tags": "Etiquetas",
+      "tagsHint": "Separadas por comas: cocina, enchufes"
+    },
+    "smart": {
+      "title": "Bus domótico",
+      "system": "Sistema",
+      "address": "Dirección física",
+      "addressHint": "En KNX: área.línea.dispositivo",
+      "addChannel": "Añadir canal",
+      "channelsHint": "Canal, función, dirección de grupo y los puntos del plano que controla.",
+      "noPoints": "No hay puntos adecuados. Añádelos primero al plano."
+    },
+    "plan": {
+      "mode": {
+        "select": "Seleccionar",
+        "room": "Estancia",
+        "point": "Punto",
+        "route": "Cable",
+        "photo": "Foto"
+      },
+      "hint": {
+        "select": "Toca un punto, una estancia o una foto para editarlo. Arrastra los tiradores para moverlo. Rueda o pellizco para hacer zoom.",
+        "room": "Coloca las esquinas de la estancia una a una. Toca la primera esquina o «Listo» para cerrarla.",
+        "point": "Elige un tipo y un automático y luego toca el plano para colocar puntos.",
+        "route": "Traza el recorrido del cable punto a punto y toca «Listo». A su alrededor aparecerá una zona sin taladrar.",
+        "photo": "Toca el lugar donde se hizo la foto y elige la imagen."
+      },
+      "noDevice": "Sin automático",
+      "finish": "Listo",
+      "background": "Fondo",
+      "bgLoaded": "Fondo cargado",
+      "bgFailed": "No se ha podido cargar el fondo",
+      "width": "Ancho del plano",
+      "height": "Alto del plano",
+      "grid": "Paso de la cuadrícula",
+      "opacity": "Opacidad del fondo",
+      "kind": "Tipo",
+      "label": "Etiqueta",
+      "device": "Automático",
+      "room": "Estancia",
+      "power": "Potencia",
+      "count": "Cantidad",
+      "heightMm": "Altura",
+      "profile": "Perfil del aparato",
+      "profileHint": "Se usa para estimar la carga y comprobar el tipo de diferencial",
+      "controls": "Direcciones de grupo",
+      "controlsHint": "Separadas por comas: 1/1/1, 3/1/1",
+      "roomN": "Estancia {n}",
+      "roomName": "Nombre de la estancia",
+      "wet": "Zona húmeda (baño, aseo)",
+      "roomHint": "Arrastra los tiradores de las esquinas para ajustar la forma.",
+      "routeKind": "Tipo de cable",
+      "routeKinds": {
+        "power": "Potencia",
+        "bus": "Bus domótico",
+        "low": "Baja tensión"
+      },
+      "routeNote": "Por dónde va",
+      "safeWidth": "Zona sin taladrar",
+      "caption": "Pie de foto",
+      "replace": "Reemplazar",
+      "summary": "En el plano",
+      "rooms": "Estancias",
+      "routes": "Recorridos"
+    },
+    "media": {
+      "photosHint": "Fotografía las paredes antes de enlucir: con los años será el mejor mapa de la instalación que tendrás.",
+      "addPhotos": "Añadir fotos",
+      "added": "Fotos añadidas: {n}",
+      "notOnPlan": "Sin marcar en el plano (pestaña Plano → Foto)",
+      "addDoc": "Subir documento",
+      "addLink": "Enlace",
+      "tooBig": "El archivo ocupa más de {mb} MB",
+      "docTitle": "Título",
+      "docKind": "Tipo",
+      "link": "Enlace"
+    },
+    "maintenance": {
+      "tasks": "Programa",
+      "title": "Tarea",
+      "interval": "Intervalo",
+      "howTo": "Cómo hacerlo",
+      "devices": "Dispositivos"
+    },
+    "publish": {
+      "status": "Estado",
+      "draftLocal": "Borrador guardado en este dispositivo",
+      "noChanges": "Sin cambios",
+      "savedAt": "guardado automáticamente a las {time}",
+      "refIssues": "Hay referencias rotas; corrígelas antes de publicar",
+      "checkErrors": "La revisión ha encontrado errores: {n}. Puedes publicar, pero échales un vistazo antes.",
+      "fileTitle": "Archivo",
+      "fileHint": "Un archivo .panel cifrado. Envíaselo al propietario o al electricista; se abre en la app web y en la app de escritorio.",
+      "save": "Guardar",
+      "saveAs": "Guardar como…",
+      "saved": "Archivo guardado",
+      "downloadPanel": "Descargar .panel",
+      "import": "Importar archivo",
+      "importPassword": "Contraseña del archivo",
+      "imported": "Archivo cargado en el borrador",
+      "plain": "Exportar sin cifrar",
+      "plainWarn": "Un archivo sin cifrar contiene el plano del piso y el recorrido de los cables. No lo publiques.",
+      "siteTitle": "Publicar en la web",
+      "siteHint": "Envía el archivo cifrado al repositorio de GitHub; la web se actualiza en un par de minutos.",
+      "owner": "Propietario",
+      "repo": "Repositorio",
+      "branch": "Rama",
+      "path": "Ruta del archivo",
+      "token": "Token de GitHub",
+      "tokenHint": "Un token fine-grained con permiso Contents: Read and write solo para este repositorio.",
+      "rememberToken": "Recordar el token en este dispositivo",
+      "publish": "Publicar",
+      "published": "Publicado",
+      "publishedHint": "La web se actualizará cuando termine GitHub Actions.",
+      "commit": "Commit",
+      "failed": "No se ha podido publicar",
+      "badToken": "El token no es válido o no tiene permiso de escritura",
+      "notFound": "No se ha encontrado el repositorio o la rama",
+      "manual": "También puedes hacerlo a mano: descarga panel.enc.json y reemplaza public/app/panel.enc.json en el repositorio.",
+      "passwordTitle": "Contraseña",
+      "changePassword": "Cambiar contraseña",
+      "passwordChanged": "Contraseña cambiada",
+      "passwordChangedHint": "Guarda o publica los datos y vuelve a imprimir el código QR.",
+      "passwordHint": "La nueva contraseña se aplicará al guardar o publicar la próxima vez. Los QR antiguos dejarán de funcionar."
+    }
+  },
+  "landing": {
+    "nav": {
+      "features": "Funciones",
+      "how": "Cómo funciona",
+      "privacy": "Privacidad",
+      "diy": "Hazte el tuyo"
+    },
+    "cta": {
+      "demo": "Abrir la demo",
+      "smart": "Demo de KNX",
+      "download": "Descargar el editor",
+      "open": "Abrir la app",
+      "source": "Código fuente"
+    },
+    "hero": {
+      "badge": "Un código QR dentro del cuadro",
+      "title": "Un cuadro eléctrico que se explica solo",
+      "subtitle": "Pega un código QR en la puerta del cuadro. Quien lo escanee verá qué automático corta qué, por dónde van los cables en las paredes y qué hacer cuando salta algo. Funciona sin conexión y los datos van cifrados.",
+      "tap": "Prueba a bajar algún automático",
+      "live": "Puntos sin corriente en el plano: {n}"
+    },
+    "how": {
+      "title": "Cómo funciona",
+      "describe": {
+        "title": "El electricista describe el cuadro",
+        "body": "En el editor: filas, magnetotérmicos, diferenciales, el plano, los enchufes, el recorrido de los cables y fotos de las paredes antes de enlucir. En el navegador o en la app de escritorio."
+      },
+      "encrypt": {
+        "title": "Los datos se cifran con una contraseña",
+        "body": "El resultado es un único archivo .panel. Envíaselo al propietario o publícalo en GitHub Pages con un botón."
+      },
+      "stick": {
+        "title": "Un código QR en la puerta del cuadro",
+        "body": "La contraseña va incluida en el QR. Lo escaneas y la web se abre incluso sin conexión, porque el móvil guarda una copia."
+      }
+    },
+    "features": {
+      "title": "Todo sobre tu cuadro en el móvil",
+      "subtitle": "Desde «qué automático bajo para cambiar un enchufe» hasta comprobar la sección de los cables.",
+      "panel": {
+        "title": "Un cuadro realista",
+        "body": "Cada automático se ve como el de verdad: calibre, curva, sensibilidad. Tócalo para ver qué alimenta y cuánta carga tiene."
+      },
+      "find": {
+        "title": "¿Qué desconecto?",
+        "body": "Elige un enchufe o el termo y obtén la respuesta: «fila 2, el quinto desde la izquierda», resaltado en el cuadro."
+      },
+      "emergency": {
+        "title": "Ha saltado algo",
+        "body": "Una guía paso a paso para toda la casa: qué puede haber pasado, qué hacer y cuándo llamar a un electricista."
+      },
+      "plan": {
+        "title": "Plano y zonas sin taladrar",
+        "body": "Enchufes y luces en el plano, recorridos de cables con las zonas donde no se debe taladrar y fotos de las paredes antes de la reforma."
+      },
+      "checks": {
+        "title": "Revisión técnica",
+        "body": "Sección del cable frente al automático, selectividad, diferenciales en zonas húmedas, tipo de diferencial para aparatos inverter, carga por circuito."
+      },
+      "schema": {
+        "title": "Esquema unifilar",
+        "body": "Se genera automáticamente, con el flujo de corriente animado y simulación de cortes."
+      },
+      "smart": {
+        "title": "Domótica y KNX",
+        "body": "Actuadores, direcciones de grupo y paneles en las estancias. Se ve qué controla qué, y que un relé domótico no sustituye a un automático."
+      },
+      "labels": {
+        "title": "Etiquetas y QR",
+        "body": "Etiquetas a escala real para los automáticos y un código QR para cada dispositivo."
+      },
+      "offline": {
+        "title": "Funciona sin luz",
+        "body": "Cuando salta el interruptor general, el router también se apaga. La web se abre desde la memoria del móvil."
+      }
+    },
+    "privacy": {
+      "title": "Tu plano sigue siendo tuyo",
+      "p1": "Los datos se cifran con AES-256-GCM directamente en el navegador, con una clave derivada de la contraseña mediante PBKDF2.",
+      "p2": "El alojamiento solo guarda un archivo cifrado. No hay servidor ni base de datos.",
+      "p3": "La contraseña del QR va después del signo #, así que el navegador nunca la envía al servidor.",
+      "p4": "Las fotos y los documentos se cifran junto con todo lo demás.",
+      "scan": "Este QR abre el piso de demostración"
+    },
+    "diy": {
+      "title": "Hazte el tuyo",
+      "subtitle": "Gratis: GitHub Pages y media hora. Tu electricista puede rellenar el cuadro en el navegador o en la app de escritorio.",
+      "steps": [
+        "Haz un fork del repositorio y activa GitHub Pages (Settings → Pages → GitHub Actions).",
+        "Abre la app, elige «Crear un cuadro nuevo» y pon una contraseña. O abre el archivo .panel de tu electricista.",
+        "Rellena el cuadro y el plano. Indica la dirección web en la pestaña General; los códigos QR la necesitan.",
+        "Pulsa «Publicar» con un token de GitHub o reemplaza public/app/panel.enc.json a mano.",
+        "Imprime las etiquetas en «Etiquetas y QR» y pega el QR en la puerta del cuadro.",
+        "Listo. Pulsa TEST en los diferenciales una vez al mes; la app te lo recordará."
+      ]
+    },
+    "footer": "No sustituye a un proyecto ni a un electricista. Hecho para vivir tranquilo después de la reforma."
+  }
+}

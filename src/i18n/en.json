@@ -49,7 +49,8 @@
       "plan": "Plan",
       "find": "Find",
       "emergency": "Tripped"
-    }
+    },
+    "network": "Networks & conduits"
   },
   "banner": {
     "demo": "This is a demo apartment. The data is made up and nothing you change is saved anywhere.",
@@ -173,7 +174,8 @@
       "network": "Low voltage",
       "panel": "Control panel",
       "sensor": "Sensor",
-      "other": "Point"
+      "other": "Point",
+      "data": "Data outlet"
     },
     "kinds": {
       "socket": "Sockets",
@@ -186,7 +188,8 @@
       "network": "Low voltage",
       "panel": "Control panels",
       "sensor": "Sensors",
-      "other": "Other"
+      "other": "Other",
+      "data": "Data outlets"
     },
     "profile": {
       "generic": "Generic appliance",
@@ -239,7 +242,9 @@
       "bus": "Smart-home bus",
       "photos": "Wall photos",
       "labels": "Breaker labels",
-      "background": "Plan underlay"
+      "background": "Plan underlay",
+      "lowvoltage": "Low voltage & conduits",
+      "dimensions": "Dimensions"
     },
     "zoomIn": "Zoom in",
     "zoomOut": "Zoom out",
@@ -767,7 +772,8 @@
       "routeKinds": {
         "power": "Power",
         "bus": "Smart-home bus",
-        "low": "Low voltage"
+        "low": "Low voltage",
+        "conduit": "Conduit"
       },
       "routeNote": "How it runs",
       "safeWidth": "No-drill zone",
@@ -775,7 +781,20 @@
       "replace": "Replace",
       "summary": "On the plan",
       "rooms": "Rooms",
-      "routes": "Routes"
+      "routes": "Routes",
+      "addCable": "Add cable",
+      "cableLabel": "Tag, e.g. “port 3”",
+      "cables": "Cables inside",
+      "ceiling": "Ceiling height",
+      "ceilingHint": "Empty: same as the whole apartment ({cm} cm)",
+      "diameter": "Conduit diameter",
+      "elevation": "Height above the floor",
+      "elevationHint": "E.g. 30 cm at socket level or 90 cm at switch level",
+      "from": "From",
+      "to": "To",
+      "mount": "Runs",
+      "pullString": "Has a draw wire",
+      "wallHeight": "Ceiling height"
     },
     "media": {
       "photosHint": "Photograph walls before plastering: years later it's the best wiring map you'll have.",
@@ -837,5 +856,135 @@
       "passwordChangedHint": "Save or publish the data, then reprint the QR code.",
       "passwordHint": "The new password applies on the next save or publish. Old QR codes will stop working."
     }
+  },
+  "landing": {
+    "nav": {
+      "features": "Features",
+      "how": "How it works",
+      "privacy": "Privacy",
+      "diy": "Make your own"
+    },
+    "cta": {
+      "demo": "Open the demo",
+      "smart": "KNX demo",
+      "download": "Download the editor",
+      "open": "Open the app",
+      "source": "Source code"
+    },
+    "hero": {
+      "badge": "A QR code inside the panel",
+      "title": "An electrical panel that explains itself",
+      "subtitle": "Stick a QR code on the panel door. Anyone who scans it sees which breaker cuts what, where the cables run in the walls and what to do when something trips. Works offline, data is encrypted.",
+      "tap": "Flip some breakers",
+      "live": "Points without power on the plan: {n}"
+    },
+    "how": {
+      "title": "How it works",
+      "describe": {
+        "title": "The electrician describes the panel",
+        "body": "In the editor: rows, breakers, RCDs, the floor plan, sockets, cable routes and photos of the walls before plastering. In the browser or in the desktop app."
+      },
+      "encrypt": {
+        "title": "The data is encrypted with a password",
+        "body": "The result is a single .panel file. Send it to the owner or publish it to GitHub Pages with one button."
+      },
+      "stick": {
+        "title": "A QR code on the panel door",
+        "body": "The password is built into the QR. Scan it and the site opens even offline, because the phone keeps a copy."
+      }
+    },
+    "features": {
+      "title": "Everything about your panel on your phone",
+      "subtitle": "From “which breaker do I switch off to replace a socket” to checking cable sizes.",
+      "panel": {
+        "title": "A realistic panel",
+        "body": "Every breaker looks like the real one: rating, curve, residual current. Tap it to see what it supplies and how loaded it is."
+      },
+      "find": {
+        "title": "What to switch off?",
+        "body": "Pick a socket or the water heater and get the answer: “row 2, fifth from the left”, highlighted on the panel."
+      },
+      "emergency": {
+        "title": "Something tripped",
+        "body": "A step-by-step guide for the whole household: what may have happened, what to do and when to call an electrician."
+      },
+      "plan": {
+        "title": "Plan and no-drill zones",
+        "body": "Sockets and lights on the floor plan, cable routes with zones where you must not drill, and photos of the walls before renovation."
+      },
+      "checks": {
+        "title": "Engineering checks",
+        "body": "Cable size vs breaker, selectivity, RCDs in wet zones, RCD type for inverter appliances, load per circuit."
+      },
+      "schema": {
+        "title": "Single-line diagram",
+        "body": "Built automatically, with flowing current and outage simulation."
+      },
+      "smart": {
+        "title": "Smart home and KNX",
+        "body": "Actuators, group addresses and room panels. See what controls what, and that a smart relay is no substitute for a breaker."
+      },
+      "labels": {
+        "title": "Labels and QR",
+        "body": "True-to-scale breaker labels and a QR code for every device."
+      },
+      "offline": {
+        "title": "Works without power",
+        "body": "When the main breaker trips, the router is off too. The site opens from the phone's storage."
+      }
+    },
+    "privacy": {
+      "title": "Your floor plan stays yours",
+      "p1": "Data is encrypted with AES-256-GCM right in the browser, with the key derived from the password via PBKDF2.",
+      "p2": "The host only stores an encrypted file. There is no server and no database.",
+      "p3": "The password in the QR travels after the # sign, so the browser never sends it to the server.",
+      "p4": "Photos and documents are encrypted together with everything else.",
+      "scan": "This QR opens the demo apartment"
+    },
+    "diy": {
+      "title": "Make your own",
+      "subtitle": "Free: GitHub Pages and half an hour. Your electrician can fill in the panel in the browser or in the desktop app.",
+      "steps": [
+        "Fork the repository and enable GitHub Pages (Settings → Pages → GitHub Actions).",
+        "Open the app, choose “Create a new panel” and set a password. Or open the .panel file from your electrician.",
+        "Fill in the panel and the plan. Set the site address on the General tab; QR codes need it.",
+        "Press “Publish” with a GitHub token, or replace public/app/panel.enc.json by hand.",
+        "Print the labels in “Labels & QR” and stick the QR on the panel door.",
+        "Done. Press TEST on the RCDs once a month; the app will remind you."
+      ]
+    },
+    "footer": "Not a substitute for a design or an electrician. Made for a calm life after renovation."
+  },
+  "network": {
+    "title": "Networks & conduits",
+    "subtitle": "Ethernet, HDMI, antenna and empty conduits: where every cable starts and ends.",
+    "empty": "No low-voltage runs or conduits yet. Add them on the plan in the editor: Cable → Low voltage or Conduit.",
+    "all": "All",
+    "pull": "draw wire",
+    "conduitHint": "Conduits with a draw wire: {n} of {total}. You can pull another cable through them without chasing the wall."
+  },
+  "route": {
+    "inside": "Inside: {n}",
+    "empty": "Empty",
+    "pullYes": "Has a draw wire: another cable can be pulled through.",
+    "pullNo": "No draw wire: pulling a new cable will be hard.",
+    "nodrill": "Don't drill closer than {cm} cm to the route.",
+    "mount": {
+      "floor": "in the floor screed",
+      "wall": "in the wall",
+      "ceiling": "along the ceiling",
+      "wallAt": "in the wall, {cm} cm above the floor"
+    }
+  },
+  "cable": {
+    "ethernet": "Ethernet",
+    "hdmi": "HDMI",
+    "coax": "Antenna (coax)",
+    "usb": "USB",
+    "speaker": "Speaker",
+    "fiber": "Fibre",
+    "phone": "Phone",
+    "alarm": "Alarm",
+    "other": "Other cable"
   }
 }

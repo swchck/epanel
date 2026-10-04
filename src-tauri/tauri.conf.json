@@ -1,0 +1,44 @@
+{
+  "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
+  "productName": "Panel Editor",
+  "version": "1.0.0",
+  "identifier": "dev.panelmap.editor",
+  "build": {
+    "frontendDist": "../dist-desktop",
+    "devUrl": "http://localhost:5181",
+    "beforeDevCommand": "npm run dev:desktop",
+    "beforeBuildCommand": "npm run build:desktop"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "Panel Editor",
+        "width": 1320,
+        "height": 860,
+        "minWidth": 960,
+        "minHeight": 640,
+        "resizable": true
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self' blob:; connect-src 'self' ipc: http://ipc.localhost https://api.github.com"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "category": "Utility",
+    "shortDescription": "Electrical panel map editor",
+    "fileAssociations": [
+      {
+        "ext": ["panel"],
+        "name": "Electrical panel",
+        "description": "Encrypted electrical panel map",
+        "role": "Editor",
+        "mimeType": "application/x-panel+json"
+      }
+    ],
+    "icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.icns", "icons/icon.ico"]
+  }
+}

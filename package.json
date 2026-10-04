@@ -12,7 +12,13 @@
     "typecheck": "vue-tsc -b",
     "validate": "tsx scripts/validate.ts",
     "seed": "tsx scripts/seed.ts",
-    "seed:demo": "tsx scripts/make-smart-demo.ts && PANEL_PASSWORD=demo tsx scripts/seed.ts data/demo.yaml public/app/demo.panel && PANEL_PASSWORD=demo tsx scripts/seed.ts data/demo-smart.yaml public/app/demo-smart.panel"
+    "seed:demo": "tsx scripts/make-smart-demo.ts && PANEL_PASSWORD=demo tsx scripts/seed.ts data/demo.yaml public/app/demo.panel && PANEL_PASSWORD=demo tsx scripts/seed.ts data/demo-smart.yaml public/app/demo-smart.panel",
+    "dev:desktop": "VITE_TARGET=desktop vite --port 5181",
+    "build:desktop": "VITE_TARGET=desktop vite build",
+    "tauri": "tauri",
+    "desktop": "tauri dev",
+    "desktop:build": "tauri build",
+    "i18n:check": "node scripts/i18n-keys.mjs ru && node scripts/i18n-keys.mjs en && node scripts/i18n-keys.mjs sr && node scripts/i18n-keys.mjs es"
   },
   "dependencies": {
     "@fontsource/ibm-plex-mono": "^5.3.0",
@@ -20,7 +26,6 @@
     "@lucide/vue": "^1.51.0",
     "@tauri-apps/api": "^2.12.1",
     "@tauri-apps/plugin-dialog": "^2.8.1",
-    "@tauri-apps/plugin-fs": "^2.6.0",
     "@vueuse/core": "^15.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -32,6 +37,7 @@
     "qrcode": "^1.5.4",
     "reka-ui": "^2.10.5",
     "tailwind-merge": "^3.7.0",
+    "three": "^0.186.1",
     "vaul-vue": "^0.4.1",
     "vue": "^3.5.43",
     "vue-i18n": "^11.4.13",
@@ -46,6 +52,7 @@
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^26.6.4",
     "@types/qrcode": "^1.5.6",
+    "@types/three": "^0.186.0",
     "@vite-pwa/assets-generator": "^2.0.0",
     "@vitejs/plugin-vue": "^6.0.9",
     "@vue/test-utils": "^2.5.1",

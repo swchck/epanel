@@ -117,6 +117,8 @@ export const Room = z.object({
   wet: z.boolean().default(false),
   polygon: z.array(Point2).default([]),
   color: z.string().optional(),
+  // centimetres; overrides plan.wallHeight for rooms with a dropped ceiling
+  ceilingCm: z.number().positive().optional(),
 })
 export type Room = z.infer<typeof Room>
 
@@ -129,6 +131,7 @@ export const POINT_KINDS = [
   'ac',
   'junction',
   'network',
+  'data',
   'panel',
   'sensor',
   'other',
@@ -169,12 +172,37 @@ export const PlanPoint = z.object({
 })
 export type PlanPoint = z.infer<typeof PlanPoint>
 
+export const ROUTE_KINDS = ['power', 'bus', 'low', 'conduit'] as const
+export type RouteKind = (typeof ROUTE_KINDS)[number]
+export const CABLE_TYPES = ['ethernet', 'hdmi', 'coax', 'usb', 'speaker', 'fiber', 'phone', 'alarm', 'other'] as const
+export type CableType = (typeof CABLE_TYPES)[number]
+
+export const Cable = z.object({
+  type: z.enum(CABLE_TYPES),
+  // what tells this cable apart at both ends, e.g. "router port 3" or "patch panel 12"
+  label: z.string().optional(),
+  count: z.number().int().positive().default(1),
+})
+export type Cable = z.infer<typeof Cable>
+
 export const Route = z.object({
   id: z.string(),
   device: z.string().optional(),
   points: z.array(Point2).min(2),
   note: LocalizedText.optional(),
-  kind: z.enum(['power', 'bus', 'low']).default('power'),
+  // power and bus runs belong to a device; low-voltage runs and conduits carry `cables` instead
+  kind: z.enum(ROUTE_KINDS).default('power'),
+  cables: z.array(Cable).default([]),
+  from: LocalizedText.optional(),
+  to: LocalizedText.optional(),
+  // conduit inner diameter, millimetres
+  diameterMm: z.number().positive().optional(),
+  // a draw wire left inside, so another cable can be pulled later
+  pullString: z.boolean().optional(),
+  // floor: in the screed; ceiling: just under the ceiling, whatever its height; wall: at `elevation`
+  mount: z.enum(['floor', 'wall', 'ceiling']).optional(),
+  // height of a wall run above the finished floor, centimetres
+  elevation: z.number().nonnegative().optional(),
   // the strip around the route that must not be drilled, in plan units
   safeWidth: z.number().positive().default(15),
 })
@@ -232,6 +260,8 @@ export const Plan = z.object({
   background: z.string().optional(),
   backgroundOpacity: z.number().min(0).max(1).default(0.6),
   grid: z.number().positive().default(50),
+  // centimetres, used by the 3D view
+  wallHeight: z.number().positive().default(270),
 })
 export type Plan = z.infer<typeof Plan>
 
@@ -256,7 +286,7 @@ export const PanelData = z.object({
   rows: z.array(Row).default([]),
   devices: z.array(Device).default([]),
   rooms: z.array(Room).default([]),
-  plan: Plan.default({ width: 1200, height: 800, backgroundOpacity: 0.6, grid: 50 }),
+  plan: Plan.default({ width: 1200, height: 800, backgroundOpacity: 0.6, grid: 50, wallHeight: 270 }),
   points: z.array(PlanPoint).default([]),
   routes: z.array(Route).default([]),
   photos: z.array(Photo).default([]),
@@ -346,4 +376,14 @@ export function referenceIssues(d: PanelData): ValidationIssue[] {
     if (p.room && !roomIds.has(p.room)) issues.push({ path: `points.${i}.room`, message: `unknown room ${p.room}` })
   })
   return issues
+}
+
+export const MOUNT_DEFAULT: Record<Route['kind'], 'floor' | 'wall' | 'ceiling'> = { power: 'wall', bus: 'wall', low: 'floor', conduit: 'floor' }
+
+// centimetres above the floor where a run actually sits
+export function routeHeight(r: Route, ceilingCm: number): number {
+  const mount = r.mount ?? (r.elevation !== undefined ? 'wall' : MOUNT_DEFAULT[r.kind])
+  if (mount === 'floor') return 4
+  if (mount === 'ceiling') return Math.max(0, ceilingCm - 6)
+  return r.elevation ?? 30
 }

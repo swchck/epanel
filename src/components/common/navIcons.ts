@@ -1,6 +1,7 @@
 import {
   CalendarCheck,
   ClipboardCheck,
+  EthernetPort,
   Images,
   Map,
   Network,
@@ -23,6 +24,7 @@ export const NAV_ICONS: Record<NavName, Component> = {
   schema: Waypoints,
   checks: ClipboardCheck,
   smart: Network,
+  network: EthernetPort,
   maintenance: CalendarCheck,
   photos: Images,
   labels: Tags,

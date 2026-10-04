@@ -85,7 +85,7 @@ d.points.push(
   { id: 'bt-leak', kind: 'sensor', room: 'bathroom', x: 90, y: 730, device: 'KI1', label: { ru: 'Датчик протечки под стиральной машиной', en: 'Leak sensor under the washer' }, controls: ['0/0/1'] },
 )
 
-const bus = (id: string, points: number[][], note: Any) => ({ id, kind: 'bus', points, note, safeWidth: 10 })
+const bus = (id: string, points: number[][], note: Any) => ({ id, kind: 'bus', points, note, safeWidth: 10, mount: 'ceiling' })
 d.routes.push(
   bus('bus-1', [[325, 740], [325, 600], [360, 600]], { ru: 'KNX TP, зелёный кабель J-Y(St)Y 2×2×0.8', en: 'KNX TP, green J-Y(St)Y 2×2×0.8' }),
   bus('bus-2', [[360, 600], [360, 430]], { ru: 'KNX TP до панели гостиной', en: 'KNX TP to the living room panel' }),

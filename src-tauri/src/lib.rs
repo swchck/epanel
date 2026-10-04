@@ -1,0 +1,88 @@
+use std::path::{Path, PathBuf};
+use std::sync::Mutex;
+
+use serde::Serialize;
+use tauri::{Emitter, Manager, State};
+
+#[derive(Serialize, Clone)]
+struct OpenedFile {
+    name: String,
+    path: String,
+    text: String,
+}
+
+// a .panel file passed on the command line (Windows/Linux) or via an Apple Event (macOS)
+// before the webview was ready to listen for it
+#[derive(Default)]
+struct PendingOpen(Mutex<Option<PathBuf>>);
+
+fn load(path: &Path) -> Result<OpenedFile, String> {
+    let text = std::fs::read_to_string(path).map_err(|e| e.to_string())?;
+    Ok(OpenedFile {
+        name: path
+            .file_name()
+            .map(|n| n.to_string_lossy().into_owned())
+            .unwrap_or_default(),
+        path: path.to_string_lossy().into_owned(),
+        text,
+    })
+}
+
+#[tauri::command]
+fn read_text(path: String) -> Result<OpenedFile, String> {
+    load(Path::new(&path))
+}
+
+#[tauri::command]
+fn write_text(path: String, text: String) -> Result<(), String> {
+    // write next to the target and rename, so a crash mid-save never leaves a truncated file
+    let target = PathBuf::from(&path);
+    let tmp = target.with_extension("tmp-save");
+    std::fs::write(&tmp, text).map_err(|e| e.to_string())?;
+    std::fs::rename(&tmp, &target).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+fn take_opened_file(pending: State<'_, PendingOpen>) -> Option<OpenedFile> {
+    let path = pending.0.lock().ok()?.take()?;
+    load(&path).ok()
+}
+
+fn panel_arg() -> Option<PathBuf> {
+    std::env::args_os()
+        .skip(1)
+        .map(PathBuf::from)
+        .find(|p| p.extension().is_some_and(|e| e == "panel") && p.is_file())
+}
+
+#[cfg_attr(mobile, tauri::mobile_entry_point)]
+pub fn run() {
+    let app = tauri::Builder::default()
+        .plugin(tauri_plugin_dialog::init())
+        .manage(PendingOpen(Mutex::new(panel_arg())))
+        .invoke_handler(tauri::generate_handler![read_text, write_text, take_opened_file])
+        .build(tauri::generate_context!())
+        .expect("error while building the panel editor");
+
+    app.run(|handle, event| {
+        #[cfg(any(target_os = "macos", target_os = "ios"))]
+        if let tauri::RunEvent::Opened { urls } = &event {
+            let Some(path) = urls.iter().find_map(|u| u.to_file_path().ok()) else {
+                return;
+            };
+            match load(&path) {
+                Ok(file) if handle.get_webview_window("main").is_some() => {
+                    let _ = handle.emit("open-file", file);
+                }
+                _ => {
+                    if let Some(pending) = handle.try_state::<PendingOpen>() {
+                        if let Ok(mut slot) = pending.0.lock() {
+                            *slot = Some(path);
+                        }
+                    }
+                }
+            }
+        }
+        let _ = (handle, event);
+    });
+}

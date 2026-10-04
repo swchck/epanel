@@ -74,6 +74,8 @@ export const useData = defineStore('data', () => {
   const password = ref<string | null>(null)
   const file = ref<{ name: string; path?: string } | null>(null)
   const draftSavedAt = ref<number>()
+  // an encrypted file opened from the OS that still needs its password
+  const pendingFile = ref<{ name: string; path?: string; text: string } | null>(null)
 
   const active = computed<Bundle | null>(() => (draft.value as Bundle | null) ?? published.value)
   const data = computed<PanelData | null>(() => active.value?.data ?? null)
@@ -109,14 +111,14 @@ export const useData = defineStore('data', () => {
     }
   }
 
-  async function init(opts: { key?: string; demo?: boolean | string } = {}) {
+  async function init(opts: { key?: string; demo?: boolean | string; prefix?: string } = {}) {
     status.value = 'loading'
     error.value = undefined
     try {
       if (opts.demo) {
         source.value = 'demo'
         const file = opts.demo === 'smart' ? 'demo-smart.panel' : 'demo.panel'
-        envelope.value = await fetchEnvelope(file)
+        envelope.value = await fetchEnvelope((opts.prefix ?? '') + file)
         if (!envelope.value) throw new Error(`${file} not found`)
         await unlock(DEMO_PASSWORD, false)
         return
@@ -284,6 +286,7 @@ export const useData = defineStore('data', () => {
     password,
     file,
     draftSavedAt,
+    pendingFile,
     active,
     data,
     assets,

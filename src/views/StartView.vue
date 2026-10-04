@@ -24,6 +24,12 @@ const pending = ref<OpenedText | null>(null)
 const busy = ref(false)
 const err = ref('')
 
+if (data.pendingFile) {
+  pending.value = data.pendingFile
+  mode.value = 'password'
+  data.pendingFile = null
+}
+
 async function open() {
   const f = await openTextFile(['panel', 'json', 'yaml', 'yml'])
   if (!f) return

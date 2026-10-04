@@ -25,14 +25,15 @@ const moreOpen = ref(false)
 
 const GROUPS: { key: string; items: NavName[] }[] = [
   { key: 'main', items: ['panel', 'plan', 'find', 'emergency'] },
-  { key: 'engineering', items: ['schema', 'checks', 'smart'] },
+  { key: 'engineering', items: ['schema', 'checks', 'smart', 'network'] },
   { key: 'service', items: ['maintenance', 'photos', 'labels'] },
   { key: 'manage', items: ['edit', 'settings'] },
 ]
 const MOBILE: NavName[] = ['panel', 'plan', 'find', 'emergency']
 const pathOf = (n: NavName) => NAV.find((x) => x.name === n)!.path
 const hasSmart = computed(() => !!data.data && (data.data.devices.some((d) => d.smart) || data.data.points.some((p) => p.kind === 'panel')))
-const visible = (n: NavName) => n !== 'smart' || hasSmart.value
+const hasNetwork = computed(() => !!data.data?.routes.some((r) => r.kind === 'low' || r.kind === 'conduit'))
+const visible = (n: NavName) => (n === 'smart' ? hasSmart.value : n === 'network' ? hasNetwork.value : true)
 
 const current = computed<NavName>(() => {
   const n = route.name as string

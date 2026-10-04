@@ -11,7 +11,7 @@ import { POINT_COLORS, POINT_ICONS } from '@/components/common/kinds'
 import FloorPlan from '@/components/plan/FloorPlan.vue'
 import { ASSET_PREFIX } from '@/domain/bundle'
 import { pointInPolygon, snap as snapTo } from '@/domain/geometry'
-import { APPLIANCE_PROFILES, POINT_KINDS, type Point2, type PointKind } from '@/domain/schema'
+import { APPLIANCE_PROFILES, CABLE_TYPES, MOUNT_DEFAULT, POINT_KINDS, ROUTE_KINDS, type Point2, type PointKind, type RouteKind } from '@/domain/schema'
 import { uniqueId } from '@/editor/ops'
 import { compressImage, newId, planImageFrom } from '@/lib/media'
 import { useDraft } from '@/composables/useDraft'
@@ -33,6 +33,7 @@ const pending = ref<Point2[]>([])
 const cursor = ref<Point2 | null>(null)
 const newKind = ref<PointKind>('socket')
 const newDevice = ref<string>('__')
+const newRouteKind = ref<RouteKind>('power')
 const busy = ref(false)
 const plan = ref<InstanceType<typeof FloorPlan> | null>(null)
 
@@ -115,7 +116,14 @@ function finish() {
       d.value.routes.map((r) => r.id),
       'rt-',
     )
-    d.value.routes.push({ id, points: pending.value, device: newDevice.value === '__' ? undefined : newDevice.value, safeWidth: 15, kind: 'power' })
+    d.value.routes.push({
+      id,
+      points: pending.value,
+      device: newRouteKind.value === 'power' || newRouteKind.value === 'bus' ? (newDevice.value === '__' ? undefined : newDevice.value) : undefined,
+      safeWidth: 15,
+      kind: newRouteKind.value,
+      cables: newRouteKind.value === 'low' ? [{ type: 'ethernet', count: 1 }] : [],
+    })
     sel.value = { kind: 'route', id }
   }
   pending.value = []
@@ -235,7 +243,13 @@ const hint = computed(() => t(`editor.plan.hint.${mode.value}`))
             </SelectContent>
           </Select>
         </template>
-        <Select v-if="mode === 'point' || mode === 'route'" v-model="newDevice">
+        <Select v-if="mode === 'route'" v-model="newRouteKind">
+          <SelectTrigger class="h-8 w-auto"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem v-for="k in ROUTE_KINDS" :key="k" :value="k">{{ t(`editor.plan.routeKinds.${k}`) }}</SelectItem>
+          </SelectContent>
+        </Select>
+        <Select v-if="mode === 'point' || (mode === 'route' && (newRouteKind === 'power' || newRouteKind === 'bus'))" v-model="newDevice">
           <SelectTrigger class="h-8 w-auto"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="__">{{ t('editor.plan.noDevice') }}</SelectItem>
@@ -277,6 +291,7 @@ const hint = computed(() => t(`editor.plan.hint.${mode.value}`))
               stroke-dasharray="10 6"
             />
             <circle v-for="(p, i) in pending" :key="i" :cx="p[0]" :cy="p[1]" :r="handleR" fill="var(--primary)" />
+            <text v-if="cursor && pending.length" :x="cursor[0] + 14" :y="cursor[1] - 14" class="seg-len">{{ (Math.hypot(cursor[0] - pending.at(-1)![0], cursor[1] - pending.at(-1)![1]) / 100).toFixed(2) }} {{ t('units.m') }}</text>
           </g>
           <!-- handles -->
           <template v-if="mode === 'select'">
@@ -334,7 +349,8 @@ const hint = computed(() => t(`editor.plan.hint.${mode.value}`))
         </FloorPlan>
       </div>
 
-      <div class="grid gap-3 rounded-2xl border bg-card p-4 sm:grid-cols-4">
+      <div class="grid gap-3 rounded-2xl border bg-card p-4 sm:grid-cols-5">
+        <FormRow :label="t('editor.plan.wallHeight')"><NumberInput v-model="d.plan.wallHeight" :suffix="t('units.cm')" /></FormRow>
         <FormRow :label="t('editor.plan.width')"><NumberInput v-model="d.plan.width" :suffix="t('units.cm')" /></FormRow>
         <FormRow :label="t('editor.plan.height')"><NumberInput v-model="d.plan.height" :suffix="t('units.cm')" /></FormRow>
         <FormRow :label="t('editor.plan.grid')"><NumberInput v-model="d.plan.grid" :suffix="t('units.cm')" /></FormRow>
@@ -411,6 +427,7 @@ const hint = computed(() => t(`editor.plan.hint.${mode.value}`))
         </div>
         <FormRow :label="t('editor.plan.roomName')"><LocalizedInput v-model="room.name" /></FormRow>
         <label class="flex items-center gap-2 text-sm"><Switch v-model="room.wet" /> {{ t('editor.plan.wet') }}</label>
+        <FormRow :label="t('editor.plan.ceiling')" :hint="t('editor.plan.ceilingHint', { cm: d.plan.wallHeight })"><NumberInput v-model="room.ceilingCm" :suffix="t('units.cm')" :placeholder="String(d.plan.wallHeight)" /></FormRow>
         <p class="text-xs text-muted-foreground">{{ t('editor.plan.roomHint') }}</p>
       </div>
 
@@ -421,14 +438,37 @@ const hint = computed(() => t(`editor.plan.hint.${mode.value}`))
           <Button variant="destructive" size="icon-sm" :aria-label="t('common.delete')" @click="removeSelected"><Trash2 /></Button>
         </div>
         <FormRow :label="t('editor.plan.routeKind')">
-          <Select :model-value="route.kind ?? 'power'" @update:model-value="(v) => (route!.kind = v as 'power' | 'bus' | 'low')">
+          <Select v-model="route.kind">
             <SelectTrigger class="w-full"><SelectValue /></SelectTrigger>
             <SelectContent>
-              <SelectItem v-for="k in ['power', 'bus', 'low']" :key="k" :value="k">{{ t(`editor.plan.routeKinds.${k}`) }}</SelectItem>
+              <SelectItem v-for="k in ROUTE_KINDS" :key="k" :value="k">{{ t(`editor.plan.routeKinds.${k}`) }}</SelectItem>
             </SelectContent>
           </Select>
         </FormRow>
-        <FormRow :label="t('editor.plan.device')">
+        <template v-if="route.kind === 'low' || route.kind === 'conduit'">
+          <div class="grid grid-cols-2 gap-2">
+            <FormRow :label="t('editor.plan.from')"><LocalizedInput v-model="route.from" /></FormRow>
+            <FormRow :label="t('editor.plan.to')"><LocalizedInput v-model="route.to" /></FormRow>
+          </div>
+          <div class="space-y-1.5">
+            <div class="text-xs font-medium text-muted-foreground">{{ t('editor.plan.cables') }}</div>
+            <div v-for="(c, ci) in route.cables" :key="ci" class="grid grid-cols-[1fr_3.5rem_1fr_auto] gap-1.5">
+              <Select v-model="c.type">
+                <SelectTrigger class="w-full"><SelectValue /></SelectTrigger>
+                <SelectContent><SelectItem v-for="ct in CABLE_TYPES" :key="ct" :value="ct">{{ t(`cable.${ct}`) }}</SelectItem></SelectContent>
+              </Select>
+              <NumberInput :model-value="c.count" @update:model-value="(v) => (c.count = Math.max(1, Math.round(v ?? 1)))" />
+              <Input :model-value="c.label ?? ''" :placeholder="t('editor.plan.cableLabel')" @update:model-value="(v) => (c.label = String(v) || undefined)" />
+              <Button variant="ghost" size="icon" :aria-label="t('common.delete')" @click="route.cables.splice(ci, 1)"><Trash2 /></Button>
+            </div>
+            <Button variant="outline" size="sm" @click="route.cables.push({ type: 'ethernet', count: 1 })">{{ t('editor.plan.addCable') }}</Button>
+          </div>
+          <div v-if="route.kind === 'conduit'" class="grid grid-cols-2 items-end gap-2">
+            <FormRow :label="t('editor.plan.diameter')"><NumberInput v-model="route.diameterMm" :suffix="t('units.mm')" /></FormRow>
+            <label class="flex h-9 items-center gap-2 text-sm"><Switch :model-value="!!route.pullString" @update:model-value="(v) => (route!.pullString = v || undefined)" /> {{ t('editor.plan.pullString') }}</label>
+          </div>
+        </template>
+        <FormRow v-if="route.kind === 'power' || route.kind === 'bus'" :label="t('editor.plan.device')">
           <Select :model-value="route.device ?? '__'" @update:model-value="(v) => (route!.device = v === '__' ? undefined : (v as string))">
             <SelectTrigger class="w-full"><SelectValue /></SelectTrigger>
             <SelectContent>
@@ -438,7 +478,20 @@ const hint = computed(() => t(`editor.plan.hint.${mode.value}`))
           </Select>
         </FormRow>
         <FormRow :label="t('editor.plan.routeNote')"><LocalizedInput v-model="route.note" multiline /></FormRow>
-        <FormRow :label="t('editor.plan.safeWidth')"><NumberInput v-model="route.safeWidth" :suffix="t('units.cm')" /></FormRow>
+        <div class="grid grid-cols-2 gap-2">
+          <FormRow :label="t('editor.plan.mount')">
+            <Select :model-value="route.mount ?? (route.elevation !== undefined ? 'wall' : MOUNT_DEFAULT[route.kind])" @update:model-value="(v) => (route!.mount = v as 'floor' | 'wall' | 'ceiling')">
+              <SelectTrigger class="w-full"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem v-for="m in ['floor', 'wall', 'ceiling']" :key="m" :value="m">{{ t(`route.mount.${m}`) }}</SelectItem>
+              </SelectContent>
+            </Select>
+          </FormRow>
+          <FormRow :label="t('editor.plan.safeWidth')"><NumberInput v-model="route.safeWidth" :suffix="t('units.cm')" /></FormRow>
+        </div>
+        <FormRow v-if="(route.mount ?? (route.elevation !== undefined ? 'wall' : MOUNT_DEFAULT[route.kind])) === 'wall'" :label="t('editor.plan.elevation')" :hint="t('editor.plan.elevationHint')">
+          <NumberInput v-model="route.elevation" :suffix="t('units.cm')" placeholder="30" />
+        </FormRow>
       </div>
 
       <div v-else-if="photo" class="space-y-3 rounded-2xl border bg-card p-4">
@@ -481,3 +534,15 @@ const hint = computed(() => t(`editor.plan.hint.${mode.value}`))
     </aside>
   </div>
 </template>
+
+<style scoped>
+.seg-len {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 600;
+  fill: var(--primary);
+  paint-order: stroke;
+  stroke: var(--background);
+  stroke-width: 4px;
+}
+</style>

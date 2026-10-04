@@ -34,17 +34,13 @@ function pickWebFile(accept: string, multiple = false): Promise<File[]> {
   })
 }
 
-function baseName(path: string): string {
-  return path.split(/[\\/]/).pop() ?? path
-}
-
 export async function openTextFile(extensions: string[]): Promise<OpenedText | null> {
   if (isDesktop) {
     const { open } = await import('@tauri-apps/plugin-dialog')
-    const { readTextFile } = await import('@tauri-apps/plugin-fs')
+    const { invoke } = await import('@tauri-apps/api/core')
     const path = await open({ multiple: false, filters: [{ name: 'Panel', extensions }] })
     if (typeof path !== 'string') return null
-    return { name: baseName(path), path, text: await readTextFile(path) }
+    return invoke<OpenedText>('read_text', { path })
   }
   const [file] = await pickWebFile(extensions.map((e) => `.${e}`).join(','))
   if (!file) return null
@@ -60,11 +56,11 @@ export async function openBinaryFiles(accept: string, multiple = false): Promise
 export async function saveTextFile(suggestedName: string, text: string, path?: string): Promise<string | undefined> {
   if (isDesktop) {
     const { save } = await import('@tauri-apps/plugin-dialog')
-    const { writeTextFile } = await import('@tauri-apps/plugin-fs')
+    const { invoke } = await import('@tauri-apps/api/core')
     const ext = suggestedName.split('.').pop() ?? 'panel'
     const target = path ?? (await save({ defaultPath: suggestedName, filters: [{ name: ext.toUpperCase(), extensions: [ext] }] }))
     if (!target) return undefined
-    await writeTextFile(target, text)
+    await invoke('write_text', { path: target, text })
     return target
   }
   const blob = new Blob([text], { type: 'application/octet-stream' })
@@ -75,4 +71,14 @@ export async function saveTextFile(suggestedName: string, text: string, path?: s
   a.click()
   setTimeout(() => URL.revokeObjectURL(url), 1000)
   return suggestedName
+}
+
+// files opened from Finder/Explorer ("Open with", double-click on a .panel) reach the app this way
+export async function onOpenFile(cb: (f: OpenedText) => void) {
+  if (!isDesktop) return
+  const { invoke } = await import('@tauri-apps/api/core')
+  const { listen } = await import('@tauri-apps/api/event')
+  const pending = await invoke<OpenedText | null>('take_opened_file')
+  if (pending) cb(pending)
+  await listen<OpenedText>('open-file', (e) => cb(e.payload))
 }

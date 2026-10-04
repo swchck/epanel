@@ -102,13 +102,13 @@ export function runChecks(data: PanelData, g: PowerGraph): CheckResult[] {
   const wetRooms = new Set(data.rooms.filter((r) => r.wet).map((r) => r.id))
   for (const p of data.points) {
     if (!p.device) {
-      if (!['junction', 'switch', 'panel', 'sensor'].includes(p.kind)) out.push({ level: 'info', code: 'point-unassigned', point: p.id, params: {} })
+      if (!['junction', 'switch', 'panel', 'sensor', 'data'].includes(p.kind)) out.push({ level: 'info', code: 'point-unassigned', point: p.id, params: {} })
       continue
     }
     const chain = g.rcdChain(p.device)
     const minLeak = Math.min(...chain.map((c) => c.leakage ?? Infinity))
     // panels and sensors sit on the SELV bus, switches carry no exposed live parts
-    const selv = p.kind === 'switch' || p.kind === 'panel' || p.kind === 'sensor'
+    const selv = p.kind === 'switch' || p.kind === 'panel' || p.kind === 'sensor' || p.kind === 'data'
     if (p.room && wetRooms.has(p.room) && !selv && minLeak > 30)
       out.push({ level: 'error', code: 'wet-no-rcd', point: p.id, device: p.device, params: {} })
     else if (p.kind === 'socket' && minLeak > 30)

@@ -3,8 +3,8 @@ import { computed, ref, toRef, watch } from 'vue'
 import { Camera, Maximize, Minus, Plus } from '@lucide/vue'
 import { resolveAsset } from '@/domain/bundle'
 import { areaM2, polygonCentroid } from '@/domain/geometry'
-import type { PanelData, PlanPoint } from '@/domain/schema'
-import { POINT_COLORS, POINT_ICONS } from '@/components/common/kinds'
+import type { PanelData, PlanPoint, Route } from '@/domain/schema'
+import { CABLE_COLORS, POINT_COLORS, POINT_ICONS } from '@/components/common/kinds'
 import { TYPE_ACCENT } from '@/components/panel/geometry'
 import { usePanZoom } from '@/composables/usePanZoom'
 import { useText } from '@/composables/useText'
@@ -26,13 +26,16 @@ const props = withDefaults(
     cursor?: string
     // rooms let clicks fall through to the canvas (editor placement modes)
     passRooms?: boolean
+    clickableRoutes?: boolean
+    selectedRoute?: string | null
   }>(),
-  { interactive: true, mini: false, showRoutes: undefined, allLayers: false, cursor: undefined, passRooms: false },
+  { interactive: true, mini: false, showRoutes: undefined, allLayers: false, cursor: undefined, passRooms: false, clickableRoutes: false, selectedRoute: null },
 )
 const emit = defineEmits<{
   point: [id: string]
   room: [id: string]
   photo: [id: string]
+  route: [id: string]
   canvas: [x: number, y: number, e: PointerEvent | MouseEvent]
   move: [x: number, y: number]
 }>()
@@ -49,6 +52,20 @@ const pz = usePanZoom(svg, base, { enabled: toRef(() => props.interactive) })
 
 const layer = (k: keyof typeof ui.planLayers) => props.allLayers || ui.planLayers[k]
 const routesVisible = computed(() => props.showRoutes ?? layer('routes'))
+const visibleRoutes = computed(() =>
+  d.value.routes.filter((r) => {
+    if (r.kind === 'power') return routesVisible.value
+    if (r.kind === 'bus') return layer('bus') || routesVisible.value
+    return layer('lowvoltage') || routesVisible.value
+  }),
+)
+const pts = (r: Route) => r.points.map((p) => p.join(',')).join(' ')
+
+function routeStroke(r: Route) {
+  if (r.kind === 'bus') return '#16a34a'
+  if (r.kind === 'low') return CABLE_COLORS[r.cables[0]?.type ?? 'other']
+  return routeColor(r.device)
+}
 const bg = computed(() => resolveAsset(d.value.plan.background, assets.value))
 const hasHighlight = computed(() => (props.highlightPoints?.size ?? 0) > 0)
 
@@ -62,6 +79,29 @@ const roomLabels = computed(() =>
       const c = props.mini ? polygonCentroid(r.polygon) : ([Math.min(...xs) + 16, Math.min(...ys) + 34] as const)
       return { room: r, c, area: areaM2(r.polygon) }
     }),
+)
+
+// wall lengths, labelled just inside each room so shared walls read from both sides
+const dimensions = computed(() =>
+  d.value.rooms
+    .filter((r) => r.polygon.length >= 3)
+    .flatMap((r) => {
+      const c = polygonCentroid(r.polygon)
+      return r.polygon.map((a, i) => {
+        const b = r.polygon[(i + 1) % r.polygon.length]!
+        const len = Math.hypot(b[0] - a[0], b[1] - a[1])
+        const mx = (a[0] + b[0]) / 2
+        const my = (a[1] + b[1]) / 2
+        let ang = (Math.atan2(b[1] - a[1], b[0] - a[0]) * 180) / Math.PI
+        if (ang > 90) ang -= 180
+        if (ang < -90) ang += 180
+        const nx = c[0] - mx
+        const ny = c[1] - my
+        const nl = Math.hypot(nx, ny) || 1
+        return { key: `${r.id}-${i}`, x: mx + (nx / nl) * 16, y: my + (ny / nl) * 16, ang, len }
+      })
+    })
+    .filter((x) => x.len >= 60),
 )
 
 const markerR = computed(() => (props.mini ? 15 : 13) / Math.sqrt(Math.max(1, pz.scale.value)))
@@ -167,23 +207,50 @@ defineExpose({ pz })
       <g pointer-events="none">
         <g v-for="l in roomLabels" :key="l.room.id" :transform="`translate(${l.c[0]}, ${l.c[1]})`">
           <text :text-anchor="mini ? 'middle' : 'start'" class="room-name" :class="{ 'room-name-mini': mini }">{{ tx(l.room.name) }}</text>
-          <text v-if="!mini" y="20" text-anchor="start" class="room-area">{{ l.area.toFixed(1) }} {{ t('units.m2') }}</text>
+          <text v-if="!mini" y="20" text-anchor="start" class="room-area">{{ l.area.toFixed(1) }} {{ t('units.m2') }} · h {{ ((l.room.ceilingCm ?? d.plan.wallHeight) / 100).toFixed(2) }} {{ t('units.m') }}</text>
         </g>
       </g>
 
+      <g v-if="layer('dimensions') && !mini" pointer-events="none">
+        <text
+          v-for="m in dimensions"
+          :key="m.key"
+          :transform="`translate(${m.x}, ${m.y}) rotate(${m.ang})`"
+          text-anchor="middle"
+          dominant-baseline="middle"
+          class="dim"
+        >
+          {{ (m.len / 100).toFixed(2) }}
+        </text>
+      </g>
+
       <!-- cable routes and no-drill strips -->
-      <g pointer-events="none">
-        <g v-for="r in d.routes.filter((x) => (x.kind === 'power' ? routesVisible : layer('bus') || routesVisible))" :key="r.id">
-          <polyline v-if="routesVisible" :points="r.points.map((p) => p.join(',')).join(' ')" fill="none" stroke="url(#nodrill)" :stroke-width="r.safeWidth * 2" stroke-linecap="round" stroke-linejoin="round" />
+      <g>
+        <g
+          v-for="r in visibleRoutes"
+          :key="r.id"
+          :class="{ 'cursor-pointer': clickableRoutes, 'opacity-25': selectedRoute && selectedRoute !== r.id }"
+          class="transition-opacity"
+          @click.stop="clickableRoutes && !pz.wasDrag() && emit('route', r.id)"
+        >
+          <polyline v-if="routesVisible" :points="pts(r)" fill="none" stroke="url(#nodrill)" :stroke-width="r.safeWidth * 2" stroke-linecap="round" stroke-linejoin="round" pointer-events="none" />
+          <!-- fat invisible hit area so thin lines are tappable on a phone -->
+          <polyline v-if="clickableRoutes" :points="pts(r)" fill="none" stroke="transparent" stroke-width="24" stroke-linecap="round" stroke-linejoin="round" />
+          <template v-if="r.kind === 'conduit'">
+            <polyline :points="pts(r)" fill="none" stroke="var(--muted-foreground)" :stroke-width="selectedRoute === r.id ? 13 : 10" stroke-opacity="0.45" stroke-linecap="round" stroke-linejoin="round" />
+            <polyline :points="pts(r)" fill="none" stroke="var(--background)" stroke-width="4" stroke-dasharray="2 6" stroke-linecap="round" stroke-linejoin="round" />
+            <circle v-for="(e, i) in [r.points[0]!, r.points.at(-1)!]" :key="i" :cx="e[0]" :cy="e[1]" r="7" fill="var(--background)" stroke="var(--muted-foreground)" stroke-width="3" />
+          </template>
           <polyline
-            :points="r.points.map((p) => p.join(',')).join(' ')"
+            v-else
+            :points="pts(r)"
             fill="none"
-            :stroke="r.kind === 'bus' ? '#16a34a' : r.kind === 'low' ? '#64748b' : routeColor(r.device)"
-            :stroke-dasharray="r.kind === 'power' ? undefined : '10 7'"
-            :stroke-width="routeLit(r.device) ? 5 : 3"
+            :stroke="routeStroke(r)"
+:stroke-dasharray="r.mount === 'ceiling' ? '1 7' : r.kind === 'power' ? undefined : r.kind === 'low' ? '3 6' : '10 7'"
+            :stroke-width="routeLit(r.device) || selectedRoute === r.id ? 5 : 3"
             stroke-linecap="round"
             stroke-linejoin="round"
-            :class="{ 'flow-line': routeLit(r.device) }"
+            :class="{ 'flow-line': routeLit(r.device) || selectedRoute === r.id }"
           />
         </g>
       </g>
@@ -260,6 +327,14 @@ defineExpose({ pz })
   font-family: var(--font-mono);
   font-size: 15px;
   fill: var(--muted-foreground);
+}
+.dim {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  fill: var(--muted-foreground);
+  paint-order: stroke;
+  stroke: var(--plan-floor);
+  stroke-width: 3px;
 }
 .pid {
   font-family: var(--font-mono);

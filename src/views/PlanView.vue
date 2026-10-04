@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, defineAsyncComponent, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useMediaQuery } from '@vueuse/core'
 import { Layers, Power, RotateCcw, X } from '@lucide/vue'
@@ -9,6 +9,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Switch } from '@/components/ui/switch'
 import DeviceChip from '@/components/common/DeviceChip.vue'
 import PhotoLightbox from '@/components/common/PhotoLightbox.vue'
+import RouteCard from '@/components/common/RouteCard.vue'
 import SwitchOffCard from '@/components/common/SwitchOffCard.vue'
 import { POINT_COLORS, POINT_ICONS } from '@/components/common/kinds'
 import FloorPlan from '@/components/plan/FloorPlan.vue'
@@ -26,11 +27,21 @@ const route = useRoute()
 const router = useRouter()
 const { t, tx } = useText()
 const wide = useMediaQuery('(min-width: 1024px)')
+const Plan3D = defineAsyncComponent(() => import('@/components/plan/Plan3D.vue'))
+const view = ref<'2d' | '3d'>(localStorage.getItem('panel.planView') === '3d' ? '3d' : '2d')
+watch(view, (v) => {
+  try {
+    localStorage.setItem('panel.planView', v)
+  } catch {
+    // storage blocked
+  }
+})
 
 const pointId = ref<string | null>(null)
 const roomId = ref<string | null>(null)
 const deviceId = ref<string | null>(null)
 const photoId = ref<string | null>(null)
+const routeId = ref<string | null>(null)
 
 watch(
   () => route.query,
@@ -38,6 +49,7 @@ watch(
     pointId.value = typeof q.point === 'string' ? q.point : null
     roomId.value = typeof q.room === 'string' ? q.room : null
     deviceId.value = typeof q.device === 'string' ? q.device : null
+    routeId.value = typeof q.route === 'string' ? q.route : null
   },
   { immediate: true },
 )
@@ -49,6 +61,7 @@ function setQuery(q: Record<string, string | undefined>) {
 const point = computed(() => data.data?.points.find((p) => p.id === pointId.value))
 const room = computed(() => data.data?.rooms.find((r) => r.id === roomId.value))
 const device = computed(() => (deviceId.value ? data.graph?.byId.get(deviceId.value) : undefined))
+const cableRun = computed(() => data.data?.routes.find((r) => r.id === routeId.value))
 
 const highlight = computed(() => {
   if (device.value && data.graph) return new Set(data.graph.pointsOf(device.value.id).map((p) => p.id))
@@ -77,7 +90,7 @@ function onRoom(id: string) {
   setQuery(roomId.value === id ? {} : { room: id })
 }
 
-const hasSelection = computed(() => !!(point.value || room.value || device.value))
+const hasSelection = computed(() => !!(point.value || room.value || device.value || cableRun.value))
 const drawerOpen = computed({
   get: () => !wide.value && hasSelection.value,
   set: (v) => {
@@ -92,6 +105,9 @@ const kindsPresent = computed(() => POINT_KINDS.filter((k) => data.data?.points.
   <div class="flex h-[calc(100dvh-7.5rem)] flex-col px-4 pt-4 lg:h-dvh lg:px-8 lg:pt-6 lg:pb-6">
     <div class="no-print mb-3 flex flex-wrap items-center gap-2">
       <h1 class="mr-auto text-xl font-semibold tracking-tight lg:text-2xl">{{ t('nav.plan') }}</h1>
+      <div class="flex overflow-hidden rounded-full border bg-card text-xs font-medium">
+        <button v-for="v in ['2d', '3d'] as const" :key="v" class="px-3 py-1 uppercase transition" :class="view === v ? 'bg-primary text-primary-foreground' : 'hover:bg-accent'" @click="view = v">{{ v }}</button>
+      </div>
       <label class="flex items-center gap-2 rounded-full border bg-card px-3 py-1 text-xs" :class="{ 'border-live bg-live/15': ui.simulate }">
         <Power class="size-3.5" :class="ui.simulate ? 'text-live' : ''" />
         {{ t('panel.simulate') }}
@@ -109,7 +125,7 @@ const kindsPresent = computed(() => POINT_KINDS.filter((k) => data.data?.points.
             <Switch v-model="ui.planLayers[k]" class="scale-90" />
           </label>
           <div class="my-1 border-t" />
-          <label v-for="k in ['routes', 'photos', 'labels', 'background'] as const" :key="k" class="flex items-center gap-2.5 rounded-md px-2 py-1.5 text-sm hover:bg-accent">
+          <label v-for="k in ['routes', 'lowvoltage', 'bus', 'dimensions', 'photos', 'labels', 'background'] as const" :key="k" class="flex items-center gap-2.5 rounded-md px-2 py-1.5 text-sm hover:bg-accent">
             <span class="flex-1">{{ t(`plan.layer.${k}`) }}</span>
             <Switch v-model="ui.planLayers[k]" class="scale-90" />
           </label>
@@ -126,7 +142,19 @@ const kindsPresent = computed(() => POINT_KINDS.filter((k) => data.data?.points.
 
     <div class="flex min-h-0 flex-1 gap-5">
       <div class="relative min-h-0 flex-1 overflow-hidden rounded-2xl border bg-card">
+        <Plan3D
+          v-if="view === '3d'"
+          :highlight-points="highlight"
+          :dead-points="dead"
+          :focus-point="pointId"
+          :selected-route="routeId"
+          :show-routes="ui.planLayers.routes || ui.planLayers.lowvoltage || ui.planLayers.bus || !!device"
+          @point="onPoint"
+          @route="(id) => setQuery({ route: id })"
+          @canvas="setQuery({})"
+        />
         <FloorPlan
+          v-else
           :highlight-points="highlight"
           :highlight-room="roomId"
           :focus-point="pointId"
@@ -134,7 +162,10 @@ const kindsPresent = computed(() => POINT_KINDS.filter((k) => data.data?.points.
           :show-routes="ui.planLayers.routes || !!device"
           @point="onPoint"
           @room="onRoom"
+          clickable-routes
+          :selected-route="routeId"
           @photo="(id) => (photoId = id)"
+          @route="(id) => setQuery({ route: id })"
           @canvas="setQuery({})"
         />
         <div v-if="!hasSelection && !ui.simulate" class="pointer-events-none absolute top-3 left-3 rounded-lg bg-background/80 px-3 py-1.5 text-xs text-muted-foreground backdrop-blur">
@@ -148,6 +179,7 @@ const kindsPresent = computed(() => POINT_KINDS.filter((k) => data.data?.points.
             <X class="size-4" />
           </button>
           <SwitchOffCard v-if="point" :key="point.id" :point="point" />
+          <RouteCard v-else-if="cableRun" :key="cableRun.id" :route="cableRun" />
           <div v-else-if="device" class="space-y-3">
             <DeviceChip :device="device" size="lg" />
             <div class="font-semibold">{{ tx(device.label) }}</div>
@@ -193,6 +225,7 @@ const kindsPresent = computed(() => POINT_KINDS.filter((k) => data.data?.points.
         <DrawerDescription class="sr-only">{{ t('plan.hint') }}</DrawerDescription>
         <div class="overflow-y-auto px-5 pt-2 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
           <SwitchOffCard v-if="point" :key="point.id" :point="point" />
+          <RouteCard v-else-if="cableRun" :key="cableRun.id" :route="cableRun" />
           <div v-else-if="device" class="space-y-3">
             <DeviceChip :device="device" size="lg" />
             <div class="font-semibold">{{ tx(device.label) }}</div>

@@ -1,5 +1,5 @@
 import { fileURLToPath, URL } from 'node:url'
-import { readFileSync } from 'node:fs'
+import { readFileSync, rmSync } from 'node:fs'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import tailwindcss from '@tailwindcss/vite'
@@ -12,9 +12,25 @@ const pkg = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 
 const page = (p: string) => fileURLToPath(new URL(p, import.meta.url))
 
 export default defineConfig({
+  // the desktop build serves the app page as its root, so Tauri finds index.html where it expects it
+  root: desktop ? 'app' : undefined,
+  publicDir: desktop ? page('./public/app') : page('./public'),
+  envDir: page('.'),
   base,
-  define: { __APP_VERSION__: JSON.stringify(pkg.version) },
+  define: {
+    __APP_VERSION__: JSON.stringify(pkg.version),
+    // set by GitHub Actions; the landing page links releases and the source from it
+    __REPO_URL__: JSON.stringify(process.env.GITHUB_REPOSITORY ? `https://github.com/${process.env.GITHUB_REPOSITORY}` : (process.env.REPO_URL ?? '')),
+  },
   plugins: [
+    {
+      // the desktop editor opens files; it must never ship whatever data the website currently publishes
+      name: 'strip-published-data',
+      apply: 'build',
+      closeBundle() {
+        if (desktop) rmSync(page('./dist-desktop/panel.enc.json'), { force: true })
+      },
+    },
     vue(),
     tailwindcss(),
     VitePWA({
@@ -60,9 +76,10 @@ export default defineConfig({
   resolve: {
     alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
   },
-  server: { port: Number(process.env.PORT) || 5180, strictPort: true },
+  server: { port: Number(process.env.PORT) || (desktop ? 5181 : 5180), strictPort: true },
   build: {
-    outDir: desktop ? 'dist-desktop' : 'dist',
+    outDir: desktop ? page('./dist-desktop') : page('./dist'),
+    emptyOutDir: true,
     chunkSizeWarningLimit: 900,
     rollupOptions: {
       input: desktop ? { app: page('./app/index.html') } : { landing: page('./index.html'), app: page('./app/index.html') },

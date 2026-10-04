@@ -401,45 +401,101 @@ data:
     - { id: bt-fan, kind: appliance, room: bathroom, x: 120, y: 460, device: QF10, label: { ru: Вытяжной вентилятор, en: Extractor fan }, powerW: 25, heightMm: 2400 }
     - { id: t-light, kind: light, room: toilet, x: 590, y: 665, device: QF10, label: { ru: Свет туалета, en: Toilet light }, powerW: 20 }
 
+    # low-voltage outlets
+    - { id: l-data, kind: data, room: living, x: 60, y: 300, heightMm: 900, label: { ru: "ТВ-зона: 2 × RJ45 и HDMI", en: "TV area: 2 × RJ45 and HDMI" } }
+    - { id: l-data2, kind: data, room: living, x: 480, y: 235, heightMm: 300, label: { ru: "HDMI у дивана (для проектора)", en: "HDMI by the sofa (projector)" } }
+    - { id: b-data, kind: data, room: bedroom, x: 515, y: 195, heightMm: 900, label: { ru: "RJ45 у рабочего стола", en: "RJ45 at the desk" } }
+    - { id: h-ap, kind: data, room: hallway, x: 640, y: 545, heightMm: 2700, label: { ru: "Точка доступа Wi-Fi на потолке (PoE)", en: "Ceiling Wi-Fi access point (PoE)" } }
+
   routes:
     - id: rt-kitchen
+      mount: floor
       device: QF1
       points: [[320, 740], [320, 470], [900, 470], [1130, 470], [1130, 120]]
       note: { ru: "В стяжке пола до кухни, далее вертикально в стене на высоте 1100 мм", en: "In the floor screed to the kitchen, then vertical in the wall at 1100 mm" }
     - id: rt-cooktop
+      mount: floor
       device: QFD1
       points: [[330, 740], [330, 480], [1100, 480], [1100, 270]]
       note: { ru: Кабель 3×6 в гофре в стяжке, en: 3×6 cable in conduit in the screed }
       safeWidth: 20
     - id: rt-living
+      elevation: 30
       device: QF5
       points: [[310, 740], [310, 440], [60, 440], [60, 250]]
       note: { ru: Горизонтальная штроба на высоте 300 мм, en: Horizontal chase at 300 mm height }
     - id: rt-living-ceiling
+      mount: ceiling
       device: QF9
       points: [[320, 740], [320, 460], [275, 400], [275, 250]]
       note: { ru: "По потолку в гофре, под натяжным потолком", en: "Along the ceiling in conduit, above the stretch ceiling" }
     - id: rt-bedroom
+      elevation: 30
       device: QF6
       points: [[320, 740], [520, 460], [880, 460], [880, 330]]
       note: { ru: Штроба на высоте 300 мм вдоль стены, en: Chase at 300 mm along the wall }
     - id: rt-bath
+      mount: ceiling
       device: QFD2
       points: [[300, 740], [80, 740], [60, 700]]
       note: { ru: Опуск по стене от потолка, en: Drop down the wall from the ceiling }
     - id: rt-boiler
+      elevation: 170
       device: QFD3
       points: [[300, 730], [290, 480], [60, 480]]
       note: { ru: По стене на высоте 1700 мм, en: Along the wall at 1700 mm }
     - id: rt-loggia
+      mount: floor
       device: QF8
       points: [[320, 740], [880, 570], [1140, 570], [1140, 600]]
       note: { ru: "В стяжке, проход через стену в гильзе", en: "In the screed, through-wall in a sleeve" }
     - id: rt-ac-living
+      elevation: 240
       device: QF11
       points: [[310, 740], [300, 430], [150, 70]]
       note: { ru: "Под потолком на высоте 2400 мм, рядом трасса фреона", en: Under the ceiling at 2400 mm next to the refrigerant line }
 
+    - id: lan-living
+      kind: low
+      mount: floor
+      points: [[750, 735], [690, 595], [320, 595], [300, 455], [65, 445], [65, 300]]
+      from: { ru: "Роутер, порты 1 и 2", en: "Router, ports 1 and 2" }
+      to: { ru: ТВ-зона гостиной, en: Living room TV area }
+      cables: [{ type: ethernet, count: 2, label: "Cat6, порты 1–2" }]
+      note: { ru: В стяжке в гофре 20 мм, en: In the screed inside a 20 mm conduit }
+    - id: lan-bedroom
+      kind: low
+      mount: floor
+      points: [[755, 735], [700, 600], [530, 470], [515, 195]]
+      from: { ru: "Роутер, порт 3", en: "Router, port 3" }
+      to: { ru: "Спальня, рабочий стол", en: Bedroom desk }
+      cables: [{ type: ethernet, count: 1, label: "Cat6, порт 3" }]
+    - id: lan-ap
+      kind: low
+      mount: ceiling
+      points: [[760, 735], [760, 600], [640, 545]]
+      from: { ru: "Роутер, порт 4 (PoE)", en: "Router, port 4 (PoE)" }
+      to: { ru: Точка доступа в прихожей, en: Hallway access point }
+      cables: [{ type: ethernet, count: 1, label: "Cat6, PoE" }]
+    - id: cd-hdmi
+      kind: conduit
+      mount: floor
+      diameterMm: 25
+      pullString: true
+      points: [[60, 305], [55, 450], [470, 450], [480, 235]]
+      from: { ru: ТВ-зона, en: TV area }
+      to: { ru: Диван (проектор), en: Sofa (projector) }
+      cables: [{ type: hdmi, count: 1, label: "HDMI 2.1, 8 м" }]
+      note: { ru: "Гофра 25 мм, в ней есть протяжка для второго кабеля", en: 25 mm conduit with a draw wire for one more cable }
+    - id: cd-spare
+      kind: conduit
+      elevation: 30
+      diameterMm: 20
+      pullString: true
+      points: [[745, 735], [890, 600], [890, 260]]
+      from: { ru: Слаботочный шкаф, en: "Low-voltage cabinet" }
+      to: { ru: "Спальня, за кроватью", en: "Bedroom, behind the bed" }
+      note: { ru: Пустая гофра на будущее, en: Empty conduit for the future }
   photos:
     - { id: ph-kitchen, src: "asset:wall-kitchen", room: kitchen, x: 1120, y: 200, caption: { ru: "Кухня, стена со столешницей до плитки", en: Kitchen worktop wall before tiling }, date: "2026-08-14" }
     - { id: ph-bath, src: "asset:wall-bath", room: bathroom, x: 150, y: 500, caption: { ru: "Ванная, выводы под бойлер и стиралку", en: "Bathroom, boiler and washer outlets" }, date: "2026-08-15" }

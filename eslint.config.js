@@ -13,7 +13,7 @@ export default tseslint.config(
     languageOptions: { parserOptions: { parser: tseslint.parser } },
   },
   {
-    languageOptions: { globals: { ...globals.browser, ...globals.node, __APP_VERSION__: 'readonly' } },
+    languageOptions: { globals: { ...globals.browser, ...globals.node, __APP_VERSION__: 'readonly', __REPO_URL__: 'readonly' } },
     rules: {
       'vue/multi-word-component-names': 'off',
       'vue/max-attributes-per-line': 'off',

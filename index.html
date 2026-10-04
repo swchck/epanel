@@ -2,11 +2,25 @@
 <html lang="ru">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Щиток</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="description" content="Интерактивная карта электрощитка по QR-коду: какой автомат что отключает, план квартиры, проверки, инструкции на случай, если выбило. Работает офлайн, данные зашифрованы." />
+    <meta name="theme-color" content="#16181d" />
+    <meta property="og:title" content="Щиток, который объясняет сам себя" />
+    <meta property="og:description" content="QR-код внутри щитка ведёт на интерактивную карту: автоматы, план, «не сверлить», что делать, если выбило." />
+    <meta property="og:type" content="website" />
+    <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="./icons/apple-touch-icon-180x180.png" />
+    <title>Щиток — интерактивная карта электрощитка</title>
+    <script>
+      try {
+        const t = localStorage.getItem('panel.theme') || 'auto'
+        const dark = t === 'dark' || (t === 'auto' && matchMedia('(prefers-color-scheme: dark)').matches)
+        document.documentElement.classList.toggle('dark', dark)
+      } catch {}
+    </script>
   </head>
   <body>
     <div id="landing"></div>
-    <script type="module" src="/src/landing/main.ts"></script>
+    <script type="module" src="./src/landing/main.ts"></script>
   </body>
 </html>
