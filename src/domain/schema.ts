@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { APPLIANCE_PROFILES, BUS_SYSTEMS, CABLE_TYPES, CHANNEL_FUNCTIONS, DEVICE_TYPES, LOCALES, POINT_KINDS, ROUTE_KINDS, type ValidationIssue } from './model'
+import { APPLIANCE_PROFILES, BUS_SYSTEMS, CABLE_TYPES, CHANNEL_FUNCTIONS, DEVICE_TYPES, LOCALES, OPENING_KINDS, POINT_KINDS, ROUTE_KINDS, type ValidationIssue } from './model'
 
 export const LocalizedText = z.union([z.string(), z.partialRecord(z.enum(LOCALES), z.string())])
 export type LocalizedText = z.infer<typeof LocalizedText>
@@ -192,6 +192,21 @@ export const Contact = z.object({
 })
 export type Contact = z.infer<typeof Contact>
 
+export const Opening = z.object({
+  id: z.string(),
+  kind: z.enum(OPENING_KINDS),
+  // centre of the opening, on the wall line
+  x: z.number(),
+  y: z.number(),
+  // degrees, direction of the wall it sits in
+  angle: z.number().default(0),
+  // centimetres along the wall
+  width: z.number().positive(),
+  // a door swings to the left of the wall direction unless flipped
+  flip: z.boolean().optional(),
+})
+export type Opening = z.infer<typeof Opening>
+
 export const Plan = z.object({
   // plan units are centimetres: a 10 m wall is 1000 units
   width: z.number().positive().default(1200),
@@ -201,6 +216,7 @@ export const Plan = z.object({
   grid: z.number().positive().default(50),
   // centimetres, used by the 3D view
   wallHeight: z.number().positive().default(270),
+  openings: z.array(Opening).default([]),
 })
 export type Plan = z.infer<typeof Plan>
 
@@ -227,7 +243,7 @@ export const PanelData = z.object({
   rows: z.array(Row).default([]),
   devices: z.array(Device).default([]),
   rooms: z.array(Room).default([]),
-  plan: Plan.default({ width: 1200, height: 800, backgroundOpacity: 0.6, grid: 50, wallHeight: 270 }),
+  plan: Plan.default({ width: 1200, height: 800, backgroundOpacity: 0.6, grid: 50, wallHeight: 270, openings: [] }),
   points: z.array(PlanPoint).default([]),
   routes: z.array(Route).default([]),
   photos: z.array(Photo).default([]),

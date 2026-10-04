@@ -197,7 +197,7 @@
       "heating": "Calefacción",
       "ac": "Aire acondicionado",
       "junction": "Caja de registro",
-      "network": "Baja tensión",
+      "network": "Router, armario de telecomunicaciones",
       "panel": "Panel de control",
       "sensor": "Sensor",
       "other": "Punto",
@@ -847,7 +847,8 @@
         "room": "Contorno",
         "point": "Punto",
         "route": "Cable",
-        "photo": "Foto"
+        "photo": "Foto",
+        "opening": "Hueco"
       },
       "hint": {
         "select": "Toca un punto, una estancia o una foto para editarlo. Arrastra los tiradores para moverlo. Rueda o pellizco para hacer zoom.",
@@ -856,7 +857,8 @@
         "route": "Dibuja el recorrido del cable punto a punto. Termina pulsando de nuevo el último punto, con Enter o con la barra de abajo del plano. Alrededor aparece una zona de «no taladrar». Los tramos van en ángulo recto, como se tienden los cables de verdad; mantén Alt para un tramo inclinado. Escribe una longitud y pulsa Enter para fijarla.",
         "photo": "Toca el lugar donde se hizo la foto y elige la imagen.",
         "rect": "Toca una esquina de la estancia y luego la opuesta. O toca la primera esquina y escribe las medidas, p. ej. «3.5x4», y pulsa Enter.",
-        "view3d": "Vista 3D para revisar alturas y recorridos. Pulsa un punto o recorrido para editarlo a la derecha. Para dibujar, usa 2D."
+        "view3d": "Vista 3D para revisar alturas y recorridos. Pulsa un punto o recorrido para editarlo a la derecha. Para dibujar, usa 2D.",
+        "opening": "Elige puerta o ventana y pulsa en una pared. El hueco se alinea con ella; ajusta el ancho y el sentido de apertura a la derecha."
       },
       "noDevice": "Sin automático",
       "finish": "Listo",
@@ -913,7 +915,14 @@
       "roomDepth": "Fondo",
       "concealed": "Oculta tras el acabado (yeso, azulejo, techo tensado)",
       "undoPoint": "Quitar punto",
-      "backToPlan": "Volver al plano"
+      "backToPlan": "Volver al plano",
+      "openingKind": {
+        "door": "Puerta",
+        "window": "Ventana"
+      },
+      "openingWidth": "Ancho",
+      "openingFlip": "Abre hacia el otro lado",
+      "openingOnWall": "Pulsa en una pared: puertas y ventanas van en la pared."
     },
     "media": {
       "photosHint": "Fotografía las paredes antes de enlucir: años después, estas fotos son la forma más fácil de saber por dónde van los cables.",

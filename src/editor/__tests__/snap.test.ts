@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { nextTick, reactive } from 'vue'
 import type { PanelData, Room } from '@/domain/model'
 import { useHistory } from '../history'
-import { orthogonal, parseTypedLength, placeOnWall, snapToGeometry } from '../snap'
+import { orthogonal, parseTypedLength, placeOnWall, snapToGeometry, wallAt } from '../snap'
 
 const box: Room = { id: 'r', name: 'R', wet: false, polygon: [[0, 0], [400, 0], [400, 300], [0, 300]] }
 
@@ -18,6 +18,12 @@ describe('snap', () => {
 
   it('snaps to anchors such as outlets', () => {
     expect(snapToGeometry([102, 98], [], 12, [[100, 100]])).toEqual([100, 100])
+  })
+
+  it('finds the wall under a door click with its direction', () => {
+    expect(wallAt([200, 12], [box], 40)).toEqual({ at: [200, 0], angle: 0 })
+    expect(wallAt([390, 150], [box], 40)).toEqual({ at: [400, 150], angle: 90 })
+    expect(wallAt([200, 150], [box], 40)).toBeNull()
   })
 
   it('puts an outlet on the wall, inset toward the clicked side', () => {

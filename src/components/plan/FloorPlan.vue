@@ -28,6 +28,7 @@ const props = withDefaults(
     passRooms?: boolean
     clickableRoutes?: boolean
     selectedRoute?: string | null
+    selectedOpening?: string | null
   }>(),
   { interactive: true, mini: false, showRoutes: undefined, allLayers: false, cursor: undefined, passRooms: false, clickableRoutes: false, selectedRoute: null },
 )
@@ -36,6 +37,7 @@ const emit = defineEmits<{
   room: [id: string]
   photo: [id: string]
   route: [id: string]
+  opening: [id: string]
   canvas: [x: number, y: number, e: PointerEvent | MouseEvent]
   move: [x: number, y: number]
   leave: []
@@ -226,6 +228,30 @@ defineExpose({ pz })
           @click="!pz.wasDrag() && emit('room', r.id)"
         />
       </g>
+      <g>
+        <g
+          v-for="o in d.plan.openings"
+          :key="o.id"
+          :transform="`translate(${o.x}, ${o.y}) rotate(${o.angle})`"
+          class="opening"
+          :class="{ 'is-selected': selectedOpening === o.id }"
+          :pointer-events="passRooms ? 'none' : undefined"
+          @click.stop="!pz.wasDrag() && emit('opening', o.id)"
+        >
+          <!-- floor-coloured patch cuts the gap out of the wall stroke underneath -->
+          <rect :x="-o.width / 2" y="-5" :width="o.width" height="10" fill="var(--plan-floor)" />
+          <template v-if="o.kind === 'door'">
+            <line :x1="-o.width / 2" y1="0" :x2="-o.width / 2" :y2="o.flip ? o.width : -o.width" class="opening-line" />
+            <path :d="`M ${-o.width / 2} ${o.flip ? o.width : -o.width} A ${o.width} ${o.width} 0 0 ${o.flip ? 0 : 1} ${o.width / 2} 0`" class="opening-swing" />
+          </template>
+          <template v-else>
+            <line :x1="-o.width / 2" y1="-3.5" :x2="o.width / 2" y2="-3.5" class="opening-line" />
+            <line :x1="-o.width / 2" y1="3.5" :x2="o.width / 2" y2="3.5" class="opening-line" />
+            <line :x1="-o.width / 2" y1="-5" :x2="-o.width / 2" y2="5" class="opening-line" />
+            <line :x1="o.width / 2" y1="-5" :x2="o.width / 2" y2="5" class="opening-line" />
+          </template>
+        </g>
+      </g>
       <g pointer-events="none">
         <g v-for="l in roomLabels" :key="l.room.id" :transform="`translate(${l.c[0]}, ${l.c[1]})`">
           <text :text-anchor="mini ? 'middle' : 'start'" class="room-name" :class="{ 'room-name-mini': mini }">{{ tx(l.room.name) }}</text>
@@ -377,5 +403,23 @@ defineExpose({ pz })
   transform-box: fill-box;
   transform-origin: center;
   animation: pulse-ring 1.6s ease-out infinite;
+}
+.opening {
+  cursor: pointer;
+}
+.opening-line {
+  stroke: var(--plan-wall);
+  stroke-width: 2.5px;
+  fill: none;
+}
+.opening-swing {
+  stroke: var(--plan-wall);
+  stroke-width: 1.5px;
+  stroke-dasharray: 4 4;
+  fill: none;
+}
+.opening.is-selected .opening-line,
+.opening.is-selected .opening-swing {
+  stroke: var(--primary);
 }
 </style>

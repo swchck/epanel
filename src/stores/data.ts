@@ -64,7 +64,7 @@ function emptyData(title: string): PanelData {
     ],
     devices: [],
     rooms: [],
-    plan: { width: 1200, height: 800, grid: 50, backgroundOpacity: 0.6, wallHeight: 270 },
+    plan: { width: 1200, height: 800, grid: 50, backgroundOpacity: 0.6, wallHeight: 270, openings: [] },
     points: [],
     routes: [],
     photos: [],

@@ -369,6 +369,19 @@ data:
     width: 1200
     height: 800
     grid: 50
+    openings:
+      - {id: door-entrance, kind: door, x: 400, 'y': 750, angle: 0, width: 90, flip: false}
+      - {id: door-living, kind: door, x: 430, 'y': 450, angle: 0, width: 80}
+      - {id: door-bedroom, kind: door, x: 760, 'y': 450, angle: 0, width: 80}
+      - {id: door-kitchen, kind: door, x: 900, 'y': 520, angle: 90, width: 80}
+      - {id: door-bath, kind: door, x: 300, 'y': 650, angle: 90, width: 70, flip: true}
+      - {id: door-toilet, kind: door, x: 590, 'y': 580, angle: 0, width: 70, flip: true}
+      - {id: door-wardrobe, kind: door, x: 790, 'y': 580, angle: 0, width: 70, flip: true}
+      - {id: door-loggia, kind: door, x: 1090, 'y': 450, angle: 0, width: 70, flip: true}
+      - {id: window-living, kind: window, x: 275, 'y': 50, angle: 0, width: 160}
+      - {id: window-bedroom, kind: window, x: 700, 'y': 50, angle: 0, width: 150}
+      - {id: window-kitchen, kind: window, x: 1025, 'y': 50, angle: 0, width: 120}
+      - {id: window-loggia, kind: window, x: 1150, 'y': 600, angle: 90, width: 220}
   points:
     - id: k-s1
       kind: socket

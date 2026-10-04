@@ -197,7 +197,7 @@
       "heating": "Heating",
       "ac": "Air conditioner",
       "junction": "Junction box",
-      "network": "Low voltage",
+      "network": "Router, low-voltage cabinet",
       "panel": "Control panel",
       "sensor": "Sensor",
       "other": "Point",
@@ -847,7 +847,8 @@
         "room": "Outline",
         "point": "Point",
         "route": "Cable",
-        "photo": "Photo"
+        "photo": "Photo",
+        "opening": "Opening"
       },
       "hint": {
         "select": "Tap a point, room or photo to edit it. Drag the handles to move. Wheel or pinch to zoom.",
@@ -856,7 +857,8 @@
         "route": "Draw the cable run point by point. Finish by clicking the last point again, pressing Enter or using the bar at the bottom of the plan. A no-drill zone appears around the run. Segments go at right angles, the way cables are actually laid; hold Alt for a diagonal. Type a length and press Enter to set a segment exactly.",
         "photo": "Tap where the photo was taken and pick the image.",
         "rect": "Tap one corner of the room, then the opposite one. Or tap the first corner and type the size, e.g. \"3.5x4\", then Enter.",
-        "view3d": "3D view for checking heights and runs. Click a point or run to edit it on the right. Drawing works in 2D."
+        "view3d": "3D view for checking heights and runs. Click a point or run to edit it on the right. Drawing works in 2D.",
+        "opening": "Pick a door or window and click a wall. The opening lines up with it; adjust the width and swing on the right."
       },
       "noDevice": "No breaker",
       "finish": "Done",
@@ -913,7 +915,14 @@
       "roomDepth": "Depth",
       "concealed": "Concealed behind the finish (plaster, tiles, stretch ceiling)",
       "undoPoint": "Remove point",
-      "backToPlan": "Back to plan"
+      "backToPlan": "Back to plan",
+      "openingKind": {
+        "door": "Door",
+        "window": "Window"
+      },
+      "openingWidth": "Width",
+      "openingFlip": "Opens the other way",
+      "openingOnWall": "Click a wall: doors and windows sit in walls."
     },
     "media": {
       "photosHint": "Photograph the walls before plastering: years later these photos are the easiest way to see where the cables run.",

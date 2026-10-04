@@ -2,7 +2,7 @@
 // The zod schemas live in ./schema and load only when a file is actually parsed.
 import type { Device, LocalizedText, PanelData, Route } from './schema'
 
-export type { LocalizedText, Channel, Smart, Note, Circuit, Device, RowItem, Row, Point2, Room, PlanPoint, Cable, Route, Photo, MaintenanceTask, MaintenanceLog, DocumentRef, Contact, Plan, PanelData, PanelInput } from './schema'
+export type { LocalizedText, Channel, Smart, Note, Circuit, Device, RowItem, Row, Point2, Room, PlanPoint, Cable, Route, Photo, MaintenanceTask, MaintenanceLog, DocumentRef, Contact, Opening, Plan, PanelData, PanelInput } from './schema'
 
 export const LOCALES = ['ru', 'en', 'sr', 'es'] as const
 export type Locale = (typeof LOCALES)[number]
@@ -35,6 +35,9 @@ export const SMART_TYPES: readonly DeviceType[] = ['actuator', 'bus-psu', 'bus-g
 
 export const BUS_SYSTEMS = ['knx', 'dali', 'modbus', 'zigbee', 'other'] as const
 export const CHANNEL_FUNCTIONS = ['switch', 'dimmer', 'blind', 'heating', 'hvac', 'input', 'other'] as const
+
+export const OPENING_KINDS = ['door', 'window'] as const
+export type OpeningKind = (typeof OPENING_KINDS)[number]
 
 export const POINT_KINDS = [
   'socket',

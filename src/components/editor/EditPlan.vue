@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref } from 'vue'
-import { Camera, Check, ChevronLeft, ImagePlus, Magnet, MousePointer2, Pentagon, Plug, Spline, Square, Trash2, Undo2, X } from '@lucide/vue'
+import { Camera, Check, ChevronLeft, DoorOpen, ImagePlus, Magnet, MousePointer2, Pentagon, Plug, Spline, Square, Trash2, Undo2, X } from '@lucide/vue'
 import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -12,9 +12,9 @@ import { POINT_COLORS, POINT_ICONS } from '@/components/common/kinds'
 import FloorPlan from '@/components/plan/FloorPlan.vue'
 import { ASSET_PREFIX } from '@/domain/model'
 import { pointInPolygon, snap as snapTo } from '@/domain/geometry'
-import { APPLIANCE_PROFILES, CABLE_TYPES, POINT_KINDS, ROUTE_KINDS, routeMount, type Point2, type PointKind, type RouteKind } from '@/domain/model'
+import { APPLIANCE_PROFILES, CABLE_TYPES, OPENING_KINDS, POINT_KINDS, ROUTE_KINDS, routeMount, type OpeningKind, type Point2, type PointKind, type RouteKind } from '@/domain/model'
 import { removePoint, removeRoom, uniqueId } from '@/editor/ops'
-import { orthogonal, parseTypedLength, placeOnWall, snapToGeometry } from '@/editor/snap'
+import { orthogonal, parseTypedLength, placeOnWall, snapToGeometry, wallAt } from '@/editor/snap'
 import { compressImage, newId, planImageFrom } from '@/lib/media'
 import { useDraft } from '@/composables/useDraft'
 import { useText } from '@/composables/useText'
@@ -23,8 +23,8 @@ import FormRow from './FormRow.vue'
 import LocalizedInput from './LocalizedInput.vue'
 import NumberInput from './NumberInput.vue'
 
-type Mode = 'select' | 'rect' | 'room' | 'point' | 'route' | 'photo'
-type Sel = { kind: 'point' | 'room' | 'route' | 'photo'; id: string } | null
+type Mode = 'select' | 'rect' | 'room' | 'opening' | 'point' | 'route' | 'photo'
+type Sel = { kind: 'point' | 'room' | 'opening' | 'route' | 'photo'; id: string } | null
 
 const { d, assets, data } = useDraft()
 const { t, tx } = useText()
@@ -43,6 +43,9 @@ function toggle3d() {
 const newKind = ref<PointKind>('socket')
 const newDevice = ref<string>('__')
 const newRouteKind = ref<RouteKind>('power')
+const newOpening = ref<OpeningKind>('door')
+// typical clear widths: an interior door leaf, a two-sash window
+const OPENING_WIDTH: Record<OpeningKind, number> = { door: 80, window: 120 }
 const busy = ref(false)
 const plan = ref<InstanceType<typeof FloorPlan> | null>(null)
 
@@ -50,6 +53,7 @@ const MODES: { id: Mode; icon: typeof Plug }[] = [
   { id: 'select', icon: MousePointer2 },
   { id: 'rect', icon: Square },
   { id: 'room', icon: Pentagon },
+  { id: 'opening', icon: DoorOpen },
   { id: 'point', icon: Plug },
   { id: 'route', icon: Spline },
   { id: 'photo', icon: Camera },
@@ -151,6 +155,7 @@ const previewLabel = computed(() => {
   return `${m(Math.hypot(c[0] - last[0], c[1] - last[1]))} ${t('units.m')}`
 })
 
+const opening = computed(() => (sel.value?.kind === 'opening' ? d.value.plan.openings.find((o) => o.id === sel.value!.id) : undefined))
 const photo = computed(() => (sel.value?.kind === 'photo' ? d.value.photos.find((p) => p.id === sel.value!.id) : undefined))
 const feeders = computed(() => d.value.devices.filter((x) => ['mcb', 'rcbo', 'din-socket', 'switch', 'contactor', 'actuator'].includes(x.type)))
 
@@ -188,6 +193,15 @@ async function onCanvas(x: number, y: number) {
     )
     d.value.points.push({ id, kind: newKind.value, x: px, y: py, room: roomAt(px, py), device: newDevice.value === '__' ? undefined : newDevice.value, count: 1, controls: [] })
     sel.value = { kind: 'point', id }
+  } else if (mode.value === 'opening') {
+    const wall = wallAt([x, y], d.value.rooms, WALL_REACH)
+    if (!wall) return void toast.info(t('editor.plan.openingOnWall'))
+    const id = uniqueId(
+      d.value.plan.openings.map((o) => o.id),
+      `${newOpening.value}-`,
+    )
+    d.value.plan.openings.push({ id, kind: newOpening.value, x: wall.at[0], y: wall.at[1], angle: wall.angle, width: OPENING_WIDTH[newOpening.value] })
+    sel.value = { kind: 'opening', id }
   } else if (mode.value === 'photo') {
     const [file] = await openBinaryFiles('image/*')
     if (!file) return
@@ -283,6 +297,7 @@ function removeSelected() {
   if (s.kind === 'room') removeRoom(d.value, s.id)
   if (s.kind === 'route') d.value.routes = d.value.routes.filter((p) => p.id !== s.id)
   if (s.kind === 'photo') d.value.photos = d.value.photos.filter((p) => p.id !== s.id)
+  if (s.kind === 'opening') d.value.plan.openings = d.value.plan.openings.filter((o) => o.id !== s.id)
   sel.value = null
 }
 
@@ -373,6 +388,12 @@ const hint = computed(() => t(`editor.plan.hint.${view3d.value ? 'view3d' : mode
             </SelectContent>
           </Select>
         </template>
+        <Select v-if="mode === 'opening'" v-model="newOpening">
+          <SelectTrigger class="h-8 w-auto"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem v-for="k in OPENING_KINDS" :key="k" :value="k">{{ t(`editor.plan.openingKind.${k}`) }}</SelectItem>
+          </SelectContent>
+        </Select>
         <Select v-if="mode === 'route'" v-model="newRouteKind">
           <SelectTrigger class="h-8 w-auto"><SelectValue /></SelectTrigger>
           <SelectContent>
@@ -420,6 +441,8 @@ const hint = computed(() => t(`editor.plan.hint.${view3d.value ? 'view3d' : mode
           @point="onPoint"
           @room="(id) => mode === 'select' && (sel = { kind: 'room', id })"
           @photo="(id) => (sel = { kind: 'photo', id })"
+          @opening="(id) => mode === 'select' && (sel = { kind: 'opening', id })"
+          :selected-opening="opening?.id"
           @move="(x, y) => (cursor = place(x, y))"
           @leave="cursor = null"
         >
@@ -574,6 +597,27 @@ const hint = computed(() => t(`editor.plan.hint.${view3d.value ? 'view3d' : mode
         <label class="flex items-center gap-2 text-sm"><Switch v-model="room.wet" /> {{ t('editor.plan.wet') }}</label>
         <FormRow :label="t('editor.plan.ceiling')" :hint="t('editor.plan.ceilingHint', { cm: d.plan.wallHeight })"><NumberInput v-model="room.ceilingCm" optional :suffix="t('units.cm')" :placeholder="String(d.plan.wallHeight)" /></FormRow>
         <p class="text-xs text-muted-foreground">{{ t('editor.plan.roomHint') }}</p>
+      </div>
+
+      <div v-else-if="opening" class="space-y-3 rounded-2xl border bg-card p-4">
+        <div class="flex items-center gap-2">
+          <Button variant="ghost" size="icon-sm" class="-ml-1.5" :aria-label="t('editor.plan.backToPlan')" @click="sel = null"><ChevronLeft /></Button>
+          <DoorOpen class="size-5 text-primary" />
+          <span class="mr-auto font-mono text-xs text-muted-foreground">{{ opening.id }}</span>
+          <Button variant="destructive" size="icon-sm" :aria-label="t('common.delete')" @click="removeSelected"><Trash2 /></Button>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <FormRow :label="t('editor.plan.kind')">
+            <Select v-model="opening.kind">
+              <SelectTrigger class="w-full"><SelectValue /></SelectTrigger>
+              <SelectContent><SelectItem v-for="k in OPENING_KINDS" :key="k" :value="k">{{ t(`editor.plan.openingKind.${k}`) }}</SelectItem></SelectContent>
+            </Select>
+          </FormRow>
+          <FormRow :label="t('editor.plan.openingWidth')"><NumberInput v-model="opening.width" integer :suffix="t('units.cm')" /></FormRow>
+        </div>
+        <label v-if="opening.kind === 'door'" class="flex items-center gap-2 text-sm">
+          <Switch :model-value="!!opening.flip" @update:model-value="(v) => (opening!.flip = v || undefined)" /> {{ t('editor.plan.openingFlip') }}
+        </label>
       </div>
 
       <div v-else-if="route" class="space-y-3 rounded-2xl border bg-card p-4">

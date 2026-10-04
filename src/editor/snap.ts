@@ -76,3 +76,18 @@ export function parseTypedLength(text: string): { a: number; b?: number } | null
   const cb = num(b)
   return cb > 0 ? { a: ca, b: cb } : null
 }
+
+/**
+ * Finds the wall closest to p within reach and returns the point on it and its direction in degrees.
+ */
+export function wallAt(p: Point2, rooms: Room[], reach: number): { at: Point2; angle: number } | null {
+  let best: { foot: Point2; edge: Segment; d: number } | null = null
+  for (const e of edges(rooms)) {
+    const foot = project(p, e)
+    const d = dist(p, foot)
+    if (d <= reach && (!best || d < best.d)) best = { foot, edge: e, d }
+  }
+  if (!best) return null
+  const [a, b] = best.edge
+  return { at: round(best.foot), angle: Math.round((Math.atan2(b[1] - a[1], b[0] - a[0]) * 180) / Math.PI) }
+}

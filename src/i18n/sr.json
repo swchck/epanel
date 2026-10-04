@@ -197,7 +197,7 @@
       "heating": "Grejanje",
       "ac": "Klima uređaj",
       "junction": "Razvodna kutija",
-      "network": "Slaba struja",
+      "network": "Ruter, slabostrujni ormar",
       "panel": "Kontrolni panel",
       "sensor": "Senzor",
       "other": "Tačka",
@@ -847,7 +847,8 @@
         "room": "Kontura",
         "point": "Tačka",
         "route": "Kabl",
-        "photo": "Foto"
+        "photo": "Foto",
+        "opening": "Otvor"
       },
       "hint": {
         "select": "Dodirnite tačku, prostoriju ili fotografiju da je izmenite. Prevucite ručice da pomerite. Točkić ili dva prsta za uvećanje.",
@@ -856,7 +857,8 @@
         "route": "Nacrtajte trasu kabla tačku po tačku. Završite ponovnim klikom na poslednju tačku, tasterom Enter ili trakom na dnu plana. Oko trase se pojavljuje zona „ne bušiti”. Deonice idu pod pravim uglom, kako se kablovi zaista polažu; za kosu deonicu držite Alt. Dužinu deonice možete ukucati i pritisnuti Enter.",
         "photo": "Dodirnite mesto gde je fotografija snimljena i izaberite sliku.",
         "rect": "Dodirnite jedan ugao prostorije, pa suprotni. Ili dodirnite prvi ugao i otkucajte dimenzije, npr. „3.5x4“, pa Enter.",
-        "view3d": "3D prikaz za proveru visina i trasa. Kliknite na tačku ili trasu da biste je izmenili desno. Crtanje radi u 2D."
+        "view3d": "3D prikaz za proveru visina i trasa. Kliknite na tačku ili trasu da biste je izmenili desno. Crtanje radi u 2D.",
+        "opening": "Izaberite vrata ili prozor i kliknite na zid. Otvor se poravna sa zidom; širinu i stranu otvaranja podesite desno."
       },
       "noDevice": "Bez osigurača",
       "finish": "Gotovo",
@@ -913,7 +915,14 @@
       "roomDepth": "Dubina",
       "concealed": "Skrivena ispod završne obrade (malter, pločice, spušteni plafon)",
       "undoPoint": "Ukloni tačku",
-      "backToPlan": "Nazad na plan"
+      "backToPlan": "Nazad na plan",
+      "openingKind": {
+        "door": "Vrata",
+        "window": "Prozor"
+      },
+      "openingWidth": "Širina",
+      "openingFlip": "Otvara se na drugu stranu",
+      "openingOnWall": "Kliknite na zid: vrata i prozori idu u zid."
     },
     "media": {
       "photosHint": "Fotografišite zidove pre malterisanja: posle nekoliko godina po tim slikama najlakše ćete videti gde idu kablovi.",
