@@ -55,7 +55,8 @@
   "banner": {
     "demo": "Ovo je demo stan. Podaci su izmišljeni i izmene se nigde ne čuvaju.",
     "draft": "Imate neobjavljene izmene i gledate nacrt.",
-    "draftAction": "Objavi"
+    "draftAction": "Objavi",
+    "leaveDemo": "Izađi iz demoa"
   },
   "search": {
     "open": "Pretraga",

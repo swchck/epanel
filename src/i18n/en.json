@@ -55,7 +55,8 @@
   "banner": {
     "demo": "This is a demo apartment. The data is made up and nothing you change is saved anywhere.",
     "draft": "You have unpublished changes and are looking at a draft.",
-    "draftAction": "Publish"
+    "draftAction": "Publish",
+    "leaveDemo": "Exit demo"
   },
   "search": {
     "open": "Search",

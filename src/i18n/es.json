@@ -55,7 +55,8 @@
   "banner": {
     "demo": "Este es un piso de demostración. Los datos son inventados y los cambios no se guardan en ningún sitio.",
     "draft": "Tienes cambios sin publicar y estás viendo un borrador.",
-    "draftAction": "Publicar"
+    "draftAction": "Publicar",
+    "leaveDemo": "Salir de la demo"
   },
   "search": {
     "open": "Buscar",

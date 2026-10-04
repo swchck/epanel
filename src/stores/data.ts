@@ -145,6 +145,13 @@ export const useData = defineStore('data', () => {
     void parsing()
     status.value = 'loading'
     error.value = undefined
+    // a re-init (leaving the demo) must not carry the demo's draft over to the real panel
+    cancelAutosave()
+    published.value = null
+    draft.value = null
+    dirty.value = false
+    password.value = null
+    file.value = null
     try {
       if (opts.demo) {
         source.value = 'demo'
@@ -154,11 +161,11 @@ export const useData = defineStore('data', () => {
         await unlock(DEMO_PASSWORD, false)
         return
       }
+      source.value = 'published'
       if (isDesktop) {
         status.value = 'empty'
         return
       }
-      source.value = 'published'
       envelope.value = await fetchEnvelope('panel.enc.json')
       if (!envelope.value) {
         status.value = 'empty'

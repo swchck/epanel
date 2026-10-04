@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useMagicKeys, whenever } from '@vueuse/core'
-import { Ellipsis, FlaskConical, PencilLine, Search } from '@lucide/vue'
+import { Ellipsis, FlaskConical, LogOut, PencilLine, Search } from '@lucide/vue'
 import { Button } from '@/components/ui/button'
 import { Kbd } from '@/components/ui/kbd'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
@@ -20,6 +20,16 @@ import { NAV_ICONS } from './navIcons'
 const data = useData()
 const ui = useUi()
 const route = useRoute()
+const router = useRouter()
+
+// `?demo` would put the visitor straight back into the demo on the next load, so it goes first
+async function leaveDemo() {
+  await router.replace({ path: '/', query: {} })
+  ui.resetSimulation()
+  ui.clearFilters()
+  ui.select(null)
+  await data.init()
+}
 const { t, tx } = useText()
 const moreOpen = ref(false)
 
@@ -125,7 +135,8 @@ whenever(
 
       <div v-if="data.source === 'demo'" class="no-print flex items-center gap-2 border-b bg-info/10 px-4 py-2 text-sm text-info lg:px-8">
         <FlaskConical class="size-4 shrink-0" />
-        <span>{{ t('banner.demo') }}</span>
+        <span class="flex-1">{{ t('banner.demo') }}</span>
+        <Button variant="ghost" size="sm" class="h-7 shrink-0 text-info hover:text-info" @click="leaveDemo"><LogOut /> {{ t('banner.leaveDemo') }}</Button>
       </div>
       <RouterLink
         v-if="data.hasDraft && current !== 'edit'"
