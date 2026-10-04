@@ -493,6 +493,18 @@
       "ga-unknown": {
         "title": "Grupna adresa ne vodi nikuda",
         "hint": "„{point}“ šalje na {group}, ali nijedan kanal aktuatora je ne sluša."
+      },
+      "route-diagonal": {
+        "title": "Trasa ide dijagonalno",
+        "hint": "Trasa {route} ima kos deo. Kablovi se polažu paralelno sa zidovima, pa se sa plana vidi gde tačno idu. Precrtajte taj deo vodoravno i uspravno."
+      },
+      "route-off-wall": {
+        "title": "Trasa „po zidu“ prolazi kroz sobu",
+        "hint": "Za trasu {route} izabrana je montaža u zidu, ali je deo puta dalje od 30 cm od zidova. Vodite je uz zidove ili izaberite montažu u podu ili po plafonu."
+      },
+      "route-drop-midair": {
+        "title": "Spust do tačke nije u zidu",
+        "hint": "Trasa {route} se penje ili spušta do tačke „{point}“, a ona je dalje od 30 cm od zida. Uspravni delovi idu samo kroz zid: pomerite tačku uz zid ili vodite trasu drugačije."
       }
     },
     "rules": {
@@ -523,6 +535,10 @@
       "input": {
         "title": "Odobrena snaga",
         "body": "Procenjena snaga se poredi sa odobrenom snagom iz ugovora, koju možete uneti u opštim podešavanjima uređivača."
+      },
+      "routes": {
+        "title": "Kako se vode trase",
+        "body": "Skrivena instalacija ide samo vodoravno i uspravno, paralelno sa zidovima. Trasa u zidu ne odvaja se od zida. Iz poda ili sa plafona kabl se do utičnice ili prekidača spušta kroz zid, a ne kroz vazduh."
       }
     }
   },
@@ -742,7 +758,7 @@
         "select": "Dodirnite tačku, prostoriju ili fotografiju da je izmenite. Prevucite ručice da pomerite. Točkić ili dva prsta za uvećanje.",
         "room": "Postavljajte uglove prostorije jedan po jedan. Dodirnite prvi ugao ili „Gotovo“ da je zatvorite.",
         "point": "Izaberite tip i osigurač, pa dodirujte plan da postavite tačke.",
-        "route": "Iscrtajte trasu kabla tačku po tačku i dodirnite „Gotovo“. Oko nje se pojavljuje zona bez bušenja.",
+        "route": "Iscrtajte trasu kabla tačku po tačku i dodirnite „Gotovo“. Oko nje se pojavljuje zona bez bušenja. Delovi se crtaju pod pravim uglom, kako se kablovi zaista polažu. Za kos deo držite Alt.",
         "photo": "Dodirnite mesto gde je fotografija snimljena i izaberite sliku."
       },
       "noDevice": "Bez osigurača",

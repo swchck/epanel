@@ -151,9 +151,14 @@ export function referenceIssues(d: PanelData): ValidationIssue[] {
 
 export const MOUNT_DEFAULT: Record<Route['kind'], 'floor' | 'wall' | 'ceiling'> = { power: 'wall', bus: 'wall', low: 'floor', conduit: 'floor' }
 
+// an explicit elevation without a mount means a wall run at that height
+export function routeMount(r: Route): 'floor' | 'wall' | 'ceiling' {
+  return r.mount ?? (r.elevation !== undefined ? 'wall' : MOUNT_DEFAULT[r.kind])
+}
+
 // centimetres above the floor where a run actually sits
 export function routeHeight(r: Route, ceilingCm: number): number {
-  const mount = r.mount ?? (r.elevation !== undefined ? 'wall' : MOUNT_DEFAULT[r.kind])
+  const mount = routeMount(r)
   if (mount === 'floor') return 4
   if (mount === 'ceiling') return Math.max(0, ceilingCm - 6)
   return r.elevation ?? 30

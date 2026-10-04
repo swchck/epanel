@@ -9,6 +9,7 @@ import { layoutPanel, locate } from '../layout'
 import { coincidence, deviceLoad, pointsLoad } from '../load'
 import { buildSearch, whatToSwitchOff } from '../lookup'
 import { taskStatuses } from '../maintenance'
+import { routeIssues } from '../routing'
 import { defaultWidth, referenceIssues, tr } from '../model'
 import { demo, tiny } from './fixture'
 
@@ -279,3 +280,37 @@ describe('bus systems', () => {
     expect(a.alternatives.map((x) => x.id)).toEqual(['D1', 'Q0'])
   })
 })
+
+describe('route geometry', () => {
+  const room = () => {
+    const d = tiny()
+    d.rooms = [{ id: 'r', name: 'r', wet: false, polygon: [[0, 0], [400, 0], [400, 300], [0, 300]] }]
+    d.points = [
+      { id: 'wall', kind: 'socket', x: 390, y: 150, count: 1, controls: [] },
+      { id: 'mid', kind: 'socket', x: 200, y: 150, count: 1, controls: [] },
+    ]
+    return d
+  }
+  const route = (points: [number, number][], extra: object = {}) => ({ id: 'rt', points, kind: 'power' as const, cables: [], safeWidth: 15, ...extra })
+  const codes = (d: ReturnType<typeof tiny>) => routeIssues(d).map((i) => `${i.code}:${i.point?.id ?? ''}`)
+
+  it('accepts a right-angled wall run that ends at a wall outlet', () => {
+    const d = room()
+    d.routes = [route([[10, 10], [390, 10], [390, 150]], { elevation: 30 })]
+    expect(codes(d)).toEqual([])
+  })
+
+  it('flags slanted sections and wall runs that cut across the room', () => {
+    const d = room()
+    d.routes = [route([[10, 10], [390, 150]], { elevation: 30 })]
+    expect(codes(d)).toEqual(['route-diagonal:', 'route-off-wall:'])
+  })
+
+  it('flags a vertical drop that would hang in the middle of the room', () => {
+    const d = room()
+    d.routes = [route([[10, 150], [200, 150]], { mount: 'floor' })]
+    d.points[1]!.heightMm = 1100
+    expect(codes(d)).toEqual(['route-drop-midair:mid'])
+  })
+})
+

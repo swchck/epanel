@@ -11,7 +11,7 @@ import { POINT_COLORS, POINT_ICONS } from '@/components/common/kinds'
 import FloorPlan from '@/components/plan/FloorPlan.vue'
 import { ASSET_PREFIX } from '@/domain/model'
 import { pointInPolygon, snap as snapTo } from '@/domain/geometry'
-import { APPLIANCE_PROFILES, CABLE_TYPES, MOUNT_DEFAULT, POINT_KINDS, ROUTE_KINDS, type Point2, type PointKind, type RouteKind } from '@/domain/model'
+import { APPLIANCE_PROFILES, CABLE_TYPES, POINT_KINDS, ROUTE_KINDS, routeMount, type Point2, type PointKind, type RouteKind } from '@/domain/model'
 import { removePoint, removeRoom, uniqueId } from '@/editor/ops'
 import { compressImage, newId, planImageFrom } from '@/lib/media'
 import { useDraft } from '@/composables/useDraft'
@@ -49,6 +49,15 @@ function sn(v: number) {
   return snapOn.value ? snapTo(v, d.value.plan.grid / 5) : Math.round(v)
 }
 
+// cables run parallel to the walls, so a new route vertex lines up with the previous one; Alt frees the angle
+const freeAngle = ref(false)
+function place(x: number, y: number): Point2 {
+  const p: Point2 = [sn(x), sn(y)]
+  const prev = pending.value.at(-1)
+  if (mode.value !== 'route' || !prev || freeAngle.value) return p
+  return Math.abs(p[0] - prev[0]) >= Math.abs(p[1] - prev[1]) ? [p[0], prev[1]] : [prev[0], p[1]]
+}
+
 const point = computed(() => (sel.value?.kind === 'point' ? d.value.points.find((p) => p.id === sel.value!.id) : undefined))
 const room = computed(() => (sel.value?.kind === 'room' ? d.value.rooms.find((p) => p.id === sel.value!.id) : undefined))
 const route = computed(() => (sel.value?.kind === 'route' ? d.value.routes.find((p) => p.id === sel.value!.id) : undefined))
@@ -66,8 +75,7 @@ function setMode(m: Mode) {
 }
 
 async function onCanvas(x: number, y: number) {
-  const px = sn(x)
-  const py = sn(y)
+  const [px, py] = place(x, y)
   if (mode.value === 'select') {
     sel.value = null
   } else if (mode.value === 'room' || mode.value === 'route') {
@@ -134,7 +142,12 @@ function onPoint(id: string) {
   if (mode.value === 'select' || mode.value === 'point') sel.value = { kind: 'point', id }
 }
 
+function onAlt(e: KeyboardEvent) {
+  freeAngle.value = e.altKey
+}
+
 function onKey(e: KeyboardEvent) {
+  onAlt(e)
   const target = e.target as HTMLElement | null
   if (target?.closest('input,textarea,[contenteditable]')) return
   if (e.key === 'Escape') {
@@ -145,8 +158,14 @@ function onKey(e: KeyboardEvent) {
   // Backspace on a focused button or select trigger must not delete the selection
   else if ((e.key === 'Delete' || e.key === 'Backspace') && sel.value && !target?.closest('button,a,[role=combobox],[role=listbox],[role=dialog]')) removeSelected()
 }
-onMounted(() => window.addEventListener('keydown', onKey))
-onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
+onMounted(() => {
+  window.addEventListener('keydown', onKey)
+  window.addEventListener('keyup', onAlt)
+})
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', onKey)
+  window.removeEventListener('keyup', onAlt)
+})
 
 function removeSelected() {
   const s = sel.value
@@ -278,7 +297,7 @@ const hint = computed(() => t(`editor.plan.hint.${mode.value}`))
           @point="onPoint"
           @room="(id) => mode === 'select' && (sel = { kind: 'room', id })"
           @photo="(id) => (sel = { kind: 'photo', id })"
-          @move="(x, y) => (cursor = [sn(x), sn(y)])"
+          @move="(x, y) => (cursor = place(x, y))"
         >
           <g v-if="pending.length" pointer-events="none">
             <polyline
@@ -477,7 +496,7 @@ const hint = computed(() => t(`editor.plan.hint.${mode.value}`))
         <FormRow :label="t('editor.plan.routeNote')"><LocalizedInput v-model="route.note" multiline /></FormRow>
         <div class="grid grid-cols-2 gap-2">
           <FormRow :label="t('editor.plan.mount')">
-            <Select :model-value="route.mount ?? (route.elevation !== undefined ? 'wall' : MOUNT_DEFAULT[route.kind])" @update:model-value="(v) => (route!.mount = v as 'floor' | 'wall' | 'ceiling')">
+            <Select :model-value="routeMount(route)" @update:model-value="(v) => (route!.mount = v as 'floor' | 'wall' | 'ceiling')">
               <SelectTrigger class="w-full"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem v-for="m in ['floor', 'wall', 'ceiling']" :key="m" :value="m">{{ t(`route.mount.${m}`) }}</SelectItem>
@@ -486,7 +505,7 @@ const hint = computed(() => t(`editor.plan.hint.${mode.value}`))
           </FormRow>
           <FormRow :label="t('editor.plan.safeWidth')"><NumberInput v-model="route.safeWidth" :suffix="t('units.cm')" /></FormRow>
         </div>
-        <FormRow v-if="(route.mount ?? (route.elevation !== undefined ? 'wall' : MOUNT_DEFAULT[route.kind])) === 'wall'" :label="t('editor.plan.elevation')" :hint="t('editor.plan.elevationHint')">
+        <FormRow v-if="routeMount(route) === 'wall'" :label="t('editor.plan.elevation')" :hint="t('editor.plan.elevationHint')">
           <NumberInput v-model="route.elevation" optional allow-zero :suffix="t('units.cm')" placeholder="30" />
         </FormRow>
       </div>

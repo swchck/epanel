@@ -493,6 +493,18 @@
       "ga-unknown": {
         "title": "Group address leads nowhere",
         "hint": "\"{point}\" sends to {group}, but no actuator channel listens to it."
+      },
+      "route-diagonal": {
+        "title": "The route runs diagonally",
+        "hint": "Route {route} has a slanted section. Cables are laid parallel to the walls so the plan shows exactly where they are. Redraw the section horizontally and vertically."
+      },
+      "route-off-wall": {
+        "title": "A wall run crosses the room",
+        "hint": "Route {route} is set to run in the wall, but part of it is more than 30 cm away from any wall. Keep it along the walls, or switch it to the floor or the ceiling."
+      },
+      "route-drop-midair": {
+        "title": "The drop to a point is not in a wall",
+        "hint": "Route {route} rises or drops to \"{point}\", which is more than 30 cm from a wall. Vertical sections only run inside walls: move the point to a wall or route the cable differently."
       }
     },
     "rules": {
@@ -523,6 +535,10 @@
       "input": {
         "title": "Supply capacity",
         "body": "Estimated demand is compared with the contracted capacity, which you can set in the editor's general settings."
+      },
+      "routes": {
+        "title": "How routes are laid",
+        "body": "Concealed wiring runs only horizontally and vertically, parallel to the walls. A wall run stays in the wall. From the floor or the ceiling, the cable goes down a wall to the socket or switch, never through open air."
       }
     }
   },
@@ -742,7 +758,7 @@
         "select": "Tap a point, room or photo to edit it. Drag the handles to move. Wheel or pinch to zoom.",
         "room": "Place the room corners one by one. Tap the first corner or \"Done\" to close it.",
         "point": "Pick a type and a breaker, then tap the plan to place points.",
-        "route": "Trace the cable route point by point and tap \"Done\". A no-drill zone appears around it.",
+        "route": "Trace the cable route point by point and tap \"Done\". A no-drill zone appears around it. Sections snap to right angles, the way cables are actually laid. Hold Alt for a slanted section.",
         "photo": "Tap where the photo was taken and pick the image."
       },
       "noDevice": "No breaker",

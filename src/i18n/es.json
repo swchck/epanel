@@ -493,6 +493,18 @@
       "ga-unknown": {
         "title": "La dirección de grupo no lleva a ningún sitio",
         "hint": "«{point}» envía a {group}, pero ningún canal de actuador la escucha."
+      },
+      "route-diagonal": {
+        "title": "El recorrido va en diagonal",
+        "hint": "El recorrido {route} tiene un tramo inclinado. Los cables se colocan paralelos a las paredes para que el plano muestre dónde están. Vuelve a dibujar el tramo en horizontal y en vertical."
+      },
+      "route-off-wall": {
+        "title": "Un tramo por pared cruza la habitación",
+        "hint": "El recorrido {route} está marcado como empotrado en pared, pero una parte se aleja más de 30 cm de las paredes. Llévalo junto a las paredes o cámbialo a suelo o techo."
+      },
+      "route-drop-midair": {
+        "title": "La bajada al punto no va por la pared",
+        "hint": "El recorrido {route} sube o baja hasta «{point}», que está a más de 30 cm de una pared. Los tramos verticales solo van por dentro de la pared: acerca el punto a una pared o cambia el recorrido."
       }
     },
     "rules": {
@@ -523,6 +535,10 @@
       "input": {
         "title": "Potencia contratada",
         "body": "La demanda estimada se compara con la potencia contratada, que puedes indicar en los ajustes generales del editor."
+      },
+      "routes": {
+        "title": "Cómo van los recorridos",
+        "body": "La instalación empotrada va solo en horizontal y en vertical, paralela a las paredes. Un tramo por pared no se separa de ella. Desde el suelo o el techo, el cable baja hasta el enchufe o el interruptor por la pared, nunca por el aire."
       }
     }
   },
@@ -742,7 +758,7 @@
         "select": "Toca un punto, una estancia o una foto para editarlo. Arrastra los tiradores para moverlo. Rueda o pellizco para hacer zoom.",
         "room": "Coloca las esquinas de la estancia una a una. Toca la primera esquina o «Listo» para cerrarla.",
         "point": "Elige un tipo y un automático y luego toca el plano para colocar puntos.",
-        "route": "Traza el recorrido del cable punto a punto y toca «Listo». A su alrededor aparecerá una zona sin taladrar.",
+        "route": "Traza el recorrido del cable punto a punto y toca «Listo». A su alrededor aparecerá una zona sin taladrar. Los tramos se dibujan en ángulo recto, como se colocan los cables de verdad. Para un tramo inclinado, mantén Alt.",
         "photo": "Toca el lugar donde se hizo la foto y elige la imagen."
       },
       "noDevice": "Sin automático",

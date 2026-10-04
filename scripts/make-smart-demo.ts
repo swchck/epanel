@@ -79,20 +79,20 @@ const relink: Record<string, string> = { 'l-light': 'QA1', 'l-light2': 'QA1', 'b
 for (const p of d.points) if (relink[p.id]) p.device = relink[p.id]
 
 d.points.push(
-  { id: 'h-panel', kind: 'panel', room: 'hallway', x: 360, y: 600, heightMm: 1300, label: { ru: 'Центральная панель у входа', en: 'Main panel by the entrance' }, controls: ['1/1/1', '1/1/2', '1/2/1', '1/3/1', '3/1/1', '0/0/1'] },
-  { id: 'l-panel', kind: 'panel', room: 'living', x: 360, y: 430, heightMm: 1300, label: { ru: 'Сенсорная панель гостиной', en: 'Living room touch panel' }, controls: ['1/1/1', '1/1/2'] },
-  { id: 'b-panel', kind: 'panel', room: 'bedroom', x: 580, y: 430, heightMm: 1300, label: { ru: 'Панель спальни', en: 'Bedroom panel' }, controls: ['1/2/1'] },
-  { id: 'bt-panel', kind: 'panel', room: 'hallway', x: 300, y: 560, heightMm: 1300, label: { ru: 'Терморегулятор ванной', en: 'Bathroom thermostat' }, controls: ['3/1/1'] },
-  { id: 'bt-leak', kind: 'sensor', room: 'bathroom', x: 90, y: 730, device: 'KI1', label: { ru: 'Датчик протечки под стиральной машиной', en: 'Leak sensor under the washer' }, controls: ['0/0/1'] },
+  { id: 'h-touch', kind: 'panel', room: 'hallway', x: 310, y: 640, heightMm: 1300, label: { ru: 'Центральная панель у входа', en: 'Main panel by the entrance' }, controls: ['1/1/1', '1/1/2', '1/2/1', '1/3/1', '3/1/1', '0/0/1'] },
+  { id: 'l-panel', kind: 'panel', room: 'living', x: 360, y: 440, heightMm: 1300, label: { ru: 'Сенсорная панель гостиной', en: 'Living room touch panel' }, controls: ['1/1/1', '1/1/2'] },
+  { id: 'b-panel', kind: 'panel', room: 'bedroom', x: 580, y: 440, heightMm: 1300, label: { ru: 'Панель спальни', en: 'Bedroom panel' }, controls: ['1/2/1'] },
+  { id: 'bt-panel', kind: 'panel', room: 'hallway', x: 310, y: 560, heightMm: 1300, label: { ru: 'Терморегулятор ванной', en: 'Bathroom thermostat' }, controls: ['3/1/1'] },
+  { id: 'bt-leak', kind: 'sensor', room: 'bathroom', x: 90, y: 740, device: 'KI1', label: { ru: 'Датчик протечки под стиральной машиной', en: 'Leak sensor under the washer' }, controls: ['0/0/1'] },
 )
 
 const bus = (id: string, points: number[][], note: Any) => ({ id, kind: 'bus', points, note, safeWidth: 10, mount: 'ceiling' })
 d.routes.push(
-  bus('bus-1', [[325, 740], [325, 600], [360, 600]], { ru: 'KNX TP, зелёный кабель J-Y(St)Y 2×2×0.8', en: 'KNX TP, green J-Y(St)Y 2×2×0.8' }),
-  bus('bus-2', [[360, 600], [360, 430]], { ru: 'KNX TP до панели гостиной', en: 'KNX TP to the living room panel' }),
-  bus('bus-3', [[360, 430], [580, 430]], { ru: 'KNX TP шлейфом до спальни', en: 'KNX TP daisy-chained to the bedroom' }),
-  bus('bus-4', [[325, 600], [300, 560]], { ru: 'KNX TP до терморегулятора', en: 'KNX TP to the thermostat' }),
-  bus('bus-5', [[315, 740], [90, 745], [90, 730]], { ru: 'Шлейф датчика протечки', en: 'Leak sensor loop' }),
+  bus('bus-1', [[315, 740], [315, 640]], { ru: 'KNX TP, зелёный кабель J-Y(St)Y 2×2×0.8', en: 'KNX TP, green J-Y(St)Y 2×2×0.8' }),
+  bus('bus-4', [[315, 640], [315, 560]], { ru: 'KNX TP шлейфом до терморегулятора', en: 'KNX TP daisy-chained to the thermostat' }),
+  bus('bus-2', [[315, 560], [315, 440], [360, 440]], { ru: 'KNX TP до панели гостиной', en: 'KNX TP to the living room panel' }),
+  bus('bus-3', [[360, 440], [580, 440]], { ru: 'KNX TP шлейфом до спальни', en: 'KNX TP daisy-chained to the bedroom' }),
+  bus('bus-5', [[305, 748], [90, 748], [90, 740]], { ru: 'Шлейф датчика протечки', en: 'Leak sensor loop' }),
 )
 
 d.maintenance.tasks.push({

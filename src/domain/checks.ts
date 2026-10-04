@@ -2,6 +2,7 @@ import type { PowerGraph } from './graph'
 import { aggregateLoad, deviceLoad, pointsLoad } from './load'
 import type { Device, PanelData } from './model'
 import { RCD_TYPES, SMART_TYPES } from './model'
+import { routeIssues } from './routing'
 
 export type CheckLevel = 'error' | 'warn' | 'info'
 
@@ -119,6 +120,9 @@ export function runChecks(data: PanelData, g: PowerGraph): CheckResult[] {
   }
 
   checkBus(data, out)
+
+  for (const i of routeIssues(data))
+    out.push({ level: 'warn', code: i.code, device: i.route.device, point: i.point?.id, params: { route: i.route.id } })
 
   const total = aggregateLoad(g, g.roots)
   if (data.supply.maxPowerKw) {

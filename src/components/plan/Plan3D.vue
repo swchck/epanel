@@ -8,6 +8,7 @@ import { CABLE_COLORS, POINT_COLORS } from '@/components/common/kinds'
 import { TYPE_ACCENT } from '@/components/panel/geometry'
 import { isDark } from '@/composables/useTheme'
 import { useText } from '@/composables/useText'
+import { pointAt, pointHeight as pointHeightOf } from '@/domain/routing'
 import { useData } from '@/stores/data'
 
 const props = defineProps<{
@@ -26,32 +27,7 @@ const host = ref<HTMLDivElement | null>(null)
 const tip = ref<{ x: number; y: number; text: string } | null>(null)
 
 // centimetres everywhere, Y is up; plan x → X, plan y → Z
-const DEFAULT_HEIGHT: Record<PlanPoint['kind'], number> = {
-  socket: 30,
-  switch: 90,
-  light: -3,
-  appliance: 50,
-  heating: 2,
-  ac: 240,
-  junction: 200,
-  network: 180,
-  data: 30,
-  panel: 130,
-  sensor: 15,
-  other: 50,
-}
-// a route endpoint this close to a point (plan units) is treated as feeding it, and gets a vertical drop
-const DROP_SNAP = 45
-
-function ceilingOf(roomId?: string) {
-  return d.value.rooms.find((r) => r.id === roomId)?.ceilingCm ?? d.value.plan.wallHeight
-}
-
-function pointHeight(p: PlanPoint) {
-  if (p.heightMm !== undefined) return p.heightMm / 10
-  const h = DEFAULT_HEIGHT[p.kind]
-  return h < 0 ? ceilingOf(p.room) + h : h
-}
+const pointHeight = (p: PlanPoint) => pointHeightOf(d.value, p)
 
 let renderer: THREE.WebGLRenderer | undefined
 let camera: THREE.PerspectiveCamera | undefined
@@ -186,19 +162,10 @@ function routeColor(device?: string) {
 function routePath(r: Route): THREE.Vector3[] {
   const elev = routeHeight(r, d.value.plan.wallHeight)
   const out = r.points.map(([x, y]) => new THREE.Vector3(x, elev, y))
-  const near = (x: number, y: number) => {
-    let best: PlanPoint | undefined
-    let bestDist = DROP_SNAP
-    for (const p of d.value.points) {
-      const dist = Math.hypot(p.x - x, p.y - y)
-      if (dist <= bestDist) [best, bestDist] = [p, dist]
-    }
-    return best
-  }
   const [sx, sy] = r.points[0]!
   const [ex, ey] = r.points.at(-1)!
-  const start = near(sx, sy)
-  const end = near(ex, ey)
+  const start = pointAt(d.value.points, sx, sy)
+  const end = pointAt(d.value.points, ex, ey)
   // vertical runs inside the wall: down from the ceiling or up from the screed to the outlet
   if (start) out.unshift(new THREE.Vector3(sx, pointHeight(start), sy))
   if (end) out.push(new THREE.Vector3(ex, pointHeight(end), ey))

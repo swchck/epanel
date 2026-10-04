@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { Cable as CableIcon, Spline } from '@lucide/vue'
-import { MOUNT_DEFAULT, routeHeight, type Route } from '@/domain/model'
+import { routeHeight, routeMount, type Route } from '@/domain/model'
 import { useText } from '@/composables/useText'
 import { useData } from '@/stores/data'
 import DeviceChip from './DeviceChip.vue'
@@ -18,7 +18,7 @@ const lengthM = computed(() => {
   return s / 100
 })
 const mountText = computed(() => {
-  const mount = props.route.mount ?? (props.route.elevation !== undefined ? 'wall' : MOUNT_DEFAULT[props.route.kind])
+  const mount = routeMount(props.route)
   return mount === 'wall' ? t('route.mount.wallAt', { cm: routeHeight(props.route, 0) }) : t(`route.mount.${mount}`)
 })
 const total = computed(() => props.route.cables.reduce((n, c) => n + c.count, 0))

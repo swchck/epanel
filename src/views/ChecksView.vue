@@ -40,7 +40,7 @@ function tone(u: number) {
   return u > 1 ? 'bg-danger' : u > 0.8 ? 'bg-warn' : 'bg-ok'
 }
 
-const RULES = ['cable', 'load', 'selectivity', 'rcd', 'wet', 'class', 'input'] as const
+const RULES = ['cable', 'load', 'selectivity', 'rcd', 'wet', 'class', 'input', 'routes'] as const
 </script>
 
 <template>
