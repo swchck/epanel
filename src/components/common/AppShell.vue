@@ -106,7 +106,7 @@ whenever(
 <template>
   <div class="min-h-dvh bg-background lg:grid lg:h-dvh lg:grid-cols-[var(--sidebar-w)_1fr] lg:overflow-hidden print:block print:h-auto print:overflow-visible">
     <aside class="no-print sticky top-0 hidden h-dvh flex-col border-r border-sidebar-border bg-sidebar lg:flex">
-      <div class="flex items-center gap-1 pt-[calc(var(--titlebar)+1rem)] pb-3" :class="collapsed ? 'justify-center px-2' : 'pr-2 pl-5'">
+      <div class="flex items-center pt-[calc(var(--titlebar)+1rem)] pb-3" :class="collapsed ? 'justify-center px-2' : 'px-5'">
         <RouterLink to="/" class="flex min-w-0 flex-1 items-center gap-3" :class="{ 'justify-center': collapsed }">
           <BrandMark class="size-9 shrink-0" />
           <div v-if="!collapsed" class="min-w-0">
@@ -114,12 +114,6 @@ whenever(
             <div class="truncate text-xs text-muted-foreground">{{ t('app.tagline') }}</div>
           </div>
         </RouterLink>
-        <Tooltip v-if="!collapsed">
-          <TooltipTrigger as-child>
-            <Button variant="ghost" size="icon-sm" class="shrink-0 text-muted-foreground" :aria-label="t('nav.collapse')" @click="ui.sidebarCollapsed = true"><PanelLeftClose /></Button>
-          </TooltipTrigger>
-          <TooltipContent side="right">{{ t('nav.collapse') }} <Kbd>⌘\</Kbd></TooltipContent>
-        </Tooltip>
       </div>
       <Tooltip :disabled="!collapsed">
         <TooltipTrigger as-child>
@@ -183,11 +177,13 @@ whenever(
           <TooltipContent side="right">{{ t('nav.leave') }}</TooltipContent>
         </Tooltip>
         <div v-else-if="!collapsed" class="flex-1" />
-        <Tooltip v-if="collapsed">
+        <Tooltip>
           <TooltipTrigger as-child>
-            <Button variant="ghost" size="icon" class="size-9" :aria-label="t('nav.expand')" @click="ui.sidebarCollapsed = false"><PanelLeftOpen /></Button>
+            <Button variant="ghost" size="icon" class="size-9 shrink-0 text-muted-foreground" :aria-label="t(collapsed ? 'nav.expand' : 'nav.collapse')" @click="ui.sidebarCollapsed = !collapsed">
+              <component :is="collapsed ? PanelLeftOpen : PanelLeftClose" />
+            </Button>
           </TooltipTrigger>
-          <TooltipContent side="right">{{ t('nav.expand') }} <Kbd>⌘\</Kbd></TooltipContent>
+          <TooltipContent side="right">{{ t(collapsed ? 'nav.expand' : 'nav.collapse') }} <Kbd>⌘\</Kbd></TooltipContent>
         </Tooltip>
       </div>
     </aside>
