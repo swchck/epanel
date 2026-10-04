@@ -8,8 +8,18 @@ import DeviceModule from './DeviceModule.vue'
 import PanelDefs from './PanelDefs.vue'
 import { HEIGHT, MODULE, RAIL_PAD, ROW_GAP } from './geometry'
 
-const props = withDefaults(defineProps<{ interactive?: boolean; focus?: string | null; onlyRow?: number }>(), { interactive: true, focus: null, onlyRow: undefined })
-const emit = defineEmits<{ select: [id: string] }>()
+const props = withDefaults(
+  defineProps<{
+    interactive?: boolean
+    focus?: string | null
+    onlyRow?: number
+    // editor mode: free rail space and blanks become "+" targets
+    addable?: boolean
+    activeSlot?: { row: number; index: number } | null
+  }>(),
+  { interactive: true, focus: null, onlyRow: undefined, addable: false, activeSlot: null },
+)
+const emit = defineEmits<{ select: [id: string]; add: [row: number, index: number] }>()
 
 const data = useData()
 const ui = useUi()
@@ -72,6 +82,10 @@ function activate(id: string) {
   else emit('select', id)
 }
 
+const rowIndexOf = (ri: number) => props.onlyRow ?? ri
+const tailIndex = (ri: number) => data.data?.rows[rowIndexOf(ri)]?.items.length ?? 0
+const isSlot = (ri: number, index: number) => props.activeSlot?.row === rowIndexOf(ri) && props.activeSlot.index === index
+
 function label(id: string) {
   const d = data.graph?.byId.get(id)
   return d ? `${d.id} ${tr(d.label, locale.value)}` : id
@@ -104,9 +118,22 @@ function label(id: string) {
       <text :x="-RAIL_PAD + 4" :y="-10" class="rowno">{{ (onlyRow ?? ri) + 1 }}</text>
 
       <template v-for="item in row.items" :key="item.device?.id ?? `blank-${item.start}`">
-        <g v-if="item.kind === 'blank'" :transform="`translate(${item.start * MODULE}, 0)`">
+        <g
+          v-if="item.kind === 'blank'"
+          :transform="`translate(${item.start * MODULE}, 0)`"
+          :class="{ 'add-slot': addable, 'is-active': isSlot(ri, item.index) }"
+          :role="addable ? 'button' : undefined"
+          :tabindex="addable ? 0 : undefined"
+          :aria-label="addable ? $t('editor.panel.addHere') : undefined"
+          @click="addable && emit('add', rowIndexOf(ri), item.index)"
+          @keydown.enter.prevent="addable && emit('add', rowIndexOf(ri), item.index)"
+        >
           <rect x="1" y="38" :width="item.width * MODULE - 2" :height="HEIGHT - 76" rx="3" fill="url(#blank)" stroke="#b9b6aa" />
           <line v-for="k in Math.ceil(item.width) - 1" :key="k" :x1="k * MODULE" y1="44" :x2="k * MODULE" :y2="HEIGHT - 44" stroke="#c8c5b9" />
+          <g v-if="addable" class="plus" :transform="`translate(${(item.width * MODULE) / 2}, ${HEIGHT / 2})`">
+            <circle r="13" />
+            <path d="M -6 0 H 6 M 0 -6 V 6" />
+          </g>
         </g>
         <g
           v-else-if="item.device"
@@ -145,6 +172,23 @@ function label(id: string) {
           <rect v-if="item.overflow" x="0" y="0" :width="item.width * MODULE" :height="HEIGHT" fill="none" stroke="var(--danger)" stroke-width="2" stroke-dasharray="4 3" />
         </g>
       </template>
+      <g
+        v-if="addable && row.used < row.modules"
+        :transform="`translate(${row.used * MODULE}, 0)`"
+        class="add-slot"
+        :class="{ 'is-active': isSlot(ri, tailIndex(ri)) }"
+        role="button"
+        tabindex="0"
+        :aria-label="$t('editor.panel.addHere')"
+        @click="emit('add', rowIndexOf(ri), tailIndex(ri))"
+        @keydown.enter.prevent="emit('add', rowIndexOf(ri), tailIndex(ri))"
+      >
+        <rect class="tail" x="2" y="2" :width="(row.modules - row.used) * MODULE - 4" :height="HEIGHT - 4" rx="6" />
+        <g class="plus" :transform="`translate(${Math.min(MODULE, ((row.modules - row.used) * MODULE) / 2)}, ${HEIGHT / 2})`">
+          <circle r="13" />
+          <path d="M -6 0 H 6 M 0 -6 V 6" />
+        </g>
+      </g>
     </g>
   </svg>
 </template>
@@ -180,5 +224,44 @@ text {
 }
 .mark-sm {
   font-size: 8px;
+}
+.add-slot {
+  cursor: pointer;
+  outline: none;
+}
+.add-slot .tail {
+  fill: #000;
+  fill-opacity: 0.03;
+  stroke: #6b7280;
+  stroke-opacity: 0.5;
+  stroke-dasharray: 5 4;
+}
+.add-slot .plus circle {
+  fill: #ffffff;
+  stroke: #9ca3af;
+}
+.add-slot .plus path {
+  stroke: #4b5563;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+.add-slot:hover .tail,
+.add-slot:focus-visible .tail,
+.add-slot.is-active .tail {
+  fill: var(--primary);
+  fill-opacity: 0.12;
+  stroke: var(--primary);
+  stroke-opacity: 1;
+}
+.add-slot:hover .plus circle,
+.add-slot:focus-visible .plus circle,
+.add-slot.is-active .plus circle {
+  fill: var(--primary);
+  stroke: var(--primary);
+}
+.add-slot:hover .plus path,
+.add-slot:focus-visible .plus path,
+.add-slot.is-active .plus path {
+  stroke: var(--primary-foreground);
 }
 </style>

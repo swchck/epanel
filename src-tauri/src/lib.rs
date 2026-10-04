@@ -65,6 +65,12 @@ fn write_text(path: String, text: String) -> Result<(), String> {
     })
 }
 
+// WKWebView ignores window.print(), so the page asks the native side to open the print dialog
+#[tauri::command]
+fn print_page(webview: tauri::Webview) -> Result<(), String> {
+    webview.print().map_err(|e| e.to_string())
+}
+
 #[tauri::command]
 fn take_opened_file(pending: State<'_, PendingOpen>) -> Option<OpenedFile> {
     let path = pending.0.lock().ok()?.take()?;
@@ -83,7 +89,7 @@ pub fn run() {
     let app = tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
         .manage(PendingOpen(Mutex::new(panel_arg())))
-        .invoke_handler(tauri::generate_handler![read_text, write_text, take_opened_file])
+        .invoke_handler(tauri::generate_handler![read_text, write_text, take_opened_file, print_page])
         .build(tauri::generate_context!())
         .expect("error while building the panel editor");
 

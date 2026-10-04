@@ -142,7 +142,7 @@ whenever(
       </div>
     </aside>
 
-    <div class="relative flex min-w-0 flex-col" :class="{ 'lg:h-dvh lg:overflow-hidden': fill }">
+    <div class="relative flex min-w-0 flex-col overflow-x-clip" :class="{ 'lg:h-dvh lg:overflow-hidden': fill }">
       <!-- the window has no title bar: the banners are the drag handle when shown, otherwise this strip over the page's top padding -->
       <div v-if="overlayTitlebar && !banner" data-tauri-drag-region class="absolute inset-x-0 top-0 z-20 h-(--titlebar)" />
       <header class="no-print sticky top-0 z-30 flex items-center gap-2 border-b bg-background/85 px-4 pt-[calc(var(--titlebar)+0.625rem)] pb-2.5 backdrop-blur-md lg:hidden">

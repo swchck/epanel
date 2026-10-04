@@ -1,4 +1,4 @@
-import type { Device, DeviceType, PanelData, RowItem } from '@/domain/model'
+import { defaultWidth, type Device, type DeviceType, type PanelData, type RowItem } from '@/domain/model'
 
 const ID_PREFIX: Record<DeviceType, string> = {
   mcb: 'QF',
@@ -114,6 +114,36 @@ export function moveToRow(d: PanelData, id: string, targetRow: number) {
   if (!d.rows[targetRow]) return
   if (loc) d.rows[loc.row]!.items.splice(loc.index, 1)
   d.rows[targetRow]!.items.push(id)
+}
+
+/**
+ * Puts a device into a row at `index` of row.items. When that index holds a blank, the device
+ * takes its place and the blank shrinks by the device width, the way a cover strip is cut back.
+ */
+export function placeAt(d: PanelData, id: string, row: number, index: number) {
+  const items = d.rows[row]?.items
+  if (!items) return
+  const at = items[index]
+  const dev = d.devices.find((x) => x.id === id)
+  if (at && typeof at !== 'string' && dev) {
+    const left = at.blank - defaultWidth(dev)
+    if (left > 0) at.blank = left
+    else items.splice(index, 1)
+  }
+  items.splice(index, 0, id)
+}
+
+/** Returns the feeder a device placed at `index` most likely hangs off: the RCD to its left, or that neighbour's own feeder. */
+export function feederAt(d: PanelData, row: number, index: number): string | undefined {
+  const items = d.rows[row]?.items ?? []
+  for (let i = index - 1; i >= 0; i--) {
+    const it = items[i]
+    if (typeof it !== 'string') continue
+    const dev = d.devices.find((x) => x.id === it)
+    if (!dev) continue
+    return dev.type === 'rcd' ? dev.id : dev.upstream
+  }
+  return undefined
 }
 
 export function insertBlank(d: PanelData, row: number, index: number, width = 1) {

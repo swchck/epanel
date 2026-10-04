@@ -9,6 +9,8 @@ export interface PlacedItem {
   position: number
   // 0-based offset in DIN modules from the left end of the rail
   start: number
+  // index in row.items, which differs from the visual order when a row lists an unknown device id
+  index: number
   width: number
   overflow: boolean
 }
@@ -26,19 +28,19 @@ export function layoutPanel(data: Pick<PanelData, 'rows' | 'devices'>): RowLayou
     let start = 0
     let position = 0
     const items: PlacedItem[] = []
-    for (const it of row.items) {
+    row.items.forEach((it, index) => {
       if (typeof it === 'string') {
         const device = byId.get(it)
-        if (!device) continue
+        if (!device) return
         const width = defaultWidth(device)
         position += 1
-        items.push({ kind: 'device', device, rowIndex, position, start, width, overflow: start + width > row.modules })
+        items.push({ kind: 'device', device, rowIndex, position, start, index, width, overflow: start + width > row.modules })
         start += width
       } else {
-        items.push({ kind: 'blank', rowIndex, position: 0, start, width: it.blank, overflow: start + it.blank > row.modules })
+        items.push({ kind: 'blank', rowIndex, position: 0, start, index, width: it.blank, overflow: start + it.blank > row.modules })
         start += it.blank
       }
-    }
+    })
     return { id: row.id, modules: row.modules, used: start, items }
   })
 }

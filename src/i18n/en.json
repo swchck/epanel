@@ -733,7 +733,6 @@
       "contactNote": "Comment"
     },
     "panel": {
-      "palette": "Add to row {row}",
       "used": "{used} of {total} modules",
       "mod": "mod.",
       "blank": "blank",
@@ -741,7 +740,7 @@
       "wider": "Wider",
       "addRow": "Add row",
       "unplaced": "Not placed in the panel",
-      "pick": "Pick a device on the panel or add a new one from the palette.",
+      "pick": "Pick what to put there from the list. To change a device that is already in place, tap it.",
       "left": "Move left",
       "right": "Move right",
       "rowUp": "Row up",
@@ -765,7 +764,12 @@
       "brand": "Manufacturer",
       "model": "Model",
       "tags": "Tags",
-      "tagsHint": "Comma-separated: kitchen, sockets"
+      "tagsHint": "Comma-separated: kitchen, sockets",
+      "addHere": "Add a device here",
+      "slotTitle": "What goes here?",
+      "slotWhere": "Row {row}, free modules: {free}",
+      "insertRight": "Add to the right",
+      "howAdd": "Tap “+” on a free spot in the panel"
     },
     "smart": {
       "title": "Smart-home bus",

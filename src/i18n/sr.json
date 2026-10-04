@@ -733,7 +733,6 @@
       "contactNote": "Komentar"
     },
     "panel": {
-      "palette": "Dodaj u red {row}",
       "used": "{used} od {total} modula",
       "mod": "mod.",
       "blank": "prazno",
@@ -741,7 +740,7 @@
       "wider": "Šire",
       "addRow": "Dodaj red",
       "unplaced": "Nije postavljeno na tablu",
-      "pick": "Izaberite uređaj na tabli ili dodajte novi iz palete.",
+      "pick": "Iz liste izaberite šta da postavite. Da izmenite uređaj koji je već postavljen, dodirnite ga.",
       "left": "Pomeri levo",
       "right": "Pomeri desno",
       "rowUp": "Red iznad",
@@ -765,7 +764,12 @@
       "brand": "Proizvođač",
       "model": "Model",
       "tags": "Oznake",
-      "tagsHint": "Odvojeno zarezima: kuhinja, utičnice"
+      "tagsHint": "Odvojeno zarezima: kuhinja, utičnice",
+      "addHere": "Dodaj uređaj ovde",
+      "slotTitle": "Šta ide ovde?",
+      "slotWhere": "Red {row}, slobodnih modula: {free}",
+      "insertRight": "Dodaj desno",
+      "howAdd": "Dodirnite „+“ na slobodnom mestu u tabli"
     },
     "smart": {
       "title": "Magistrala pametne kuće",

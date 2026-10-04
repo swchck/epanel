@@ -93,3 +93,10 @@ export async function confirmAction(message: string): Promise<boolean> {
   const { ask } = await import('@tauri-apps/plugin-dialog')
   return ask(message, { kind: 'warning' })
 }
+
+/** Opens the print dialog for the current page. */
+export async function printPage(): Promise<void> {
+  if (!isDesktop) return window.print()
+  const { invoke } = await import('@tauri-apps/api/core')
+  await invoke('print_page')
+}

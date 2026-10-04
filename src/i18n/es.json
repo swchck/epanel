@@ -733,7 +733,6 @@
       "contactNote": "Comentario"
     },
     "panel": {
-      "palette": "Añadir a la fila {row}",
       "used": "{used} de {total} módulos",
       "mod": "mód.",
       "blank": "hueco",
@@ -741,7 +740,7 @@
       "wider": "Más ancho",
       "addRow": "Añadir fila",
       "unplaced": "Sin colocar en el cuadro",
-      "pick": "Elige un dispositivo del cuadro o añade uno nuevo desde la paleta.",
+      "pick": "Elige de la lista qué poner. Para cambiar un dispositivo ya colocado, tócalo.",
       "left": "Mover a la izquierda",
       "right": "Mover a la derecha",
       "rowUp": "Fila de arriba",
@@ -765,7 +764,12 @@
       "brand": "Fabricante",
       "model": "Modelo",
       "tags": "Etiquetas",
-      "tagsHint": "Separadas por comas: cocina, enchufes"
+      "tagsHint": "Separadas por comas: cocina, enchufes",
+      "addHere": "Añadir un dispositivo aquí",
+      "slotTitle": "¿Qué va aquí?",
+      "slotWhere": "Fila {row}, módulos libres: {free}",
+      "insertRight": "Añadir a la derecha",
+      "howAdd": "Toca «+» en un hueco libre del cuadro"
     },
     "smart": {
       "title": "Bus domótico",

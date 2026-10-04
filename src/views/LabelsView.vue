@@ -7,6 +7,7 @@ import { Switch } from '@/components/ui/switch'
 import QrCode from '@/components/common/QrCode.vue'
 import { useText } from '@/composables/useText'
 import { appUrl } from '@/lib/appUrl'
+import { printPage } from '@/platform'
 import { useData } from '@/stores/data'
 
 const data = useData()
@@ -19,8 +20,8 @@ const MODULE_MM = 17.5
 const labelHeight = ref(14)
 const MM_PX = 96 / 25.4
 
-// a full 18-module strip is 315 mm, wider than the page column; the preview shrinks to fit,
-// print keeps the real size (zoom is reset in the print styles below)
+// a full 18-module strip is 315 mm, wider than the page column; the preview scales down to fit and
+// print keeps the real size. transform, not zoom: WebKit (the desktop window) lays zoomed boxes out at full width
 const strips = ref<HTMLElement | null>(null)
 const { width: stripsWidth } = useElementSize(strips)
 const stripZoom = computed(() => {
@@ -33,7 +34,7 @@ const deviceUrl = (id: string) => appUrl(data.data?.meta.publicUrl, `/d/${id}`, 
 const noBase = computed(() => !mainUrl.value.startsWith('http'))
 
 function print() {
-  window.print()
+  void printPage()
 }
 
 function rating(id: string) {
@@ -79,18 +80,20 @@ function rating(id: string) {
       <section v-if="showLabels" ref="strips" class="strips space-y-[6mm]">
         <div v-for="(row, ri) in data.layout" :key="row.id" class="strip-wrap">
           <div class="no-print mb-1 text-xs text-muted-foreground">{{ t('labels.row', { n: ri + 1 }) }}</div>
-          <div class="strip flex bg-white text-black" :style="{ width: `${row.modules * MODULE_MM}mm`, zoom: stripZoom }">
-            <div
-              v-for="item in row.items"
-              :key="item.device?.id ?? `b${item.start}`"
-              class="flex shrink-0 flex-col items-center justify-center overflow-hidden border-[0.25mm] border-black/70 px-[0.6mm] text-center"
-              :style="{ width: `${item.width * MODULE_MM}mm`, height: `${labelHeight}mm` }"
-            >
-              <template v-if="item.device">
-                <div class="font-mono text-[2.8mm] leading-none font-bold">{{ item.device.id }}</div>
-                <div class="mt-[0.5mm] line-clamp-2 text-[1.9mm] leading-[1.1]">{{ tx(item.device.label) }}</div>
-                <div class="font-mono text-[1.8mm] leading-none text-neutral-600">{{ rating(item.device.id) }}</div>
-              </template>
+          <div class="strip-box overflow-hidden" :style="{ height: `${labelHeight * MM_PX * stripZoom}px` }">
+            <div class="strip flex origin-top-left bg-white text-black" :style="{ width: `${row.modules * MODULE_MM}mm`, transform: `scale(${stripZoom})` }">
+              <div
+                v-for="item in row.items"
+                :key="item.device?.id ?? `b${item.start}`"
+                class="flex shrink-0 flex-col items-center justify-center overflow-hidden border-[0.25mm] border-black/70 px-[0.6mm] text-center"
+                :style="{ width: `${item.width * MODULE_MM}mm`, height: `${labelHeight}mm` }"
+              >
+                <template v-if="item.device">
+                  <div class="font-mono text-[2.8mm] leading-none font-bold">{{ item.device.id }}</div>
+                  <div class="mt-[0.5mm] line-clamp-2 text-[1.9mm] leading-[1.1]">{{ tx(item.device.label) }}</div>
+                  <div class="font-mono text-[1.8mm] leading-none text-neutral-600">{{ rating(item.device.id) }}</div>
+                </template>
+              </div>
             </div>
           </div>
         </div>
@@ -116,7 +119,11 @@ function rating(id: string) {
     break-inside: avoid;
   }
   .strip {
-    zoom: 1 !important;
+    transform: none !important;
+  }
+  .strip-box {
+    height: auto !important;
+    overflow: visible;
   }
 }
 </style>

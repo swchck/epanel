@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, Minus, Plus, SquareDashed, Trash2 } from '@lucide/vue'
+import { computed, ref, watch } from 'vue'
+import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, Minus, Plus, SquareDashed, Trash2, X } from '@lucide/vue'
 import { Button } from '@/components/ui/button'
 import DeviceChip from '@/components/common/DeviceChip.vue'
 import PanelEnclosure from '@/components/panel/PanelEnclosure.vue'
 import { TYPE_ACCENT } from '@/components/panel/geometry'
-import { DEVICE_TYPES, defaultWidth, type DeviceType } from '@/domain/model'
-import { addDevice, addRow, findItem, insertBlank, moveItem, moveToRow, removeDevice, removeRow } from '@/editor/ops'
+import { DEVICE_TYPES, type DeviceType } from '@/domain/model'
+import { addDevice, addRow, feederAt, findItem, insertBlank, moveItem, moveToRow, placeAt, removeDevice, removeRow } from '@/editor/ops'
 import { useDraft } from '@/composables/useDraft'
 import { useText } from '@/composables/useText'
 import { useUi } from '@/stores/ui'
@@ -19,31 +19,36 @@ const { t, tx } = useText()
 
 const selected = computed(() => d.value.devices.find((x) => x.id === ui.selectedDevice))
 const loc = computed(() => (selected.value ? findItem(d.value, selected.value.id) : undefined))
-const free = (i: number) => (d.value.rows[i]?.modules ?? 0) - used(i)
-// with nothing selected, new devices go to the first row with a free slot; past the last row, a new one is added
-const targetRow = computed(() => {
-  if (loc.value) return loc.value.row
-  const i = d.value.rows.findIndex((_, ri) => free(ri) >= 1)
-  return i >= 0 ? i : d.value.rows.length
-})
 const unplaced = computed(() => d.value.devices.filter((x) => !findItem(d.value, x.id)))
 
+// the slot the user clicked "+" on; the aside then asks what goes there
+const slot = ref<{ row: number; index: number } | null>(null)
+const slotFree = computed(() => {
+  const s = slot.value
+  if (!s) return 0
+  const blank = d.value.rows[s.row]?.items[s.index]
+  return blank && typeof blank !== 'string' ? blank.blank : (d.value.rows[s.row]?.modules ?? 0) - used(s.row)
+})
+watch(
+  () => ui.selectedDevice,
+  (id) => id && (slot.value = null),
+)
+
+function openSlot(row: number, index: number) {
+  ui.select(null)
+  slot.value = { row, index }
+}
+
+// breakers placed right of an RCD are fed by it, the way panels are usually wired
+const FED_TYPES: DeviceType[] = ['mcb', 'din-socket', 'contactor', 'actuator', 'switch']
+
 function add(type: DeviceType) {
+  const s = slot.value
+  if (!s) return
   const dev = addDevice(d.value, type, -1)
-  if (loc.value) {
-    d.value.rows[loc.value.row]!.items.splice(loc.value.index + 1, 0, dev.id)
-  } else {
-    const width = defaultWidth(dev)
-    let row = [targetRow.value, ...d.value.rows.keys()].find((i) => free(i) >= width)
-    if (row === undefined) {
-      addRow(d.value)
-      row = d.value.rows.length - 1
-    }
-    d.value.rows[row]!.items.push(dev.id)
-  }
-  // new devices hang off the selected RCD (or the selected device's own feeder) — the common way panels are filled in
-  const sel = selected.value
-  if (sel) dev.upstream = sel.type === 'rcd' ? sel.id : sel.upstream
+  placeAt(d.value, dev.id, s.row, s.index)
+  if (FED_TYPES.includes(type)) dev.upstream = feederAt(d.value, s.row, s.index)
+  slot.value = null
   ui.select(dev.id)
 }
 
@@ -61,19 +66,9 @@ function used(i: number) {
 <template>
   <div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_28rem]">
     <div class="min-w-0 space-y-4">
-      <div class="rounded-2xl border bg-card p-3">
-        <div class="mb-2 text-xs font-medium text-muted-foreground">{{ t('editor.panel.palette', { row: targetRow + 1 }) }}</div>
-        <div class="flex flex-wrap gap-1.5">
-          <Button v-for="tp in DEVICE_TYPES" :key="tp" variant="outline" size="sm" @click="add(tp)">
-            <span class="size-2 rounded-full" :style="{ background: TYPE_ACCENT[tp] }" />
-            {{ t(`device.typeShort.${tp}`) }}
-          </Button>
-        </div>
-      </div>
-
       <div class="overflow-x-auto rounded-2xl">
         <div class="mx-auto max-w-[900px]">
-          <PanelEnclosure @select="(id) => ui.select(ui.selectedDevice === id ? null : id)" />
+          <PanelEnclosure addable :active-slot="slot" @select="(id) => ui.select(ui.selectedDevice === id ? null : id)" @add="openSlot" />
         </div>
       </div>
 
@@ -113,7 +108,27 @@ function used(i: number) {
     </div>
 
     <aside class="space-y-4">
-      <div v-if="selected" class="rounded-2xl border bg-card p-4">
+      <div v-if="slot" class="rounded-2xl border border-primary/50 bg-card p-4">
+        <div class="mb-3 flex items-start gap-2">
+          <div class="mr-auto">
+            <div class="font-medium">{{ t('editor.panel.slotTitle') }}</div>
+            <div class="text-sm text-muted-foreground">{{ t('editor.panel.slotWhere', { row: slot.row + 1, free: slotFree }) }}</div>
+          </div>
+          <Button variant="ghost" size="icon-sm" :aria-label="t('common.cancel')" @click="slot = null"><X /></Button>
+        </div>
+        <div class="grid grid-cols-2 gap-1.5">
+          <button
+            v-for="tp in DEVICE_TYPES"
+            :key="tp"
+            class="flex items-center gap-2 rounded-lg border px-2.5 py-2 text-left text-sm transition hover:border-primary/60 hover:bg-accent"
+            @click="add(tp)"
+          >
+            <span class="size-2.5 shrink-0 rounded-full" :style="{ background: TYPE_ACCENT[tp] }" />
+            <span class="truncate">{{ t(`device.typeShort.${tp}`) }}</span>
+          </button>
+        </div>
+      </div>
+      <div v-else-if="selected" class="rounded-2xl border bg-card p-4">
         <div class="mb-4 flex flex-wrap items-center gap-1.5">
           <DeviceChip :device="selected" />
           <span class="mr-auto truncate text-sm text-muted-foreground">{{ tx(selected.label) }}</span>
@@ -123,13 +138,20 @@ function used(i: number) {
             <Button variant="outline" size="icon-sm" :disabled="loc.row === 0" :aria-label="t('editor.panel.rowUp')" @click="moveToRow(d, selected.id, loc.row - 1)"><ArrowUp /></Button>
             <Button variant="outline" size="icon-sm" :disabled="loc.row >= d.rows.length - 1" :aria-label="t('editor.panel.rowDown')" @click="moveToRow(d, selected.id, loc.row + 1)"><ArrowDown /></Button>
             <Button variant="outline" size="icon-sm" :aria-label="t('editor.panel.blankBefore')" @click="insertBlank(d, loc.row, loc.index)"><SquareDashed /></Button>
+            <Button variant="outline" size="icon-sm" :aria-label="t('editor.panel.insertRight')" @click="openSlot(loc.row, loc.index + 1)"><Plus /></Button>
           </template>
-          <Button v-else variant="outline" size="sm" @click="moveToRow(d, selected.id, targetRow)">{{ t('editor.panel.place') }}</Button>
+          <Button v-else variant="outline" size="sm" @click="moveToRow(d, selected.id, Math.max(0, d.rows.length - 1))">{{ t('editor.panel.place') }}</Button>
           <Button variant="destructive" size="icon-sm" :aria-label="t('common.delete')" @click="remove"><Trash2 /></Button>
         </div>
         <DeviceForm :id="selected.id" :key="selected.id" />
       </div>
-      <div v-else class="rounded-2xl border border-dashed p-8 text-center text-sm text-muted-foreground">{{ t('editor.panel.pick') }}</div>
+      <div v-else class="rounded-2xl border border-dashed p-6 text-sm text-muted-foreground">
+        <p class="mb-2 flex items-center gap-2 font-medium text-foreground">
+          <span class="grid size-6 place-items-center rounded-full bg-primary text-primary-foreground"><Plus class="size-3.5" /></span>
+          {{ t('editor.panel.howAdd') }}
+        </p>
+        <p>{{ t('editor.panel.pick') }}</p>
+      </div>
     </aside>
   </div>
 </template>

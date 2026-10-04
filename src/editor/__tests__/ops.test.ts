@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { tiny } from '@/domain/__tests__/fixture'
-import { addDevice, addRow, findItem, insertBlank, moveItem, moveToRow, nextDeviceId, removeDevice, removePoint, removeRoom, renameDevice } from '../ops'
+import { addDevice, addRow, feederAt, findItem, insertBlank, moveItem, moveToRow, nextDeviceId, placeAt, removeDevice, removePoint, removeRoom, renameDevice } from '../ops'
 import { referenceIssues } from '@/domain/model'
 
 describe('editor ops', () => {
@@ -69,5 +69,22 @@ describe('editor ops', () => {
     d.devices[0]!.smart = { system: 'knx', channels: [{ id: 'A', function: 'switch', points: ['ghost'] }] }
     d.routes.push({ id: 'r', device: 'NOPE', points: [[0, 0], [1, 1]], kind: 'power', cables: [], safeWidth: 15 })
     expect(referenceIssues(d).map((i) => i.message)).toEqual(['unknown device NOPE', 'unknown point ghost'])
+  })
+
+  it('places a device into a blank and cuts the blank back', () => {
+    const d = tiny()
+    const dev = addDevice(d, 'mcb', -1)
+    placeAt(d, dev.id, 0, 4)
+    expect(d.rows[0]!.items.slice(4)).toEqual([dev.id, { blank: 1 }])
+    const second = addDevice(d, 'mcb', -1)
+    placeAt(d, second.id, 0, 5)
+    expect(d.rows[0]!.items.slice(4)).toEqual([dev.id, second.id])
+  })
+
+  it('feeds a new breaker from the RCD on its left', () => {
+    const d = tiny()
+    expect(feederAt(d, 0, 2)).toBe('D1')
+    expect(feederAt(d, 0, 4)).toBe('D1')
+    expect(feederAt(d, 0, 1)).toBeUndefined()
   })
 })
