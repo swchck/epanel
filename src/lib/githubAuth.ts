@@ -2,7 +2,7 @@
 // The two github.com/login endpoints send no CORS headers, so they go through the Tauri HTTP plugin;
 // api.github.com allows browser requests and is called with plain fetch.
 
-import { GithubError } from './github'
+import { GithubError, type GithubTarget } from './github'
 
 export const GITHUB_CLIENT_ID: string = import.meta.env.VITE_GITHUB_CLIENT_ID ?? ''
 // `repo` because enabling Pages on a new site needs it; `public_repo` would leave that step to the user
@@ -54,11 +54,26 @@ export class SignInError extends Error {
   }
 }
 
+export type Grant = Pick<GithubTarget, 'token' | 'refreshToken' | 'expiresAt' | 'refreshExpiresAt'>
+
+type TokenReply = { access_token?: string; refresh_token?: string; expires_in?: number; refresh_token_expires_in?: number; error?: string; interval?: number }
+
+// an app registered without expiring tokens sends no expiry; zero then means "never" all the way down
+function toGrant(r: TokenReply & { access_token: string }): Grant {
+  const now = Date.now()
+  return {
+    token: r.access_token,
+    refreshToken: r.refresh_token ?? '',
+    expiresAt: r.expires_in ? now + r.expires_in * 1000 : 0,
+    refreshExpiresAt: r.refresh_token_expires_in ? now + r.refresh_token_expires_in * 1000 : 0,
+  }
+}
+
 /**
- * Waits until the user confirms the code on github.com and returns the access token.
+ * Waits until the user confirms the code on github.com and returns the tokens.
  * @throws SignInError when the user declines, the code expires or the signal aborts.
  */
-export async function waitForToken(code: DeviceCode, signal: AbortSignal): Promise<string> {
+export async function waitForToken(code: DeviceCode, signal: AbortSignal): Promise<Grant> {
   let interval = code.interval
   const deadline = Date.now() + code.expiresIn * 1000
   while (Date.now() < deadline) {
@@ -66,12 +81,12 @@ export async function waitForToken(code: DeviceCode, signal: AbortSignal): Promi
       const t = setTimeout(resolve, interval * 1000)
       signal.addEventListener('abort', () => (clearTimeout(t), reject(new SignInError('cancelled'))), { once: true })
     })
-    const r = await loginPost<{ access_token?: string; error?: string; interval?: number }>('https://github.com/login/oauth/access_token', {
+    const r = await loginPost<TokenReply>('https://github.com/login/oauth/access_token', {
       client_id: GITHUB_CLIENT_ID,
       device_code: code.deviceCode,
       grant_type: 'urn:ietf:params:oauth:grant-type:device_code',
     })
-    if (r.access_token) return r.access_token
+    if (r.access_token) return toGrant({ ...r, access_token: r.access_token })
     // RFC 8628 §3.5: slow_down means add 5 seconds, and GitHub sends the new interval along
     if (r.error === 'slow_down') interval = r.interval ?? interval + 5
     else if (r.error === 'access_denied') throw new SignInError('denied')
@@ -79,6 +94,35 @@ export async function waitForToken(code: DeviceCode, signal: AbortSignal): Promi
     else if (r.error !== 'authorization_pending') throw new SignInError('failed')
   }
   throw new SignInError('expired')
+}
+
+// refresh a few minutes early so a publish that starts just before expiry does not fail halfway
+const REFRESH_MARGIN_MS = 5 * 60_000
+let refreshing: Promise<Grant> | null = null
+
+/**
+ * Returns a usable access token for the target, refreshing it first when it is about to expire.
+ * The new grant is written into the target and handed to persist before this resolves: GitHub
+ * rotates the refresh token on every use, so an unsaved one would lock the user out on next launch.
+ * @throws SignInError 'expired' when the refresh token is gone or rejected and the user must sign in again.
+ */
+export async function freshToken(t: GithubTarget, persist: () => Promise<void>): Promise<string> {
+  if (!t.expiresAt || Date.now() < t.expiresAt - REFRESH_MARGIN_MS) return t.token
+  if (!t.refreshToken || (t.refreshExpiresAt && Date.now() >= t.refreshExpiresAt)) throw new SignInError('expired')
+  // two refreshes with the same token would invalidate each other, so concurrent callers share one
+  refreshing ??= (async () => {
+    // client_secret is not needed for tokens that came from the device flow
+    const r = await loginPost<TokenReply>('https://github.com/login/oauth/access_token', {
+      client_id: GITHUB_CLIENT_ID,
+      grant_type: 'refresh_token',
+      refresh_token: t.refreshToken,
+    })
+    if (!r.access_token) throw new SignInError('expired')
+    return toGrant({ ...r, access_token: r.access_token })
+  })().finally(() => (refreshing = null))
+  Object.assign(t, await refreshing)
+  await persist()
+  return t.token
 }
 
 async function api<T>(token: string, path: string, init: RequestInit = {}): Promise<T> {

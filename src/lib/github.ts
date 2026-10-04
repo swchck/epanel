@@ -6,23 +6,34 @@ export interface GithubTarget {
   branch: string
   path: string
   token: string
+  // sign-in grant from the desktop device flow; a pasted token leaves these empty and never expires here
+  refreshToken: string
+  // epoch milliseconds, 0 when the token does not expire
+  expiresAt: number
+  refreshExpiresAt: number
 }
+
+type Secrets = Pick<GithubTarget, 'token' | 'refreshToken' | 'expiresAt' | 'refreshExpiresAt'>
 
 const STORAGE = 'panel.github'
 
 export function emptyTarget(): GithubTarget {
-  return { owner: '', repo: '', branch: 'main', path: 'public/app/panel.enc.json', token: '' }
+  return { owner: '', repo: '', branch: 'main', path: 'public/app/panel.enc.json', token: '', refreshToken: '', expiresAt: 0, refreshExpiresAt: 0 }
 }
 
-// the token can push to the repo, so it is kept encrypted with the panel password like the data itself
+// the tokens can push to the repo, so they are kept encrypted with the panel password like the data itself
 export async function loadTarget(password: string | null): Promise<GithubTarget> {
   try {
     const raw = localStorage.getItem(STORAGE)
     if (!raw) return emptyTarget()
-    const { token, ...rest } = JSON.parse(raw) as Partial<GithubTarget> & { token?: unknown }
-    let plain = ''
-    if (password && isEnvelope(token)) plain = await decryptJson<string>(token, password).catch(() => '')
-    return { ...emptyTarget(), ...rest, token: plain }
+    const { token, owner, repo, branch, path } = JSON.parse(raw) as Partial<GithubTarget> & { token?: unknown }
+    // older saves held the bare token string inside the envelope
+    let secrets: Partial<Secrets> = {}
+    if (password && isEnvelope(token)) {
+      const plain = await decryptJson<string | Secrets>(token, password).catch(() => '')
+      secrets = typeof plain === 'string' ? { token: plain } : plain
+    }
+    return { ...emptyTarget(), ...(owner && { owner }), ...(repo && { repo }), ...(branch && { branch }), ...(path && { path }), ...secrets }
   } catch {
     // storage blocked or corrupted
     return emptyTarget()
@@ -30,9 +41,10 @@ export async function loadTarget(password: string | null): Promise<GithubTarget>
 }
 
 export async function saveTarget(t: GithubTarget, rememberToken: boolean, password: string | null) {
-  const token = rememberToken && password && t.token ? await encryptJson(t.token, password, 60_000) : undefined
+  const secrets: Secrets = { token: t.token, refreshToken: t.refreshToken, expiresAt: t.expiresAt, refreshExpiresAt: t.refreshExpiresAt }
+  const token = rememberToken && password && t.token ? await encryptJson(secrets, password, 60_000) : undefined
   try {
-    localStorage.setItem(STORAGE, JSON.stringify({ ...t, token }))
+    localStorage.setItem(STORAGE, JSON.stringify({ owner: t.owner, repo: t.repo, branch: t.branch, path: t.path, token }))
   } catch {
     // storage blocked
   }

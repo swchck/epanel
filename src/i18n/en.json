@@ -1080,7 +1080,8 @@
         "failed": "Could not sign in with GitHub"
       },
       "advanced": "Advanced: branch and file path",
-      "remember": "Stay signed in on this device"
+      "remember": "Stay signed in on this device",
+      "sessionExpired": "Your GitHub sign-in expired. Please sign in again."
     }
   },
   "landing": {

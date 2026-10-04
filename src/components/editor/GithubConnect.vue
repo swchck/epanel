@@ -7,12 +7,14 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { GithubError, type GithubTarget } from '@/lib/github'
-import { createSite, currentUser, listRepos, siteUrl, SignInError, startDeviceFlow, templateRepo, waitForToken, type DeviceCode, type Repo } from '@/lib/githubAuth'
+import { createSite, currentUser, freshToken, listRepos, siteUrl, SignInError, startDeviceFlow, templateRepo, waitForToken, type DeviceCode, type Repo } from '@/lib/githubAuth'
 import { useText } from '@/composables/useText'
 import { openExternal } from '@/platform'
 import FormRow from './FormRow.vue'
 
 const target = defineModel<GithubTarget>({ required: true })
+// saves the target after a token refresh; GitHub rotates the refresh token, so this must not be skipped
+const props = defineProps<{ persist: () => Promise<void> }>()
 const emit = defineEmits<{ signedIn: []; site: [url: string] }>()
 const { t } = useText()
 
@@ -28,17 +30,27 @@ const code = ref<DeviceCode | null>(null)
 const copied = ref(false)
 let abort: AbortController | null = null
 
+const token = () => freshToken(target.value, props.persist)
+
+// an expired session drops the tokens and puts the sign-in button back instead of failing every call
+function onAuthError(e: unknown): boolean {
+  const expired = (e instanceof SignInError && e.code === 'expired') || (e instanceof GithubError && e.status === 401)
+  if (!expired) return false
+  signOut()
+  toast.info(t('editor.github.sessionExpired'))
+  return true
+}
+
 async function loadAccount() {
   if (!target.value.token) return
   loading.value = true
   try {
-    login.value = await currentUser(target.value.token)
-    repos.value = await listRepos(target.value.token)
+    const tok = await token()
+    login.value = await currentUser(tok)
+    repos.value = await listRepos(tok)
     if (target.value.owner && target.value.repo) choice.value = `${target.value.owner}/${target.value.repo}`
   } catch (e) {
-    // a revoked or expired token: drop it and show the sign-in button again
-    if (e instanceof GithubError && e.status === 401) signOut()
-    else toast.error(t('editor.github.failed'), { description: (e as Error).message })
+    if (!onAuthError(e)) toast.error(t('editor.github.failed'), { description: (e as Error).message })
   } finally {
     loading.value = false
   }
@@ -54,7 +66,7 @@ async function signIn() {
   }
   abort = new AbortController()
   try {
-    target.value.token = await waitForToken(code.value, abort.signal)
+    Object.assign(target.value, await waitForToken(code.value, abort.signal))
     code.value = null
     emit('signedIn')
   } catch (e) {
@@ -84,7 +96,8 @@ function cancelSignIn(open: boolean) {
 onBeforeUnmount(() => abort?.abort())
 
 function signOut() {
-  target.value.token = ''
+  Object.assign(target.value, { token: '', refreshToken: '', expiresAt: 0, refreshExpiresAt: 0 })
+  void props.persist()
   login.value = null
   repos.value = []
   choice.value = ''
@@ -104,12 +117,13 @@ async function create() {
   if (!login.value || !newName.value.trim()) return
   creating.value = true
   try {
-    const r = await createSite(target.value.token, login.value, newName.value.trim())
+    const r = await createSite(await token(), login.value, newName.value.trim())
     repos.value = [r, ...repos.value]
     pick(`${r.owner}/${r.name}`)
     emit('site', siteUrl(r.owner, r.name))
     toast.success(t('editor.github.created'), { description: t('editor.github.createdHint') })
   } catch (e) {
+    if (onAuthError(e)) return
     const status = e instanceof GithubError ? e.status : 0
     toast.error(t('editor.github.createFailed'), { description: status === 422 ? t('editor.github.nameTaken') : status === 404 ? t('editor.github.noTemplate', { repo: templateRepo() ?? '—' }) : (e as Error).message })
   } finally {

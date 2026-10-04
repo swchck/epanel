@@ -1080,7 +1080,8 @@
         "failed": "Prijava preko GitHub-a nije uspela"
       },
       "advanced": "Dodatno: grana i putanja do fajla",
-      "remember": "Ostani prijavljen na ovom uređaju"
+      "remember": "Ostani prijavljen na ovom uređaju",
+      "sessionExpired": "Prijava na GitHub je istekla. Prijavite se ponovo."
     }
   },
   "landing": {

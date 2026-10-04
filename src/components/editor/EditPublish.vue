@@ -10,7 +10,7 @@ import { pruneAssets, type Bundle } from '@/domain/model'
 import { isoDay } from '@/domain/maintenance'
 import { tr } from '@/domain/model'
 import { emptyTarget, GithubError, loadTarget, publishFile, saveTarget } from '@/lib/github'
-import { canSignIn } from '@/lib/githubAuth'
+import { canSignIn, freshToken, SignInError } from '@/lib/githubAuth'
 import { useDraft } from '@/composables/useDraft'
 import { useText } from '@/composables/useText'
 import { isDesktop, openTextFile, saveTextFile } from '@/platform'
@@ -118,6 +118,12 @@ loadTarget(data.password).then((target) => {
   gh.value = target
   rememberToken.value = !!target.token
 })
+const persistTarget = () => saveTarget(gh.value, rememberToken.value, data.password)
+function onSignedIn() {
+  rememberToken.value = true
+  void persistTarget()
+}
+
 // the QR codes point at the site, so a freshly created one becomes the panel's address unless one is set
 function onSite(url: string) {
   if (!d.value.meta.publicUrl) d.value.meta.publicUrl = url
@@ -130,7 +136,8 @@ async function publish() {
   try {
     const text = await encrypted()
     if (!text) return
-    await saveTarget(gh.value, rememberToken.value, data.password)
+    await freshToken(gh.value, persistTarget)
+    await persistTarget()
     const { commitUrl } = await publishFile(gh.value, text, `Update panel data ${isoDay(new Date())}`)
     await data.commitDraft()
     toast.success(t('editor.publish.published'), {
@@ -138,6 +145,10 @@ async function publish() {
       action: { label: t('editor.publish.commit'), onClick: () => window.open(commitUrl, '_blank', 'noopener') },
     })
   } catch (e) {
+    if (e instanceof SignInError && e.code === 'expired') {
+      Object.assign(gh.value, { token: '', refreshToken: '', expiresAt: 0, refreshExpiresAt: 0 })
+      return void toast.info(t('editor.github.sessionExpired'))
+    }
     const status = e instanceof GithubError ? e.status : 0
     toast.error(t('editor.publish.failed'), {
       description: status === 401 || status === 403 ? t('editor.publish.badToken') : status === 404 ? t('editor.publish.notFound') : (e as Error).message,
@@ -202,7 +213,7 @@ async function publish() {
         <p class="text-sm text-muted-foreground">{{ t('editor.publish.siteHint') }}</p>
       </div>
       <template v-if="canSignIn">
-        <GithubConnect v-model="gh" @signed-in="rememberToken = true" @site="onSite" />
+        <GithubConnect v-model="gh" :persist="persistTarget" @signed-in="onSignedIn" @site="onSite" />
         <details class="text-sm">
           <summary class="cursor-pointer text-muted-foreground">{{ t('editor.github.advanced') }}</summary>
           <div class="mt-3 grid grid-cols-2 gap-3">

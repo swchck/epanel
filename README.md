@@ -54,7 +54,7 @@
 
 Чтобы кнопка появилась в сборке:
 
-1. Зарегистрируйте OAuth App: **Settings → Developer settings → OAuth Apps → New OAuth App**. Homepage и Callback URL можно указать адрес сайта, они не используются. Включите **Enable Device Flow**.
+1. Зарегистрируйте OAuth App: **Settings → Developer settings → OAuth Apps → New OAuth App**. Homepage и Callback URL можно указать адрес сайта, они не используются. Включите **Enable Device Flow** и оставьте включённым **Expire user access tokens**: токен живёт 8 часов, программа сама обновляет его без секрета приложения.
 2. Скопируйте **Client ID**. Это не секрет, он попадает в сборку как есть.
 3. Для релизов добавьте его в переменные репозитория (**Settings → Secrets and variables → Actions → Variables**) под именем `OAUTH_CLIENT_ID`. Для локальной сборки положите в `.env.local` строку `VITE_GITHUB_CLIENT_ID=<client id>` и `REPO_URL=https://github.com/<user>/<repo>`.
 4. Отметьте репозиторий как шаблон: **Settings → General → Template repository**. Иначе создать новый сайт не получится.
