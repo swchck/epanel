@@ -62,6 +62,12 @@ export default defineConfig({
       },
     },
     preloadStartupChunks(),
+    {
+      // icons and the PWA manifest live next to the landing page; the desktop shell has neither
+      name: 'desktop-head',
+      apply: () => desktop,
+      transformIndexHtml: (html) => html.replace(/\s*<link rel="(?:icon|apple-touch-icon|manifest)"[^>]*>/g, ''),
+    },
     vue(),
     // messages compiled at build time: the runtime-only vue-i18n ships no message compiler
     VueI18nPlugin({ include: [page('./src/i18n/*.json')], runtimeOnly: true, compositionOnly: true, fullInstall: false }),
