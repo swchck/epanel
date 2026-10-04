@@ -1,0 +1,151 @@
+// GitHub sign-in for the desktop editor (OAuth device flow) and the repository calls that come with it.
+// The two github.com/login endpoints send no CORS headers, so they go through the Tauri HTTP plugin;
+// api.github.com allows browser requests and is called with plain fetch.
+
+import { GithubError } from './github'
+
+export const GITHUB_CLIENT_ID: string = import.meta.env.VITE_GITHUB_CLIENT_ID ?? ''
+// `repo` because enabling Pages on a new site needs it; `public_repo` would leave that step to the user
+const SCOPE = 'repo'
+
+/**
+ * Reports whether this build can sign in to GitHub: the desktop app with an OAuth client id baked in.
+ */
+export const canSignIn = import.meta.env.VITE_TARGET === 'desktop' && !!GITHUB_CLIENT_ID
+
+/**
+ * Names the repository new sites are generated from, as "owner/repo", or returns null when unknown.
+ */
+export function templateRepo(): string | null {
+  const m = /github\.com\/([^/]+\/[^/]+?)(?:\.git)?\/?$/.exec(__REPO_URL__)
+  return m?.[1] ?? null
+}
+
+export interface DeviceCode {
+  deviceCode: string
+  userCode: string
+  verificationUri: string
+  // seconds
+  interval: number
+  expiresIn: number
+}
+
+async function loginPost<T>(url: string, body: Record<string, string>): Promise<T> {
+  const { fetch: tauriFetch } = await import('@tauri-apps/plugin-http')
+  const res = await tauriFetch(url, { method: 'POST', headers: { Accept: 'application/json', 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+  if (!res.ok) throw new GithubError(res.status, await res.text())
+  return (await res.json()) as T
+}
+
+/**
+ * Starts a device sign-in and returns the code the user types on github.com.
+ */
+export async function startDeviceFlow(): Promise<DeviceCode> {
+  const r = await loginPost<{ device_code: string; user_code: string; verification_uri: string; interval: number; expires_in: number }>('https://github.com/login/device/code', {
+    client_id: GITHUB_CLIENT_ID,
+    scope: SCOPE,
+  })
+  return { deviceCode: r.device_code, userCode: r.user_code, verificationUri: r.verification_uri, interval: r.interval, expiresIn: r.expires_in }
+}
+
+export class SignInError extends Error {
+  constructor(public code: 'denied' | 'expired' | 'cancelled' | 'failed') {
+    super(code)
+  }
+}
+
+/**
+ * Waits until the user confirms the code on github.com and returns the access token.
+ * @throws SignInError when the user declines, the code expires or the signal aborts.
+ */
+export async function waitForToken(code: DeviceCode, signal: AbortSignal): Promise<string> {
+  let interval = code.interval
+  const deadline = Date.now() + code.expiresIn * 1000
+  while (Date.now() < deadline) {
+    await new Promise<void>((resolve, reject) => {
+      const t = setTimeout(resolve, interval * 1000)
+      signal.addEventListener('abort', () => (clearTimeout(t), reject(new SignInError('cancelled'))), { once: true })
+    })
+    const r = await loginPost<{ access_token?: string; error?: string; interval?: number }>('https://github.com/login/oauth/access_token', {
+      client_id: GITHUB_CLIENT_ID,
+      device_code: code.deviceCode,
+      grant_type: 'urn:ietf:params:oauth:grant-type:device_code',
+    })
+    if (r.access_token) return r.access_token
+    // RFC 8628 §3.5: slow_down means add 5 seconds, and GitHub sends the new interval along
+    if (r.error === 'slow_down') interval = r.interval ?? interval + 5
+    else if (r.error === 'access_denied') throw new SignInError('denied')
+    else if (r.error === 'expired_token') throw new SignInError('expired')
+    else if (r.error !== 'authorization_pending') throw new SignInError('failed')
+  }
+  throw new SignInError('expired')
+}
+
+async function api<T>(token: string, path: string, init: RequestInit = {}): Promise<T> {
+  const res = await fetch(`https://api.github.com${path}`, {
+    ...init,
+    headers: { Accept: 'application/vnd.github+json', Authorization: `Bearer ${token}`, 'X-GitHub-Api-Version': '2022-11-28', ...(init.body ? { 'Content-Type': 'application/json' } : {}) },
+    cache: 'no-store',
+  })
+  if (!res.ok) throw new GithubError(res.status, await res.text())
+  return (res.status === 204 ? undefined : await res.json()) as T
+}
+
+export interface Repo {
+  owner: string
+  name: string
+  defaultBranch: string
+  private: boolean
+}
+
+type ApiRepo = { name: string; owner: { login: string }; default_branch: string; private: boolean }
+const toRepo = (r: ApiRepo): Repo => ({ owner: r.owner.login, name: r.name, defaultBranch: r.default_branch, private: r.private })
+
+/**
+ * Returns the login of the signed-in user.
+ */
+export async function currentUser(token: string): Promise<string> {
+  return (await api<{ login: string }>(token, '/user')).login
+}
+
+/**
+ * Lists repositories the user owns, most recently updated first.
+ */
+export async function listRepos(token: string): Promise<Repo[]> {
+  return (await api<ApiRepo[]>(token, '/user/repos?affiliation=owner&sort=updated&per_page=100')).map(toRepo)
+}
+
+/**
+ * Creates a public repository from the app template and switches GitHub Pages to the Actions build.
+ * @throws GithubError 404 when the template repository is not marked as a template or is unreachable.
+ */
+export async function createSite(token: string, owner: string, name: string): Promise<Repo> {
+  const template = templateRepo()
+  if (!template) throw new GithubError(404, 'no template repository')
+  const repo = toRepo(
+    await api<ApiRepo>(token, `/repos/${template}/generate`, {
+      method: 'POST',
+      body: JSON.stringify({ owner, name, private: false, description: 'Electrical panel map', include_all_branches: false }),
+    }),
+  )
+  // the generated repo exists before its first commit lands; Pages refuses to configure an empty repo
+  for (let attempt = 0; ; attempt++) {
+    try {
+      await api(token, `/repos/${repo.owner}/${repo.name}/pages`, { method: 'POST', body: JSON.stringify({ build_type: 'workflow' }) })
+      break
+    } catch (e) {
+      if (e instanceof GithubError && e.status === 409) break
+      if (attempt >= 5 || !(e instanceof GithubError) || e.status === 401 || e.status === 403) throw e
+      await new Promise((r) => setTimeout(r, 1500 * (attempt + 1)))
+    }
+  }
+  return repo
+}
+
+/**
+ * Returns the address the site will be served at once Pages finishes the first build.
+ */
+export function siteUrl(owner: string, repo: string): string {
+  const host = `${owner.toLowerCase()}.github.io`
+  return repo.toLowerCase() === host ? `https://${host}/app/` : `https://${host}/${repo}/app/`
+}

@@ -101,6 +101,15 @@ export async function printPage(): Promise<void> {
   await invoke('print_page')
 }
 
+/**
+ * Opens a web address in the system browser on the desktop, in a new tab on the web.
+ */
+export async function openExternal(url: string) {
+  if (!isDesktop) return void window.open(url, '_blank', 'noopener')
+  const { openUrl } = await import('@tauri-apps/plugin-opener')
+  await openUrl(url)
+}
+
 // the desktop webview won't follow tel:, mailto: or web links by itself, so clicks on them go to the OS
 export function routeExternalLinks() {
   if (!isDesktop) return
@@ -109,8 +118,7 @@ export function routeExternalLinks() {
     const href = a?.getAttribute('href')
     if (!href || !/^(tel:|mailto:|https?:)/i.test(href)) return
     e.preventDefault()
-    const { openUrl } = await import('@tauri-apps/plugin-opener')
-    await openUrl(href)
+    await openExternal(href)
   })
 }
 

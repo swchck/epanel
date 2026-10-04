@@ -1,7 +1,7 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "Main window: file dialogs, the app's own read/write commands, and handing tel:, mailto: and web links to the system",
+  "description": "Main window: file dialogs, the app's own read/write commands, handing tel:, mailto: and web links to the system, and the two GitHub sign-in endpoints that do not allow browser requests",
   "windows": [
     "main"
   ],
@@ -13,6 +13,17 @@
     "dialog:allow-message",
     "dialog:allow-ask",
     "opener:allow-open-url",
-    "opener:allow-default-urls"
+    "opener:allow-default-urls",
+    {
+      "identifier": "http:default",
+      "allow": [
+        {
+          "url": "https://github.com/login/device/code"
+        },
+        {
+          "url": "https://github.com/login/oauth/access_token"
+        }
+      ]
+    }
   ]
 }

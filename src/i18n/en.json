@@ -1053,6 +1053,34 @@
       "boldText": "bold text",
       "italicText": "italic",
       "linkText": "link text"
+    },
+    "github": {
+      "intro": "Sign in with GitHub: the app lists your repositories or creates a new site. No need to make a token by hand.",
+      "signIn": "Sign in with GitHub",
+      "signedInAs": "Signed in as",
+      "signOut": "Sign out",
+      "site": "Site",
+      "pickRepo": "Pick a repository",
+      "newSite": "Create a new site",
+      "newName": "Name",
+      "create": "Create",
+      "created": "Site created",
+      "createdHint": "GitHub builds it within a couple of minutes of the first publish. The site address is filled in under General.",
+      "createFailed": "Could not create the site",
+      "nameTaken": "A repository with this name already exists. Pick another.",
+      "noTemplate": "The template {repo} is not available. Its owner needs to mark it as a Template repository in its settings.",
+      "codeTitle": "Confirm the sign-in on GitHub",
+      "codeHint": "Open GitHub and enter this code. This window closes by itself once you confirm.",
+      "copyOpen": "Copy the code and open GitHub",
+      "waiting": "Waiting for confirmation…",
+      "failed": "GitHub did not respond",
+      "error": {
+        "denied": "Sign-in was declined on GitHub",
+        "expired": "The code expired. Try again.",
+        "failed": "Could not sign in with GitHub"
+      },
+      "advanced": "Advanced: branch and file path",
+      "remember": "Stay signed in on this device"
     }
   },
   "landing": {

@@ -1,6 +1,6 @@
 import { fileURLToPath, URL } from 'node:url'
 import { readFileSync, rmSync } from 'node:fs'
-import { defineConfig, type Plugin } from 'vite'
+import { defineConfig, loadEnv, type Plugin } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite'
 import tailwindcss from '@tailwindcss/vite'
@@ -11,6 +11,8 @@ const desktop = process.env.VITE_TARGET === 'desktop'
 const base = desktop ? '/' : (process.env.BASE_PATH ?? '/')
 const pkg = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8')) as { version: string }
 const page = (p: string) => fileURLToPath(new URL(p, import.meta.url))
+// REPO_URL may come from .env.local for local builds; Vite only exposes VITE_* to the app, not to this config
+const repoUrl = process.env.GITHUB_REPOSITORY ? `https://github.com/${process.env.GITHUB_REPOSITORY}` : (process.env.REPO_URL ?? loadEnv('', page('.'), 'REPO_URL').REPO_URL ?? '')
 
 // The locale messages and the zod parser are dynamic imports, so the browser would only discover them
 // after main.js runs. Preloading them from the HTML saves that round trip on every cold start.
@@ -50,7 +52,7 @@ export default defineConfig({
   define: {
     __APP_VERSION__: JSON.stringify(pkg.version),
     // set by GitHub Actions; the landing page links releases and the source from it
-    __REPO_URL__: JSON.stringify(process.env.GITHUB_REPOSITORY ? `https://github.com/${process.env.GITHUB_REPOSITORY}` : (process.env.REPO_URL ?? '')),
+    __REPO_URL__: JSON.stringify(repoUrl),
   },
   plugins: [
     {

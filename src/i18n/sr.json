@@ -1053,6 +1053,34 @@
       "boldText": "podebljan tekst",
       "italicText": "kurziv",
       "linkText": "tekst linka"
+    },
+    "github": {
+      "intro": "Prijavite se preko GitHub-a: program prikazuje vaše repozitorijume ili pravi novi sajt. Token ne morate praviti ručno.",
+      "signIn": "Prijava preko GitHub-a",
+      "signedInAs": "Prijavljeni ste kao",
+      "signOut": "Odjava",
+      "site": "Sajt",
+      "pickRepo": "Izaberite repozitorijum",
+      "newSite": "Napravi novi sajt",
+      "newName": "Naziv",
+      "create": "Napravi",
+      "created": "Sajt je napravljen",
+      "createdHint": "GitHub ga sastavi za par minuta posle prvog objavljivanja. Adresa sajta je upisana u „Opšte”.",
+      "createFailed": "Sajt nije napravljen",
+      "nameTaken": "Repozitorijum s tim nazivom već postoji. Izaberite drugi.",
+      "noTemplate": "Šablon {repo} nije dostupan. Vlasnik treba da ga označi kao Template repository u podešavanjima.",
+      "codeTitle": "Potvrdite prijavu na GitHub-u",
+      "codeHint": "Otvorite GitHub i unesite ovaj kod. Prozor se sam zatvara kad potvrdite.",
+      "copyOpen": "Kopiraj kod i otvori GitHub",
+      "waiting": "Čekamo potvrdu…",
+      "failed": "GitHub nije odgovorio",
+      "error": {
+        "denied": "Prijava je odbijena na GitHub-u",
+        "expired": "Kod je istekao. Pokušajte ponovo.",
+        "failed": "Prijava preko GitHub-a nije uspela"
+      },
+      "advanced": "Dodatno: grana i putanja do fajla",
+      "remember": "Ostani prijavljen na ovom uređaju"
     }
   },
   "landing": {

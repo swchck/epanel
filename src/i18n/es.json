@@ -1053,6 +1053,34 @@
       "boldText": "texto en negrita",
       "italicText": "cursiva",
       "linkText": "texto del enlace"
+    },
+    "github": {
+      "intro": "Entra con GitHub: la app muestra tus repositorios o crea un sitio nuevo. No hace falta crear un token a mano.",
+      "signIn": "Entrar con GitHub",
+      "signedInAs": "Has entrado como",
+      "signOut": "Salir",
+      "site": "Sitio",
+      "pickRepo": "Elige un repositorio",
+      "newSite": "Crear un sitio nuevo",
+      "newName": "Nombre",
+      "create": "Crear",
+      "created": "Sitio creado",
+      "createdHint": "GitHub lo construye en un par de minutos tras la primera publicación. La dirección del sitio ya está en «General».",
+      "createFailed": "No se pudo crear el sitio",
+      "nameTaken": "Ya existe un repositorio con ese nombre. Elige otro.",
+      "noTemplate": "La plantilla {repo} no está disponible. Su dueño tiene que marcarla como Template repository en los ajustes.",
+      "codeTitle": "Confirma el acceso en GitHub",
+      "codeHint": "Abre GitHub e introduce este código. Esta ventana se cierra sola cuando confirmes.",
+      "copyOpen": "Copiar el código y abrir GitHub",
+      "waiting": "Esperando la confirmación…",
+      "failed": "GitHub no responde",
+      "error": {
+        "denied": "El acceso se rechazó en GitHub",
+        "expired": "El código ha caducado. Inténtalo de nuevo.",
+        "failed": "No se pudo entrar con GitHub"
+      },
+      "advanced": "Avanzado: rama y ruta del archivo",
+      "remember": "Mantener la sesión en este dispositivo"
     }
   },
   "landing": {

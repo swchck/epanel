@@ -2,6 +2,8 @@
 
 interface ImportMetaEnv {
   readonly VITE_TARGET?: 'web' | 'desktop'
+  // OAuth app client id for GitHub sign-in in the desktop build; public by design, not a secret
+  readonly VITE_GITHUB_CLIENT_ID?: string
 }
 
 interface ImportMeta {

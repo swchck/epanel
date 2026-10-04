@@ -10,10 +10,12 @@ import { pruneAssets, type Bundle } from '@/domain/model'
 import { isoDay } from '@/domain/maintenance'
 import { tr } from '@/domain/model'
 import { emptyTarget, GithubError, loadTarget, publishFile, saveTarget } from '@/lib/github'
+import { canSignIn } from '@/lib/githubAuth'
 import { useDraft } from '@/composables/useDraft'
 import { useText } from '@/composables/useText'
 import { isDesktop, openTextFile, saveTextFile } from '@/platform'
 import FormRow from './FormRow.vue'
+import GithubConnect from './GithubConnect.vue'
 import PasswordDialog from './PasswordDialog.vue'
 
 const { d, data } = useDraft()
@@ -116,6 +118,11 @@ loadTarget(data.password).then((target) => {
   gh.value = target
   rememberToken.value = !!target.token
 })
+// the QR codes point at the site, so a freshly created one becomes the panel's address unless one is set
+function onSite(url: string) {
+  if (!d.value.meta.publicUrl) d.value.meta.publicUrl = url
+}
+
 const ghReady = computed(() => gh.value.owner && gh.value.repo && gh.value.branch && gh.value.path && gh.value.token)
 
 async function publish() {
@@ -194,7 +201,17 @@ async function publish() {
         <h3 class="font-semibold">{{ t('editor.publish.siteTitle') }}</h3>
         <p class="text-sm text-muted-foreground">{{ t('editor.publish.siteHint') }}</p>
       </div>
-      <div class="grid grid-cols-2 gap-3">
+      <template v-if="canSignIn">
+        <GithubConnect v-model="gh" @signed-in="rememberToken = true" @site="onSite" />
+        <details class="text-sm">
+          <summary class="cursor-pointer text-muted-foreground">{{ t('editor.github.advanced') }}</summary>
+          <div class="mt-3 grid grid-cols-2 gap-3">
+            <FormRow :label="t('editor.publish.branch')"><Input v-model="gh.branch" /></FormRow>
+            <FormRow :label="t('editor.publish.path')"><Input v-model="gh.path" class="font-mono text-xs" /></FormRow>
+          </div>
+        </details>
+      </template>
+      <div v-else class="grid grid-cols-2 gap-3">
         <FormRow :label="t('editor.publish.owner')"><Input v-model="gh.owner" placeholder="user" /></FormRow>
         <FormRow :label="t('editor.publish.repo')"><Input v-model="gh.repo" placeholder="panel" /></FormRow>
         <FormRow :label="t('editor.publish.branch')"><Input v-model="gh.branch" /></FormRow>
@@ -203,7 +220,7 @@ async function publish() {
           <Input v-model="gh.token" type="password" autocomplete="off" placeholder="github_pat_…" />
         </FormRow>
       </div>
-      <label class="flex items-center gap-2 text-sm"><Checkbox v-model="rememberToken" /> {{ t('editor.publish.rememberToken') }}</label>
+      <label v-if="gh.token" class="flex items-center gap-2 text-sm"><Checkbox v-model="rememberToken" /> {{ t(canSignIn ? 'editor.github.remember' : 'editor.publish.rememberToken') }}</label>
       <div class="flex flex-wrap gap-2">
         <Button :disabled="!ghReady || !!busy" @click="publish">
           <LoaderCircle v-if="busy === 'publish'" class="animate-spin" /><CloudUpload v-else /> {{ t('editor.publish.publish') }}
