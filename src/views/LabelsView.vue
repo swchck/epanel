@@ -87,7 +87,7 @@ function rating(id: string) {
 
       <section v-if="showLabels" class="space-y-[5mm]">
         <template v-for="(row, ri) in pieces" :key="ri">
-          <div v-for="(piece, pi) in row" :key="pi" class="strip-wrap max-w-full overflow-x-auto">
+          <div v-for="(piece, pi) in row" :key="pi" class="strip-wrap mx-auto w-max max-w-full overflow-x-auto">
             <div class="mb-1 text-xs text-muted-foreground print:text-[2.4mm] print:text-neutral-500">
               {{ t('labels.row', { n: ri + 1 }) }}<template v-if="row.length > 1"> · {{ pi + 1 }}/{{ row.length }}</template>
             </div>
