@@ -40,8 +40,9 @@ async function leave() {
 const { t, tx } = useText()
 const moreOpen = ref(false)
 const collapsed = computed(() => ui.sidebarCollapsed)
-// on <html> so the window drag strip in App.vue lines up with the sidebar too
-watchEffect(() => document.documentElement.style.setProperty('--sidebar-w', collapsed.value ? '4.5rem' : '15.5rem'))
+// on <html> so the window drag strip in App.vue lines up with the sidebar too;
+// the rail must stay wider than the macOS traffic lights, which take ~70px
+watchEffect(() => document.documentElement.style.setProperty('--sidebar-w', collapsed.value ? '5.25rem' : '15.5rem'))
 
 const GROUPS: { key: string; items: NavName[] }[] = [
   { key: 'main', items: ['panel', 'plan', 'find', 'emergency'] },
