@@ -120,7 +120,15 @@
       "bus-psu": "Bus power supply",
       "bus-gateway": "Bus gateway",
       "bus-io": "Input module",
-      "other": "Other"
+      "other": "Other",
+      "afdd": "Arc fault detection device",
+      "fuse": "Fuse",
+      "time-relay": "Time switch",
+      "impulse-relay": "Impulse relay",
+      "dimmer": "Dimmer",
+      "psu": "12/24 V power supply",
+      "ats": "Automatic transfer switch",
+      "ups": "UPS"
     },
     "typeShort": {
       "mcb": "Breaker",
@@ -138,7 +146,15 @@
       "bus-psu": "Bus PSU",
       "bus-gateway": "Gateway",
       "bus-io": "Inputs",
-      "other": "Other"
+      "other": "Other",
+      "afdd": "AFDD",
+      "fuse": "Fuse",
+      "time-relay": "Timer",
+      "impulse-relay": "Impulse",
+      "dimmer": "Dimmer",
+      "psu": "PSU 12/24 V",
+      "ats": "ATS",
+      "ups": "UPS"
     },
     "field": {
       "rating": "Rating",
@@ -185,7 +201,15 @@
       "bus-psu": "Powers a KNX or DALI bus",
       "bus-gateway": "Connects the bus to the network and app",
       "bus-io": "Takes signals from push buttons and sensors",
-      "other": "Anything not on this list"
+      "other": "Anything not on this list",
+      "afdd": "Cuts the circuit on arcing in the wiring: a loose contact, a damaged cable",
+      "fuse": "A fuse link in a holder. Blows on overload, replace it with the same rating",
+      "time-relay": "Switches a load on a schedule: water heater, lighting, towel rail",
+      "impulse-relay": "Lights switched by push buttons from several places",
+      "dimmer": "Sets the brightness of the lights smoothly",
+      "psu": "Powers LED strips, sensors, low-voltage gear",
+      "ats": "Moves the flat to a second feed or a generator when the main one fails",
+      "ups": "Keeps the router, boiler or pump on battery during a power cut"
     }
   },
   "point": {
@@ -387,6 +411,27 @@
         "steps": [
           "Go back and pick the breaker whose lever is down.",
           "If no lever is down, check the voltage relay."
+        ]
+      },
+      "afdd": {
+        "title": "The arc fault device tripped",
+        "why": "An AFDD cuts the circuit when the wiring arcs: a loose contact in a socket or box, a damaged cable, a faulty extension lead. It is a fire warning.",
+        "steps": [
+          "Unplug everything on this circuit, especially extension leads and old chargers.",
+          "Push the lever back up.",
+          "If it holds, plug things back one at a time and watch which one trips it.",
+          "If it trips with nothing plugged in, or keeps tripping, leave it off and call an electrician: there is a bad contact somewhere."
+        ]
+      },
+      "fuse": {
+        "title": "A fuse has blown",
+        "why": "A fuse link melts on overload or short circuit. It does not reset by itself.",
+        "steps": [
+          "Switch off heavy appliances on this circuit.",
+          "Open the holder and take the link out. A blown one has a dark window or an unlit indicator.",
+          "Fit a new link of the same rating, printed on its body.",
+          "Never fit a higher rating and never replace it with wire.",
+          "If the new one blows at once, it is a short circuit. Call an electrician."
         ]
       }
     },
@@ -633,7 +678,10 @@
       "dali": "DALI",
       "modbus": "Modbus",
       "zigbee": "Zigbee",
-      "other": "Other bus"
+      "other": "Other bus",
+      "zwave": "Z-Wave",
+      "matter": "Matter / Thread",
+      "wirenboard": "Wiren Board"
     },
     "fn": {
       "switch": "On/off",
@@ -824,7 +872,8 @@
         "control": "Metering and control",
         "wiring": "Busbars and terminals",
         "smart": "Smart home",
-        "other": "Other"
+        "other": "Other",
+        "power": "Power supply"
       },
       "suggestTask": "recommended",
       "createTask": "Create task",

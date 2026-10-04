@@ -15,7 +15,7 @@ import PanelList from '@/components/panel/PanelList.vue'
 import PanelViewToggle from '@/components/panel/PanelViewToggle.vue'
 import { TYPE_ACCENT } from '@/components/panel/geometry'
 import { pointPowered } from '@/domain/graph'
-import type { DeviceType } from '@/domain/model'
+import { DEVICE_TYPES, SMART_TYPES, type DeviceType } from '@/domain/model'
 import { useText } from '@/composables/useText'
 import { useData } from '@/stores/data'
 import { useUi } from '@/stores/ui'
@@ -58,7 +58,7 @@ const drawerOpen = computed({
 
 const presentTypes = computed(() => {
   const s = new Set(data.data?.devices.map((d) => d.type))
-  return (['mcb', 'rcd', 'rcbo', 'voltage-relay', 'spd', 'meter', 'din-socket', 'switch', 'contactor', 'bus', 'terminal', 'other'] as DeviceType[]).filter((x) => s.has(x))
+  return DEVICE_TYPES.filter((x) => s.has(x) && !SMART_TYPES.includes(x))
 })
 const tags = computed(() => [...new Set(data.data?.devices.flatMap((d) => d.tags))].sort())
 

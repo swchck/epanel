@@ -8,12 +8,13 @@ import { POINT_ICONS } from '@/components/common/kinds'
 import OutsideDevices from '@/components/panel/OutsideDevices.vue'
 import PanelEnclosure from '@/components/panel/PanelEnclosure.vue'
 import { locate } from '@/domain/layout'
+import type { DeviceType } from '@/domain/model'
 import { useText } from '@/composables/useText'
 import { useData } from '@/stores/data'
 import MarkdownText from '@/components/common/MarkdownText.vue'
 
 type Scenario = 'partial' | 'all' | 'rcd' | 'smell' | 'flicker'
-type Guide = 'mcb' | 'rcd' | 'relay' | 'all' | 'other'
+type Guide = 'mcb' | 'rcd' | 'afdd' | 'fuse' | 'relay' | 'all' | 'other'
 // one screen per question; the history makes "back" undo exactly the last answer
 type Screen =
   | { kind: 'what' }
@@ -54,9 +55,11 @@ function choose(s: Scenario) {
   else go({ kind: 'pick', scenario: s })
 }
 
+const GUIDE_BY_TYPE: Partial<Record<DeviceType, Guide>> = { mcb: 'mcb', switch: 'mcb', rcd: 'rcd', rcbo: 'rcd', afdd: 'afdd', fuse: 'fuse', 'voltage-relay': 'relay' }
+
 function picked(id: string) {
   const d = data.graph?.byId.get(id)
-  const guide: Guide = !d ? 'other' : d.type === 'rcd' || d.type === 'rcbo' ? 'rcd' : d.type === 'voltage-relay' ? 'relay' : d.type === 'mcb' || d.type === 'switch' ? 'mcb' : 'other'
+  const guide: Guide = (d && GUIDE_BY_TYPE[d.type]) || 'other'
   go({ kind: 'guide', guide, device: id, step: 0 })
 }
 

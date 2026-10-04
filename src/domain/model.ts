@@ -17,6 +17,14 @@ export const DEVICE_TYPES = [
   'switch',
   'contactor',
   'din-socket',
+  'afdd',
+  'fuse',
+  'time-relay',
+  'impulse-relay',
+  'dimmer',
+  'psu',
+  'ats',
+  'ups',
   'bus',
   'terminal',
   'actuator',
@@ -30,10 +38,10 @@ export type DeviceType = (typeof DEVICE_TYPES)[number]
 export const RCD_TYPES: readonly DeviceType[] = ['rcd', 'rcbo']
 // devices that physically break the circuit and are safe to rely on before touching wires;
 // bus actuators and contactors are software-driven relays and never count as isolation
-export const ISOLATING_TYPES: readonly DeviceType[] = ['mcb', 'rcd', 'rcbo', 'switch']
+export const ISOLATING_TYPES: readonly DeviceType[] = ['mcb', 'rcd', 'rcbo', 'switch', 'afdd', 'fuse']
 export const SMART_TYPES: readonly DeviceType[] = ['actuator', 'bus-psu', 'bus-gateway', 'bus-io']
 
-export const BUS_SYSTEMS = ['knx', 'dali', 'modbus', 'zigbee', 'other'] as const
+export const BUS_SYSTEMS = ['knx', 'dali', 'modbus', 'zigbee', 'zwave', 'matter', 'wirenboard', 'other'] as const
 export const CHANNEL_FUNCTIONS = ['switch', 'dimmer', 'blind', 'heating', 'hvac', 'input', 'other'] as const
 
 export const OPENING_KINDS = ['door', 'window'] as const
@@ -104,6 +112,15 @@ export function defaultWidth(d: Pick<Device, 'type' | 'poles' | 'width'>): numbe
       return d.poles >= 3 ? 4 : 2
     case 'rcbo':
       return d.poles >= 3 ? 4 : 2
+    case 'afdd':
+      return 2
+    case 'time-relay':
+    case 'dimmer':
+      return 2
+    case 'psu':
+    case 'ats':
+    case 'ups':
+      return 4
     default:
       return d.poles
   }

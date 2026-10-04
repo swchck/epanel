@@ -25,8 +25,9 @@ const rating = computed(() => {
   if (!d.rating) return ''
   return d.curve ? `${d.curve}${d.rating}` : `${d.rating}A`
 })
-const isBreakerLike = computed(() => ['mcb', 'rcd', 'rcbo', 'switch'].includes(t.value))
-const leverPoles = computed(() => (t.value === 'rcd' || t.value === 'rcbo' ? 1 : poles.value))
+const isBreakerLike = computed(() => ['mcb', 'rcd', 'rcbo', 'switch', 'afdd'].includes(t.value))
+const hasTestButton = computed(() => ['rcd', 'rcbo', 'afdd'].includes(t.value))
+const leverPoles = computed(() => (hasTestButton.value ? 1 : poles.value))
 const leverX = 4
 const isSmart = computed(() => SMART_TYPES.includes(t.value))
 const channels = computed(() => props.device.smart?.channels.slice(0, Math.max(2, Math.floor(props.width * 2))) ?? [])
@@ -39,6 +40,7 @@ const leverColor = computed(() => {
   if (t.value === 'switch') return 'url(#lever-red)'
   if (t.value === 'rcd') return 'url(#lever-blue)'
   if (t.value === 'rcbo') return 'url(#lever-violet)'
+  if (t.value === 'afdd') return 'url(#lever-violet)'
   return 'url(#lever-dark)'
 })
 
@@ -108,13 +110,19 @@ const busColor = computed(() => {
         <rect :x="leverX + 3" y="70" :width="leverW - 6" height="4" rx="1.5" fill="white" opacity="0.25" />
       </g>
       <!-- RCD extras: test button and leakage -->
-      <template v-if="t === 'rcd' || t === 'rcbo'">
+      <template v-if="hasTestButton">
         <circle :cx="W - MODULE / 2" cy="80" r="8" fill="#e8c547" stroke="#a88a1e" />
         <text :x="W - MODULE / 2" y="83.5" text-anchor="middle" class="test">T</text>
-        <text :x="W - MODULE / 2" y="104" text-anchor="middle" class="small">{{ device.leakage ? `${device.leakage}mA` : '' }}</text>
-        <text v-if="device.rcdClass" :x="W - MODULE / 2" y="114" text-anchor="middle" class="tiny">type {{ device.rcdClass }}</text>
+        <template v-if="t === 'afdd'">
+          <circle :cx="W - MODULE / 2" cy="100" r="3" :fill="energized ? '#22c55e' : '#3a3a3a'" />
+          <text :x="W - MODULE / 2" y="114" text-anchor="middle" class="tiny">AFDD</text>
+        </template>
+        <template v-else>
+          <text :x="W - MODULE / 2" y="104" text-anchor="middle" class="small">{{ device.leakage ? `${device.leakage}mA` : '' }}</text>
+          <text v-if="device.rcdClass" :x="W - MODULE / 2" y="114" text-anchor="middle" class="tiny">type {{ device.rcdClass }}</text>
+        </template>
       </template>
-      <text :x="(t === 'rcd' || t === 'rcbo' ? leverW / 2 + leverX : W / 2)" y="128" text-anchor="middle" class="rating">{{ rating }}</text>
+      <text :x="(hasTestButton ? leverW / 2 + leverX : W / 2)" y="128" text-anchor="middle" class="rating">{{ rating }}</text>
     </template>
 
     <template v-else-if="t === 'voltage-relay'">
@@ -177,6 +185,72 @@ const busColor = computed(() => {
         <rect :x="(i - 1) * (W / Math.max(1, Math.round(width * 2))) + 1" y="40" :width="W / Math.max(1, Math.round(width * 2)) - 2" :height="HEIGHT - 80" rx="2" fill="#9aa4b2" stroke="#5b6470" />
         <circle :cx="(i - 0.5) * (W / Math.max(1, Math.round(width * 2)))" cy="60" r="4" fill="url(#screw)" />
       </g>
+    </template>
+
+    <!-- fuse holder: the carrier swings down to open; the window shows a blown cartridge -->
+    <template v-else-if="t === 'fuse'">
+      <g v-for="i in poles" :key="'f' + i">
+        <rect :x="(i - 1) * MODULE + 4" y="50" :width="MODULE - 8" height="78" rx="3" fill="url(#shoulder)" stroke="#9a9a92" />
+        <rect :x="(i - 1) * MODULE + MODULE / 2 - 5" y="62" width="10" height="34" rx="2" fill="#f2efe4" stroke="#8a8578" />
+        <rect :x="(i - 1) * MODULE + MODULE / 2 - 3" y="74" width="6" height="8" rx="1" :fill="energized ? '#22c55e' : '#3a3a3a'" />
+      </g>
+      <text :x="W / 2" y="140" text-anchor="middle" class="rating">{{ device.rating ? `${device.rating}A` : '' }}</text>
+    </template>
+
+    <template v-else-if="t === 'time-relay'">
+      <text :x="W / 2" y="54" text-anchor="middle" class="brand">{{ device.brand ?? '' }}</text>
+      <rect x="6" y="62" :width="W - 12" height="26" rx="3" fill="url(#lcd)" stroke="#123" />
+      <text :x="W / 2" y="81" text-anchor="middle" class="seg seg-sm" :class="{ off: !energized }">{{ energized ? '12:00' : '--:--' }}</text>
+      <g v-for="i in 3" :key="'b' + i">
+        <rect :x="6 + (i - 1) * ((W - 12) / 3) + 2" y="96" :width="(W - 12) / 3 - 4" height="8" rx="2" fill="#d1d1ca" stroke="#999" />
+      </g>
+      <text :x="W / 2" y="128" text-anchor="middle" class="rating">{{ rating }}</text>
+    </template>
+
+    <template v-else-if="t === 'impulse-relay'">
+      <rect x="8" y="64" :width="W - 16" height="26" rx="2" fill="#30302d" />
+      <rect :x="W / 2 - 6" :y="on && energized ? 66 : 76" width="12" height="12" rx="2" fill="#e5e5e0" class="lever" />
+      <circle :cx="W / 2" cy="104" r="5" fill="#d1d1ca" stroke="#999" />
+      <text :x="W / 2" y="128" text-anchor="middle" class="rating">{{ rating }}</text>
+    </template>
+
+    <template v-else-if="t === 'dimmer'">
+      <circle :cx="W / 2" cy="82" r="14" fill="#2a2a28" stroke="#111" />
+      <line :x1="W / 2" y1="82" :x2="W / 2 + 8" y2="72" stroke="#e5e5e0" stroke-width="2.5" stroke-linecap="round" />
+      <circle cx="12" cy="106" r="3" :fill="energized ? '#f59e0b' : '#3a3a3a'" :class="{ 'led-on': energized }" />
+      <text :x="W / 2" y="128" text-anchor="middle" class="small">{{ device.model ?? '' }}</text>
+    </template>
+
+    <template v-else-if="t === 'psu'">
+      <text x="8" y="54" class="brand" text-anchor="start">{{ device.brand ?? '' }}</text>
+      <circle cx="14" cy="72" r="3.2" :fill="energized ? '#22c55e' : '#3a3a3a'" />
+      <text x="22" y="75" class="tiny" text-anchor="start">DC OK</text>
+      <circle :cx="W - 14" cy="72" r="5" fill="#d1d1ca" stroke="#999" />
+      <text :x="W / 2" y="104" text-anchor="middle" class="rating">{{ device.model ?? 'DC' }}</text>
+      <text :x="W / 2" y="122" text-anchor="middle" class="small">{{ device.rating ? `${device.rating} A` : '' }}</text>
+    </template>
+
+    <!-- transfer switch: two inputs, one of them is live at a time -->
+    <template v-else-if="t === 'ats'">
+      <g v-for="(n, i) in ['I', 'II']" :key="n" :transform="`translate(${(i + 0.5) * (W / 2)}, 0)`">
+        <rect x="-10" y="64" width="20" height="36" rx="3" fill="#2a2a28" />
+        <rect x="-8" :y="i === 0 && energized ? 66 : 82" width="16" height="16" rx="2" fill="url(#lever-red)" class="lever" />
+        <text y="114" text-anchor="middle" class="tiny">{{ n }}</text>
+        <circle cy="56" r="3" :fill="i === 0 && energized ? '#22c55e' : '#3a3a3a'" />
+      </g>
+      <text :x="W / 2" y="134" text-anchor="middle" class="rating">{{ rating }}</text>
+    </template>
+
+    <template v-else-if="t === 'ups'">
+      <text x="8" y="54" class="brand" text-anchor="start">{{ device.brand ?? '' }}</text>
+      <rect :x="W / 2 - 16" y="66" width="30" height="16" rx="2" fill="none" stroke="#3a3a3a" stroke-width="2" />
+      <rect :x="W / 2 + 14" y="71" width="3" height="6" fill="#3a3a3a" />
+      <rect :x="W / 2 - 13" y="69" :width="energized ? 24 : 6" height="10" rx="1" :fill="energized ? '#22c55e' : '#ef4444'" />
+      <circle cx="14" cy="98" r="3" :fill="energized ? '#22c55e' : '#3a3a3a'" />
+      <text x="22" y="101" class="tiny" text-anchor="start">AC</text>
+      <circle cx="14" cy="110" r="3" :fill="energized ? '#3a3a3a' : '#f59e0b'" />
+      <text x="22" y="113" class="tiny" text-anchor="start">BAT</text>
+      <text :x="W / 2" y="132" text-anchor="middle" class="small">{{ device.model ?? '' }}</text>
     </template>
 
     <!-- bus devices (KNX and friends): bus terminal, channel LEDs, manual buttons -->

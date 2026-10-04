@@ -77,6 +77,10 @@ function render(time: number) {
   else lastTime = 0
 }
 
+// centimetres from the floor: a standard 2.1 m door, a window with a 0.85 m sill and 1.4 m of glass
+const DOOR_SPAN = [0, 210] as const
+const WINDOW_SPAN = [85, 225] as const
+
 function build() {
   disposeGroup(world.value)
   scene.remove(world.value)
@@ -116,6 +120,25 @@ function build() {
       edges.rotation.copy(wall.rotation)
       g.add(edges)
     })
+  }
+
+  for (const o of d.value.plan.openings) {
+    const [bottom, top] = o.kind === 'door' ? DOOR_SPAN : WINDOW_SPAN
+    const h = top - bottom
+    const frame = new THREE.LineSegments(
+      new THREE.EdgesGeometry(new THREE.BoxGeometry(o.width, h, 10)),
+      new THREE.LineBasicMaterial({ color: o.kind === 'door' ? 0xb07a4a : 0x60a5fa }),
+    )
+    frame.position.set(o.x, bottom + h / 2, o.y)
+    frame.rotation.y = (-o.angle * Math.PI) / 180
+    g.add(frame)
+    const fill = new THREE.Mesh(
+      new THREE.PlaneGeometry(o.width, h),
+      new THREE.MeshStandardMaterial({ color: o.kind === 'door' ? 0xb07a4a : 0x93c5fd, transparent: true, opacity: o.kind === 'door' ? 0.35 : 0.25, side: THREE.DoubleSide, depthWrite: false }),
+    )
+    fill.position.copy(frame.position)
+    fill.rotation.copy(frame.rotation)
+    g.add(fill)
   }
 
   for (const p of d.value.points) {
@@ -332,7 +355,7 @@ onBeforeUnmount(() => {
   renderer?.domElement.remove()
 })
 
-watch(() => [d.value.rooms, d.value.points, d.value.routes, d.value.plan.wallHeight, props.showRoutes, isDark.value, locale.value], build, { deep: true })
+watch(() => [d.value.rooms, d.value.points, d.value.routes, d.value.plan.wallHeight, d.value.plan.openings, props.showRoutes, isDark.value, locale.value], build, { deep: true })
 watch(() => [props.highlightPoints, props.deadPoints, props.focusPoint, props.selectedRoute], applyState)
 </script>
 

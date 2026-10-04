@@ -142,7 +142,11 @@ export const useData = defineStore('data', () => {
     const stored = await idbSafe(() => idbGet<EncryptedEnvelope>(DRAFT_KEY))
     if (!stored) return
     try {
-      draft.value = await decryptJson<Bundle>(stored, pw)
+      // drafts outlive app updates, so they go through the schema to pick up new defaults;
+      // a half-edited draft the schema rejects is still the user's work and is kept as it was
+      const raw = await decryptJson<Bundle>(stored, pw)
+      const parsed = (await parsing()).bundleFromUnknown(raw)
+      draft.value = parsed.kind === 'bundle' ? parsed.bundle : raw
       dirty.value = true
     } catch {
       // a draft encrypted with another password belongs to someone else on this device

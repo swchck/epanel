@@ -120,7 +120,15 @@
       "bus-psu": "Fuente de alimentación del bus",
       "bus-gateway": "Pasarela de bus",
       "bus-io": "Módulo de entradas",
-      "other": "Otro"
+      "other": "Otro",
+      "afdd": "Dispositivo de protección contra arcos",
+      "fuse": "Fusible",
+      "time-relay": "Interruptor horario",
+      "impulse-relay": "Telerruptor",
+      "dimmer": "Regulador",
+      "psu": "Fuente de 12/24 V",
+      "ats": "Conmutador automático de red",
+      "ups": "SAI"
     },
     "typeShort": {
       "mcb": "Automático",
@@ -138,7 +146,15 @@
       "bus-psu": "Fuente bus",
       "bus-gateway": "Pasarela",
       "bus-io": "Entradas",
-      "other": "Otro"
+      "other": "Otro",
+      "afdd": "AFDD",
+      "fuse": "Fusible",
+      "time-relay": "Horario",
+      "impulse-relay": "Telerruptor",
+      "dimmer": "Regulador",
+      "psu": "Fuente 12/24 V",
+      "ats": "ATS",
+      "ups": "SAI"
     },
     "field": {
       "rating": "Calibre",
@@ -185,7 +201,15 @@
       "bus-psu": "Alimenta un bus KNX o DALI",
       "bus-gateway": "Conecta el bus con la red y la app",
       "bus-io": "Recibe señales de pulsadores y sensores",
-      "other": "Cualquier cosa que no esté en la lista"
+      "other": "Cualquier cosa que no esté en la lista",
+      "afdd": "Corta la línea si hay chispas en la instalación: un mal contacto, un cable dañado",
+      "fuse": "Un cartucho en su portafusibles. Se funde por sobrecarga, cámbialo por uno igual",
+      "time-relay": "Enciende y apaga una carga según horario: termo, iluminación, toallero",
+      "impulse-relay": "Luz que se enciende y apaga con pulsadores desde varios puntos",
+      "dimmer": "Ajusta suavemente la intensidad de las luces",
+      "psu": "Alimenta tiras LED, sensores, baja tensión",
+      "ats": "Pasa la vivienda a una segunda acometida o generador cuando cae la principal",
+      "ups": "Mantiene el router, la caldera o la bomba con batería durante un corte"
     }
   },
   "point": {
@@ -387,6 +411,27 @@
         "steps": [
           "Vuelve atrás y elige el automático que tiene la palanca bajada.",
           "Si no hay ninguna palanca bajada, revisa el relé de tensión."
+        ]
+      },
+      "afdd": {
+        "title": "Ha saltado la protección contra arcos",
+        "why": "El AFDD corta la línea cuando la instalación hace chispas: un contacto flojo en un enchufe o caja, un cable dañado, un alargador averiado. Es un aviso de incendio.",
+        "steps": [
+          "Desenchufa todo en esta línea, sobre todo alargadores y cargadores viejos.",
+          "Sube la palanca.",
+          "Si aguanta, enchufa los aparatos de uno en uno y fíjate con cuál vuelve a saltar.",
+          "Si salta sin nada enchufado o se repite, déjala apagada y llama a un electricista: hay un mal contacto."
+        ]
+      },
+      "fuse": {
+        "title": "Se ha fundido un fusible",
+        "why": "El cartucho se funde por sobrecarga o cortocircuito. No se rearma solo.",
+        "steps": [
+          "Apaga los aparatos potentes de esta línea.",
+          "Abre el portafusibles y saca el cartucho. Uno fundido tiene la ventanilla oscura o el indicador apagado.",
+          "Pon uno nuevo del mismo calibre, viene impreso en el cuerpo.",
+          "Nunca pongas uno de más amperios ni lo sustituyas por un alambre.",
+          "Si el nuevo se funde enseguida, es un cortocircuito. Llama a un electricista."
         ]
       }
     },
@@ -633,7 +678,10 @@
       "dali": "DALI",
       "modbus": "Modbus",
       "zigbee": "Zigbee",
-      "other": "Otro bus"
+      "other": "Otro bus",
+      "zwave": "Z-Wave",
+      "matter": "Matter / Thread",
+      "wirenboard": "Wiren Board"
     },
     "fn": {
       "switch": "Encendido/apagado",
@@ -824,7 +872,8 @@
         "control": "Medida y control",
         "wiring": "Barras y bornes",
         "smart": "Domótica",
-        "other": "Otros"
+        "other": "Otros",
+        "power": "Alimentación"
       },
       "suggestTask": "recomendado",
       "createTask": "Crear tarea",

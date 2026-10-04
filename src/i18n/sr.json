@@ -120,7 +120,15 @@
       "bus-psu": "Napajanje magistrale",
       "bus-gateway": "Gejtvej magistrale",
       "bus-io": "Ulazni modul",
-      "other": "Ostalo"
+      "other": "Ostalo",
+      "afdd": "Uređaj za zaštitu od luka",
+      "fuse": "Topljivi osigurač",
+      "time-relay": "Vremenski relej",
+      "impulse-relay": "Impulsni relej",
+      "dimmer": "Dimer",
+      "psu": "Napajanje 12/24 V",
+      "ats": "Automatsko preključivanje",
+      "ups": "UPS"
     },
     "typeShort": {
       "mcb": "Osigurač",
@@ -138,7 +146,15 @@
       "bus-psu": "Napajanje",
       "bus-gateway": "Gejtvej",
       "bus-io": "Ulazi",
-      "other": "Ostalo"
+      "other": "Ostalo",
+      "afdd": "AFDD",
+      "fuse": "Osigurač",
+      "time-relay": "Tajmer",
+      "impulse-relay": "Imp. relej",
+      "dimmer": "Dimer",
+      "psu": "Napajanje",
+      "ats": "ATS",
+      "ups": "UPS"
     },
     "field": {
       "rating": "Nazivna struja",
@@ -185,7 +201,15 @@
       "bus-psu": "Napaja KNX ili DALI magistralu",
       "bus-gateway": "Povezuje magistralu sa mrežom i aplikacijom",
       "bus-io": "Prima signale od tastera i senzora",
-      "other": "Sve što nije na listi"
+      "other": "Sve što nije na listi",
+      "afdd": "Isključuje kolo pri varničenju u instalaciji: loš kontakt, oštećen kabl",
+      "fuse": "Topljivi uložak u držaču. Pregori pri preopterećenju, menja se istim",
+      "time-relay": "Uključuje i isključuje potrošač po rasporedu: bojler, rasveta, grejač peškira",
+      "impulse-relay": "Svetlo se pali i gasi tasterima sa više mesta",
+      "dimmer": "Postepeno menja jačinu svetla",
+      "psu": "Napaja LED trake, senzore, slabu struju",
+      "ats": "Prebacuje stan na drugi priključak ili agregat kad nestane glavni",
+      "ups": "Drži ruter, kotao ili pumpu na bateriji kad nestane struje"
     }
   },
   "point": {
@@ -387,6 +411,27 @@
         "steps": [
           "Vratite se i izaberite osigurač čija je poluga spuštena.",
           "Ako nijedna poluga nije spuštena, proverite naponski relej."
+        ]
+      },
+      "afdd": {
+        "title": "Proradila zaštita od luka",
+        "why": "AFDD isključuje kolo kada instalacija varniči: olabavljen kontakt u utičnici ili kutiji, oštećen kabl, neispravan produžni kabl. To je upozorenje na požar.",
+        "steps": [
+          "Isključite sve na ovom kolu, posebno produžne kablove i stare punjače.",
+          "Podignite polugu.",
+          "Ako drži, uključujte uređaje jedan po jedan i pratite posle kog ponovo proradi.",
+          "Ako proradi bez opterećenja ili se ponavlja, ne uključujte kolo. Zovite električara: negde je loš kontakt."
+        ]
+      },
+      "fuse": {
+        "title": "Pregoreo je osigurač",
+        "why": "Topljivi uložak pregori pri preopterećenju ili kratkom spoju. Sam se ne vraća.",
+        "steps": [
+          "Isključite jake potrošače na ovom kolu.",
+          "Otvorite držač i izvadite uložak. Pregoreli ima tamno okance ili ugašen indikator.",
+          "Stavite novi uložak iste jačine, piše na kućištu.",
+          "Nikad ne stavljajte jači uložak i ne zamenjujte ga žicom.",
+          "Ako novi odmah pregori, to je kratak spoj. Zovite električara."
         ]
       }
     },
@@ -633,7 +678,10 @@
       "dali": "DALI",
       "modbus": "Modbus",
       "zigbee": "Zigbee",
-      "other": "Druga magistrala"
+      "other": "Druga magistrala",
+      "zwave": "Z-Wave",
+      "matter": "Matter / Thread",
+      "wirenboard": "Wiren Board"
     },
     "fn": {
       "switch": "Uklj./isklj.",
@@ -824,7 +872,8 @@
         "control": "Merenje i upravljanje",
         "wiring": "Šine i kleme",
         "smart": "Pametna kuća",
-        "other": "Ostalo"
+        "other": "Ostalo",
+        "power": "Napajanje"
       },
       "suggestTask": "preporučeno",
       "createTask": "Napravi zadatak",
