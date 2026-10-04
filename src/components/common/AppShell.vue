@@ -43,7 +43,7 @@ const { t, tx } = useText()
 const moreOpen = ref(false)
 const collapsed = computed(() => ui.sidebarCollapsed)
 // on <html> so the window drag strip in App.vue lines up with the sidebar too
-watchEffect(() => document.documentElement.style.setProperty('--sidebar-w', collapsed.value ? '5rem' : '15.5rem'))
+watchEffect(() => document.documentElement.style.setProperty('--sidebar-w', collapsed.value ? '4.5rem' : '15.5rem'))
 
 const GROUPS: { key: string; items: NavName[] }[] = [
   { key: 'main', items: ['panel', 'plan', 'find', 'emergency'] },
@@ -108,18 +108,26 @@ whenever(
 <template>
   <div class="min-h-dvh bg-background lg:grid lg:h-dvh lg:grid-cols-[var(--sidebar-w)_1fr] lg:overflow-hidden print:block print:h-auto print:overflow-visible">
     <aside class="no-print sticky top-0 hidden h-dvh flex-col border-r border-sidebar-border bg-sidebar lg:flex">
-      <RouterLink to="/" class="flex items-center gap-3 pt-[calc(var(--titlebar)+1rem)] pb-3" :class="collapsed ? 'justify-center px-2' : 'px-5'">
-        <BrandMark class="size-9 shrink-0" />
-        <div v-if="!collapsed" class="min-w-0">
-          <div class="truncate text-sm font-semibold leading-tight">{{ tx(data.data?.meta.title) || t('app.name') }}</div>
-          <div class="truncate text-xs text-muted-foreground">{{ t('app.tagline') }}</div>
-        </div>
-      </RouterLink>
+      <div class="flex items-center gap-1 pt-[calc(var(--titlebar)+1rem)] pb-3" :class="collapsed ? 'justify-center px-2' : 'pr-2 pl-5'">
+        <RouterLink to="/" class="flex min-w-0 flex-1 items-center gap-3" :class="{ 'justify-center': collapsed }">
+          <BrandMark class="size-9 shrink-0" />
+          <div v-if="!collapsed" class="min-w-0">
+            <div class="truncate text-sm font-semibold leading-tight">{{ tx(data.data?.meta.title) || t('app.name') }}</div>
+            <div class="truncate text-xs text-muted-foreground">{{ t('app.tagline') }}</div>
+          </div>
+        </RouterLink>
+        <Tooltip v-if="!collapsed">
+          <TooltipTrigger as-child>
+            <Button variant="ghost" size="icon-sm" class="shrink-0 text-muted-foreground" :aria-label="t('nav.collapse')" @click="ui.sidebarCollapsed = true"><PanelLeftClose /></Button>
+          </TooltipTrigger>
+          <TooltipContent side="right">{{ t('nav.collapse') }} <Kbd>⌘\</Kbd></TooltipContent>
+        </Tooltip>
+      </div>
       <Tooltip :disabled="!collapsed">
         <TooltipTrigger as-child>
           <button
             class="mb-2 flex items-center gap-2 rounded-lg border bg-background text-left text-sm text-muted-foreground transition hover:border-primary/50"
-            :class="collapsed ? 'mx-auto size-9 justify-center' : 'mx-4 px-3 py-1.5'"
+            :class="collapsed ? 'mx-auto size-10 justify-center' : 'mx-4 px-3 py-1.5'"
             :aria-label="t('search.open')"
             @click="ui.searchOpen = true"
           >
@@ -135,14 +143,14 @@ whenever(
       <nav class="flex-1 overflow-y-auto pb-2" :class="collapsed ? 'px-2' : 'px-3'">
         <div v-for="(g, gi) in GROUPS" :key="g.key" class="mb-2.5">
           <div v-if="!collapsed" class="px-2 pt-1 pb-1 text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">{{ t(`nav.group.${g.key}`) }}</div>
-          <div v-else-if="gi > 0" class="mx-2 mb-2 border-t border-sidebar-border" />
+          <div v-else-if="gi > 0" class="mx-auto mb-2 w-8 border-t border-sidebar-border" />
           <Tooltip v-for="n in g.items.filter(visible)" :key="n" :disabled="!collapsed">
             <TooltipTrigger as-child>
               <RouterLink
                 :to="pathOf(n)"
-                class="group relative flex items-center gap-3 rounded-lg py-1.5 text-sm transition"
+                class="group relative flex items-center gap-3 rounded-lg text-sm transition"
                 :class="[
-                  collapsed ? 'justify-center px-0' : 'px-2.5',
+                  collapsed ? 'mx-auto mb-0.5 size-10 justify-center' : 'px-2.5 py-1.5',
                   current === n ? 'bg-sidebar-accent font-medium text-foreground' : 'text-muted-foreground hover:bg-sidebar-accent/60 hover:text-foreground',
                 ]"
                 :aria-label="collapsed ? t(`nav.${n}`) : undefined"
@@ -152,7 +160,7 @@ whenever(
                   <span class="flex-1">{{ t(`nav.${n}`) }}</span>
                   <span v-if="badge[n]" class="rounded-full px-1.5 text-[11px] font-semibold tabular" :class="badge[n]!.tone">{{ badge[n]!.n }}</span>
                 </template>
-                <span v-else-if="badge[n]" class="absolute top-1 right-2 size-2 rounded-full" :class="badge[n]!.tone" />
+                <span v-else-if="badge[n]" class="absolute top-1.5 right-1.5 size-2 rounded-full" :class="badge[n]!.tone" />
               </RouterLink>
             </TooltipTrigger>
             <TooltipContent side="right">{{ t(`nav.${n}`) }}<template v-if="badge[n]"> · {{ badge[n]!.n }}</template></TooltipContent>
@@ -176,15 +184,13 @@ whenever(
           <TooltipContent side="right">{{ t('nav.leave') }}</TooltipContent>
         </Tooltip>
         <div v-else-if="!collapsed" class="flex-1" />
-        <LangSwitch />
+        <LangSwitch :compact="collapsed" />
         <ThemeToggle />
-        <Tooltip>
+        <Tooltip v-if="collapsed">
           <TooltipTrigger as-child>
-            <Button variant="ghost" size="icon-sm" :aria-label="t(collapsed ? 'nav.expand' : 'nav.collapse')" @click="ui.sidebarCollapsed = !collapsed">
-              <component :is="collapsed ? PanelLeftOpen : PanelLeftClose" />
-            </Button>
+            <Button variant="ghost" size="icon" class="size-9" :aria-label="t('nav.expand')" @click="ui.sidebarCollapsed = false"><PanelLeftOpen /></Button>
           </TooltipTrigger>
-          <TooltipContent side="right">{{ t(collapsed ? 'nav.expand' : 'nav.collapse') }} <Kbd>⌘\</Kbd></TooltipContent>
+          <TooltipContent side="right">{{ t('nav.expand') }} <Kbd>⌘\</Kbd></TooltipContent>
         </Tooltip>
       </div>
     </aside>
