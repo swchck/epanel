@@ -127,7 +127,7 @@ whenever(
         <TooltipTrigger as-child>
           <button
             class="mb-2 flex items-center gap-2 rounded-lg border bg-background text-left text-sm text-muted-foreground transition hover:border-primary/50"
-            :class="collapsed ? 'mx-auto size-10 justify-center' : 'mx-4 px-3 py-1.5'"
+            :class="collapsed ? 'mx-auto size-9 justify-center' : 'mx-4 px-3 py-1.5'"
             :aria-label="t('search.open')"
             @click="ui.searchOpen = true"
           >
@@ -140,17 +140,18 @@ whenever(
         </TooltipTrigger>
         <TooltipContent side="right">{{ t('search.placeholderShort') }}</TooltipContent>
       </Tooltip>
-      <nav class="flex-1 overflow-y-auto pb-2" :class="collapsed ? 'px-2' : 'px-3'">
-        <div v-for="(g, gi) in GROUPS" :key="g.key" class="mb-2.5">
+      <!-- scrolls only on a very short window; the bar itself would just be noise next to the icons -->
+      <nav class="flex-1 [scrollbar-width:none] overflow-y-auto pb-2 [&::-webkit-scrollbar]:hidden" :class="collapsed ? 'px-2' : 'px-3'">
+        <div v-for="(g, gi) in GROUPS" :key="g.key" :class="collapsed ? 'mb-1.5' : 'mb-2.5'">
           <div v-if="!collapsed" class="px-2 pt-1 pb-1 text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">{{ t(`nav.group.${g.key}`) }}</div>
-          <div v-else-if="gi > 0" class="mx-auto mb-2 w-8 border-t border-sidebar-border" />
+          <div v-else-if="gi > 0" class="mx-auto mb-1.5 w-8 border-t border-sidebar-border" />
           <Tooltip v-for="n in g.items.filter(visible)" :key="n" :disabled="!collapsed">
             <TooltipTrigger as-child>
               <RouterLink
                 :to="pathOf(n)"
                 class="group relative flex items-center gap-3 rounded-lg text-sm transition"
                 :class="[
-                  collapsed ? 'mx-auto mb-0.5 size-10 justify-center' : 'px-2.5 py-1.5',
+                  collapsed ? 'mx-auto size-9 justify-center' : 'px-2.5 py-1.5',
                   current === n ? 'bg-sidebar-accent font-medium text-foreground' : 'text-muted-foreground hover:bg-sidebar-accent/60 hover:text-foreground',
                 ]"
                 :aria-label="collapsed ? t(`nav.${n}`) : undefined"
