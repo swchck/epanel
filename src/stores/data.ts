@@ -55,8 +55,8 @@ export function emptyData(title = ''): PanelInput {
     photos: [],
     maintenance: {
       tasks: [
-        { id: 'rcd-test', title: { ru: 'Нажать «Тест» на УЗО', en: 'Press TEST on RCDs' }, intervalDays: 30, devices: [] },
-        { id: 'tighten', title: { ru: 'Протяжка клемм', en: 'Re-torque terminals' }, intervalDays: 365, devices: [] },
+        { id: 'rcd-test', title: { ru: 'Нажать «Тест» на УЗО', en: 'Press TEST on RCDs', sr: 'Pritisnuti TEST na FID sklopkama', es: 'Pulsar TEST en los diferenciales' }, intervalDays: 30, devices: [] },
+        { id: 'tighten', title: { ru: 'Протяжка клемм', en: 'Re-torque terminals', sr: 'Pritezanje klema', es: 'Reapriete de bornes' }, intervalDays: 365, devices: [] },
       ],
       log: [],
     },

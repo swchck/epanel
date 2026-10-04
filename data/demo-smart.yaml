@@ -5,10 +5,10 @@ assetsDir: assets
 data:
   meta:
     title:
-      ru: Квартира с KNX — щит ЩК-1
-      en: KNX apartment — panel DB-1
-      sr: KNX stan — tabla RT-1
-      es: Apartamento KNX — cuadro CG-1
+      ru: Квартира с KNX, щит ЩК-1
+      en: KNX apartment, panel DB-1
+      sr: KNX stan, tabla RT-1
+      es: Apartamento KNX, cuadro CG-1
     updated: '2026-10-01'
     enclosure: Встраиваемый щит 5×18 модулей
     location:
@@ -70,7 +70,7 @@ data:
       model: УЗМ-51М
       upstream: PM1
       tags: [ввод, защита]
-      notes: [{author: Иван, date: '2026-09-12', text: 'Уставки 170–260 В, задержка включения 30 с. Если всё погасло и через минуту включилось — это оно сработало, авария в сети.'}]
+      notes: [{author: Иван, date: '2026-09-12', text: 'Уставки от 170 до 260 В, задержка включения 30 с. Если всё погасло и через минуту включилось само, сработало реле: авария в сети.'}]
     - id: FV1
       type: spd
       label: {ru: УЗИП (защита от перенапряжений), en: Surge protector, sr: Prenaponska zaštita, es: Protector contra sobretensiones}
@@ -104,13 +104,13 @@ data:
       tags: [кухня]
     - id: QF1
       type: mcb
-      label: {ru: Кухня — розетки над столешницей, en: Kitchen — worktop sockets, sr: Kuhinja — utičnice iznad radne ploče, es: Cocina — enchufes de encimera}
+      label: {ru: 'Кухня: розетки над столешницей', en: 'Kitchen: worktop sockets', sr: 'Kuhinja: utičnice iznad radne ploče', es: 'Cocina: enchufes de encimera'}
       rating: 16
       curve: C
       upstream: QD1
       circuit: {cable: ВВГнг(А)-LS 3×2.5, crossSection: 2.5, lengthM: 14}
       tags: [кухня, розетки]
-      notes: [{author: Иван, date: '2026-09-10', text: 'Чайник и кофемашину одновременно — нормально, а вот ещё и тостер — уже на грани.'}]
+      notes: [{author: Иван, date: '2026-09-10', text: 'Чайник и кофемашина одновременно держатся спокойно. Если добавить тостер, линия уже на грани.'}]
     - id: QF2
       type: mcb
       label: {ru: Духовой шкаф, en: Oven, sr: Rerna, es: Horno}
@@ -161,7 +161,7 @@ data:
       tags: [розетки]
     - id: QF5
       type: mcb
-      label: {ru: Гостиная — розетки, en: Living room — sockets, sr: Dnevna soba — utičnice, es: Salón — enchufes}
+      label: {ru: 'Гостиная: розетки', en: 'Living room: sockets', sr: 'Dnevna soba: utičnice', es: 'Salón: enchufes'}
       rating: 16
       curve: C
       upstream: QD2
@@ -169,7 +169,7 @@ data:
       tags: [гостиная, розетки]
     - id: QF6
       type: mcb
-      label: {ru: Спальня — розетки, en: Bedroom — sockets, sr: Spavaća soba — utičnice, es: Dormitorio — enchufes}
+      label: {ru: 'Спальня: розетки', en: 'Bedroom: sockets', sr: 'Spavaća soba: utičnice', es: 'Dormitorio: enchufes'}
       rating: 16
       curve: C
       upstream: QD2
@@ -177,7 +177,7 @@ data:
       tags: [спальня, розетки]
     - id: QF7
       type: mcb
-      label: {ru: Прихожая и гардероб — розетки, en: Hallway & wardrobe — sockets, sr: Hodnik i garderober — utičnice, es: Recibidor y vestidor — enchufes}
+      label: {ru: 'Прихожая и гардероб: розетки', en: 'Hallway & wardrobe: sockets', sr: 'Hodnik i garderober: utičnice', es: 'Recibidor y vestidor: enchufes'}
       rating: 16
       curve: C
       upstream: QD2
@@ -185,13 +185,13 @@ data:
       tags: [прихожая, розетки]
     - id: QF8
       type: mcb
-      label: {ru: Лоджия — розетки, en: Loggia — sockets, sr: Lođa — utičnice, es: Galería — enchufes}
+      label: {ru: 'Лоджия: розетки', en: 'Loggia: sockets', sr: 'Lođa: utičnice', es: 'Galería: enchufes'}
       rating: 20
       curve: C
       upstream: QD2
       circuit: {cable: ВВГнг(А)-LS 3×2.5, crossSection: 2.5, lengthM: 21}
       tags: [лоджия, розетки]
-      notes: [{author: Владелец, date: '2026-09-20', text: 'Поставили 20 А под обогреватель, проверки ругаются — подумать о замене на 16 А.'}]
+      notes: [{author: Владелец, date: '2026-09-20', text: 'Поставили 20 А под обогреватель, проверки ругаются. Надо подумать о замене на 16 А.'}]
     - id: QD3
       type: rcd
       label: {ru: УЗО освещения и кондиционеров, en: Lighting & AC RCD, sr: FID rasvete i klima, es: Diferencial iluminación y A/A}
@@ -205,7 +205,7 @@ data:
       tags: [свет]
     - id: QF9
       type: mcb
-      label: {ru: Свет — комнаты и лоджия, en: Lighting — rooms & loggia, sr: Rasveta — sobe i lođa, es: Luz — habitaciones y galería}
+      label: {ru: 'Свет: комнаты и лоджия', en: 'Lighting: rooms & loggia', sr: 'Rasveta: sobe i lođa', es: 'Luz: habitaciones y galería'}
       rating: 10
       curve: B
       upstream: QD3
@@ -213,7 +213,7 @@ data:
       tags: [свет]
     - id: QF10
       type: mcb
-      label: {ru: 'Свет — кухня, прихожая, санузлы', en: 'Lighting — kitchen, hallway, bathrooms', sr: 'Rasveta — kuhinja, hodnik, kupatila', es: 'Luz — cocina, recibidor, baños'}
+      label: {ru: 'Свет: кухня, прихожая, санузлы', en: 'Lighting: kitchen, hallway, bathrooms', sr: 'Rasveta: kuhinja, hodnik, kupatila', es: 'Luz: cocina, recibidor, baños'}
       rating: 10
       curve: B
       upstream: QD3
@@ -221,7 +221,7 @@ data:
       tags: [свет]
     - id: QF11
       type: mcb
-      label: {ru: Кондиционер — гостиная, en: AC — living room, sr: Klima — dnevna soba, es: A/A — salón}
+      label: {ru: 'Кондиционер: гостиная', en: 'AC: living room', sr: 'Klima: dnevna soba', es: 'A/A: salón'}
       rating: 16
       curve: C
       upstream: QD3
@@ -229,7 +229,7 @@ data:
       tags: [гостиная, кондиционер]
     - id: QF12
       type: mcb
-      label: {ru: Кондиционер — спальня, en: AC — bedroom, sr: Klima — spavaća soba, es: A/A — dormitorio}
+      label: {ru: 'Кондиционер: спальня', en: 'AC: bedroom', sr: 'Klima: spavaća soba', es: 'A/A: dormitorio'}
       rating: 10
       curve: C
       upstream: QD3
@@ -237,7 +237,7 @@ data:
       tags: [спальня, кондиционер]
     - id: QFD2
       type: rcbo
-      label: {ru: Ванная — стиральная машина и розетка, en: Bathroom — washer & socket, sr: Kupatilo — veš mašina i utičnica, es: Baño — lavadora y enchufe}
+      label: {ru: 'Ванная: стиральная машина и розетка', en: 'Bathroom: washer & socket', sr: 'Kupatilo: veš mašina i utičnica', es: 'Baño: lavadora y enchufe'}
       rating: 16
       curve: C
       leakage: 10
@@ -263,7 +263,7 @@ data:
       tags: [ванная, техника]
     - id: QFD4
       type: rcbo
-      label: {ru: Тёплый пол — ванная, en: Floor heating — bathroom, sr: Podno grejanje — kupatilo, es: Suelo radiante — baño}
+      label: {ru: 'Тёплый пол: ванная', en: 'Floor heating: bathroom', sr: 'Podno grejanje: kupatilo', es: 'Suelo radiante: baño'}
       rating: 10
       curve: C
       leakage: 30
@@ -323,7 +323,7 @@ data:
       label: {ru: Модуль входов (датчики), en: Binary input module, sr: Modul ulaza, es: Módulo de entradas}
       brand: MDT
       model: BE-04000.02
-      smart: {system: knx, address: 1.1.4, channels: [{id: A, function: input, group: 0/0/1, label: {ru: Датчик протечки — ванная, en: Leak sensor — bathroom}, points: [bt-leak]}]}
+      smart: {system: knx, address: 1.1.4, channels: [{id: A, function: input, group: 0/0/1, label: {ru: 'Датчик протечки: ванная', en: 'Leak sensor: bathroom'}, points: [bt-leak]}]}
       tags: [knx]
   rooms:
     - id: living
@@ -869,7 +869,7 @@ data:
       points: [[750, 735], [690, 595], [320, 595], [300, 455], [65, 445], [65, 300]]
       from: {ru: 'Роутер, порты 1 и 2', en: 'Router, ports 1 and 2'}
       to: {ru: ТВ-зона гостиной, en: Living room TV area}
-      cables: [{type: ethernet, count: 2, label: 'Cat6, порты 1–2'}]
+      cables: [{type: ethernet, count: 2, label: 'Cat6, порты 1-2'}]
       note: {ru: В стяжке в гофре 20 мм, en: In the screed inside a 20 mm conduit}
     - id: lan-bedroom
       kind: low
@@ -958,9 +958,9 @@ data:
       date: '2026-08-16'
   maintenance:
     tasks:
-      - {id: rcd-test, title: {ru: Нажать кнопку «Тест» на УЗО и дифавтоматах, en: Press the TEST button on all RCDs and RCBOs, sr: Pritisnuti TEST na svim FID sklopkama, es: Pulsar TEST en todos los diferenciales}, intervalDays: 30, devices: [QD1, QD2, QD3, QFD1, QFD2, QFD3, QFD4], howTo: {ru: 'Нажмите «Т». Устройство должно отключиться. Включите обратно. Если не отключилось — неисправно, звоните электрику.', en: Press T. The device must trip. Switch it back on. If it does not trip it is faulty — call an electrician.}}
-      - {id: spd-check, title: {ru: Проверить индикатор УЗИП, en: Check the surge protector indicator, sr: Proveriti indikator prenaponske zaštite, es: Revisar el indicador del protector}, intervalDays: 180, devices: [FV1], howTo: {ru: 'Окошко должно быть зелёным. Красное — картридж отработал, его нужно заменить.', en: The window must be green. Red means the cartridge is spent and must be replaced.}}
-      - {id: tighten, title: {ru: Протяжка клемм и осмотр щита, en: Re-torque terminals and inspect the panel, sr: Pritezanje klema i pregled table, es: Reapriete de bornes e inspección}, intervalDays: 365, howTo: {ru: Только электрик и только при снятом напряжении. Первая протяжка — через месяц после сборки., en: 'Electrician only, with the power off. First re-torque one month after assembly.'}}
+      - {id: rcd-test, title: {ru: Нажать кнопку «Тест» на УЗО и дифавтоматах, en: Press the TEST button on all RCDs and RCBOs, sr: Pritisnuti TEST na svim FID sklopkama, es: Pulsar TEST en todos los diferenciales}, intervalDays: 30, devices: [QD1, QD2, QD3, QFD1, QFD2, QFD3, QFD4], howTo: {ru: 'Нажмите «Т». Устройство должно отключиться. Включите обратно. Если не отключилось, устройство неисправно: звоните электрику.', en: 'Press T. The device must trip. Switch it back on. If it does not trip, it is faulty: call an electrician.'}}
+      - {id: spd-check, title: {ru: Проверить индикатор УЗИП, en: Check the surge protector indicator, sr: Proveriti indikator prenaponske zaštite, es: Revisar el indicador del protector}, intervalDays: 180, devices: [FV1], howTo: {ru: 'Окошко должно быть зелёным. Красное значит, что картридж отработал и его нужно заменить.', en: The window must be green. Red means the cartridge is spent and must be replaced.}}
+      - {id: tighten, title: {ru: Протяжка клемм и осмотр щита, en: Re-torque terminals and inspect the panel, sr: Pritezanje klema i pregled table, es: Reapriete de bornes e inspección}, intervalDays: 365, howTo: {ru: Только электрик и только при снятом напряжении. Первая протяжка через месяц после сборки., en: 'Electrician only, with the power off. First re-torque one month after assembly.'}}
       - {id: knx-backup, title: {ru: Резервная копия проекта ETS, en: Back up the ETS project, sr: Rezervna kopija ETS projekta, es: Copia del proyecto ETS}, intervalDays: 365, devices: [KF1], howTo: {ru: Выгрузить .knxproj и положить в документы. Без него перепрограммировать систему очень дорого., en: Export the .knxproj and store it with the documents. Reprogramming without it is very expensive.}}
     log:
       - {task: rcd-test, date: '2026-08-20', author: Иван, note: Все УЗО сработали}

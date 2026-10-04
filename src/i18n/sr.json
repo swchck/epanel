@@ -49,7 +49,8 @@
       "plan": "Plan",
       "find": "Nađi",
       "emergency": "Izbacilo"
-    }
+    },
+    "network": "Mreže i cevi"
   },
   "banner": {
     "demo": "Ovo je demo stan. Podaci su izmišljeni i izmene se nigde ne čuvaju.",
@@ -93,7 +94,8 @@
     "passwordMismatch": "Lozinke se ne poklapaju ili su kraće od 4 znaka",
     "createSubmit": "Napravi",
     "encrypted": "„{name}“ je šifrovan. Unesite lozinku.",
-    "invalid": "Fajl nije moguće pročitati"
+    "invalid": "Fajl nije moguće pročitati",
+    "replaceDraft": "Otvoriti „{name}“? Nesačuvane izmene u nacrtu biće izgubljene."
   },
   "device": {
     "type": {
@@ -173,7 +175,8 @@
       "network": "Slaba struja",
       "panel": "Kontrolni panel",
       "sensor": "Senzor",
-      "other": "Tačka"
+      "other": "Tačka",
+      "data": "Komunikaciona utičnica"
     },
     "kinds": {
       "socket": "Utičnice",
@@ -186,7 +189,8 @@
       "network": "Slaba struja",
       "panel": "Kontrolni paneli",
       "sensor": "Senzori",
-      "other": "Ostalo"
+      "other": "Ostalo",
+      "data": "Komunikacione utičnice"
     },
     "profile": {
       "generic": "Običan uređaj",
@@ -239,7 +243,9 @@
       "bus": "Magistrala pametne kuće",
       "photos": "Fotografije zidova",
       "labels": "Oznake osigurača",
-      "background": "Podloga plana"
+      "background": "Podloga plana",
+      "lowvoltage": "Slaba struja i cevi",
+      "dimensions": "Dimenzije"
     },
     "zoomIn": "Uvećaj",
     "zoomOut": "Umanji",
@@ -269,7 +275,7 @@
   },
   "emergency": {
     "title": "Nešto je izbacilo",
-    "subtitle": "Bez panike. Odgovorite na par pitanja i rešićemo to.",
+    "subtitle": "Odgovorite na par pitanja i zajedno ćemo videti šta da radite.",
     "scenario": {
       "partial": {
         "title": "Deo stana je ostao bez struje",
@@ -323,7 +329,7 @@
         "why": "Relej isključuje stan kada napon u mreži izađe iz bezbednog opsega i tako štiti vaše uređaje od skokova napona.",
         "steps": [
           "Pogledajte displej releja da vidite napon.",
-          "Sačekajte: kada se napon vrati u normalu, relej sam vraća struju (obično za 30–60 sekundi).",
+          "Sačekajte: kada se napon vrati u normalu, relej sam vraća struju, obično za 30 do 60 sekundi.",
           "Ne dirajte druge osigurače i ne pokušavajte da zaobiđete relej.",
           "Ako se to često dešava, javite upravniku zgrade: problem je u napajanju zgrade."
         ]
@@ -387,7 +393,7 @@
     "totalHint": "Uz faktor istovremenosti. Ukupna snaga svih uređaja: {nameplate} kW.",
     "issues": "Nalazi",
     "showInfo": "Prikaži savete",
-    "allGood": "Nema problema. Tabla je uredno složena.",
+    "allGood": "Nema problema.",
     "circuits": "Opterećenje po strujnim kolima",
     "rulesTitle": "Šta se proverava i kako",
     "disclaimer": "Ove provere su pojednostavljene i ne zamenjuju projekat ni pregled električara. Bakar, polaganje pod malter, napon iz podešavanja.",
@@ -496,7 +502,7 @@
       },
       "load": {
         "title": "Opterećenje strujnog kola",
-        "body": "Struja se računa iz snage uređaja uz faktore istovremenosti: utičnice 0,3, svetla 1, uređaji 0,7–1. Za celu tablu dodaje se i opšti faktor prema broju strujnih kola."
+        "body": "Struja se računa iz snage uređaja uz faktore istovremenosti: utičnice 0,3, svetla 1, uređaji od 0,7 do 1. Za celu tablu dodaje se i opšti faktor prema broju strujnih kola."
       },
       "selectivity": {
         "title": "Selektivnost",
@@ -504,11 +510,11 @@
       },
       "rcd": {
         "title": "FID sklopke i kaskade",
-        "body": "FID sklopka od 30 mA štiti ljude. Dve FID sklopke u nizu bez selektivnosti izbacuju zajedno, zato ona iznad treba da bude selektivna (S) od 100–300 mA."
+        "body": "FID sklopka od 30 mA štiti ljude. Dve FID sklopke u nizu bez selektivnosti izbacuju zajedno, zato ona iznad treba da bude selektivna (S), od 100 ili 300 mA."
       },
       "wet": {
         "title": "Vlažne prostorije",
-        "body": "Sve u kupatilima i toaletima mora biti iza FID sklopke ili FID osigurača od 10–30 mA."
+        "body": "Sve u kupatilima i toaletima mora biti iza FID sklopke ili FID osigurača od 10 ili 30 mA."
       },
       "class": {
         "title": "Tip FID sklopke",
@@ -525,7 +531,7 @@
     "subtitle": "Uređaji na magistrali (KNX i drugi), njihove adrese i šta čime upravlja.",
     "empty": "Ova tabla nema uređaja na magistrali. Ako imate KNX, DALI ili Modbus, dodajte aktuatore, napajanje magistrale i kontrolne panele u uređivaču.",
     "openDemo": "Pogledaj KNX demo",
-    "safety": "Kanali aktuatora su releji kojima upravlja softver. Svetlo ugašeno sa panela nije bez napona. Pre rada na instalaciji isključite osigurač.",
+    "safety": "Kanal aktuatora je relej kojim upravlja softver. Svetlo ugašeno sa panela i dalje je pod naponom. Pre rada na instalaciji isključite osigurač.",
     "topology": "Uređaji na magistrali",
     "address": "Adresa",
     "device": "Uređaj",
@@ -701,14 +707,14 @@
       "idTaken": "Ta oznaka već postoji",
       "type": "Tip",
       "label": "Natpis",
-      "labelHint": "Jasno svakome: „Kuhinja — utičnice iznad radne ploče“",
+      "labelHint": "Jasno svakome: „Kuhinja, utičnice iznad radne ploče“",
       "curve": "Karakteristika",
       "width": "Širina, mod.",
       "widthHint": "Prazno: prema tipu",
       "selective": "Selektivna (S)",
       "upstream": "Napaja se iz",
       "upstreamHint": "Uređaj iznad njega u lancu",
-      "noUpstream": "— napajanje —",
+      "noUpstream": "Napajanje (ništa iznad)",
       "circuit": "Strujno kolo",
       "brand": "Proizvođač",
       "model": "Model",
@@ -767,7 +773,8 @@
       "routeKinds": {
         "power": "Energetski",
         "bus": "Magistrala pametne kuće",
-        "low": "Slaba struja"
+        "low": "Slaba struja",
+        "conduit": "Rebrasto crevo"
       },
       "routeNote": "Kako je položen",
       "safeWidth": "Zona bez bušenja",
@@ -775,10 +782,23 @@
       "replace": "Zameni",
       "summary": "Na planu",
       "rooms": "Prostorije",
-      "routes": "Trase"
+      "routes": "Trase",
+      "addCable": "Dodaj kabl",
+      "cableLabel": "Oznaka, npr. „port 3“",
+      "cables": "Kablovi unutra",
+      "ceiling": "Visina plafona",
+      "ceilingHint": "Prazno: kao u celom stanu ({cm} cm)",
+      "diameter": "Prečnik creva",
+      "elevation": "Visina od poda",
+      "elevationHint": "Npr. 30 cm u visini utičnica ili 90 cm u visini prekidača",
+      "from": "Odakle",
+      "to": "Dokle",
+      "mount": "Gde ide",
+      "pullString": "Ima provlakač",
+      "wallHeight": "Visina plafona"
     },
     "media": {
-      "photosHint": "Fotografišite zidove pre malterisanja: za nekoliko godina to će biti najbolja mapa instalacije koju imate.",
+      "photosHint": "Fotografišite zidove pre malterisanja: posle nekoliko godina po tim slikama najlakše ćete videti gde idu kablovi.",
       "addPhotos": "Dodaj fotografije",
       "added": "Dodato fotografija: {n}",
       "notOnPlan": "Nije označeno na planu (kartica Plan → Foto)",
@@ -855,7 +875,7 @@
     "hero": {
       "badge": "QR kod u razvodnoj tabli",
       "title": "Električna tabla koja sama sebe objašnjava",
-      "subtitle": "Zalepite QR kod na vrata table. Ko god ga skenira, vidi koji osigurač šta isključuje, gde kablovi idu kroz zidove i šta da radi kada nešto izbaci. Radi bez interneta, podaci su šifrovani.",
+      "subtitle": "Zalepite QR kod na vrata table. Ko god ga skenira, vidi koji osigurač šta isključuje, gde kablovi idu kroz zidove i šta da radi kada nešto izbaci. Sajt radi bez interneta, a podaci su šifrovani.",
       "tap": "Probajte poluge",
       "live": "Tačaka bez struje na planu: {n}"
     },
@@ -867,11 +887,11 @@
       },
       "encrypt": {
         "title": "Podaci se šifruju lozinkom",
-        "body": "Rezultat je jedan .panel fajl. Pošaljite ga vlasniku ili ga objavite na GitHub Pages jednim dugmetom."
+        "body": "Rezultat je jedan .panel fajl. Pošaljite ga vlasniku ili ga objavite na GitHub Pages direktno iz uređivača."
       },
       "stick": {
         "title": "QR kod na vratima table",
-        "body": "Lozinka je ugrađena u QR. Skenirate ga i sajt se otvara čak i bez interneta, jer telefon čuva kopiju."
+        "body": "Lozinka je ugrađena u QR, pa niko ne mora da je kuca. Posle prvog otvaranja telefon čuva kopiju i sajt radi bez interneta."
       }
     },
     "features": {
@@ -911,11 +931,11 @@
       },
       "offline": {
         "title": "Radi i bez struje",
-        "body": "Kada izbaci glavni osigurač, ruter se takođe gasi. Sajt se otvara iz memorije telefona."
+        "body": "Kada izbaci glavni osigurač, i ruter ostaje bez struje. Sajt koji ste jednom otvorili učitava se iz memorije telefona."
       }
     },
     "privacy": {
-      "title": "Plan vašeg stana ostaje vaš",
+      "title": "Plan vašeg stana vide samo oni koji imaju lozinku",
       "p1": "Podaci se šifruju algoritmom AES-256-GCM direktno u pregledaču, a ključ se izvodi iz lozinke pomoću PBKDF2.",
       "p2": "Hosting čuva samo šifrovani fajl. Nema servera ni baze podataka.",
       "p3": "Lozinka u QR kodu ide posle znaka #, pa je pregledač nikada ne šalje serveru.",
@@ -924,16 +944,48 @@
     },
     "diy": {
       "title": "Napravite svoju",
-      "subtitle": "Besplatno: GitHub Pages i pola sata. Električar može da popuni tablu u pregledaču ili u desktop aplikaciji.",
+      "subtitle": "Potreban vam je samo besplatan GitHub nalog. Električar može da popuni tablu u pregledaču ili u desktop aplikaciji.",
       "steps": [
         "Napravite fork repozitorijuma i uključite GitHub Pages (Settings → Pages → GitHub Actions).",
         "Otvorite aplikaciju, izaberite „Napravi novu tablu“ i postavite lozinku. Ili otvorite .panel fajl od električara.",
         "Popunite tablu i plan. Unesite adresu sajta na kartici Opšte; potrebna je za QR kodove.",
         "Pritisnite „Objavi“ uz GitHub token ili ručno zamenite public/app/panel.enc.json.",
         "Odštampajte nalepnice u odeljku „Nalepnice i QR“ i zalepite QR na vrata table.",
-        "Gotovo. Jednom mesečno pritisnite TEST na FID sklopkama; aplikacija će vas podsetiti."
+        "Jednom mesečno pritisnite TEST na FID sklopkama. Aplikacija će vas podsetiti ako preskočite."
       ]
     },
-    "footer": "Ne zamenjuje projekat ni električara. Napravljeno za miran život posle renoviranja."
+    "footer": "Ne zamenjuje projekat elektroinstalacije ni pregled električara."
+  },
+  "network": {
+    "title": "Mreže i cevi",
+    "subtitle": "Ethernet, HDMI, antena i prazna creva: odakle kreće i gde završava svaki kabl.",
+    "empty": "Još nema slabostrujnih vodova ni creva. Dodajte ih na planu u uređivaču: Kabl → Slaba struja ili Rebrasto crevo.",
+    "all": "Sve",
+    "pull": "provlakač",
+    "conduitHint": "Creva sa provlakačem: {n} od {total}. Kroz njih možete provući još jedan kabl bez štemovanja zida."
+  },
+  "route": {
+    "inside": "Unutra: {n}",
+    "empty": "Prazno",
+    "pullYes": "Ima provlakač: može se provući još jedan kabl.",
+    "pullNo": "Nema provlakača: novi kabl će se teško provući.",
+    "nodrill": "Ne bušite bliže od {cm} cm od trase.",
+    "mount": {
+      "floor": "u estrihu poda",
+      "wall": "u zidu",
+      "ceiling": "po plafonu",
+      "wallAt": "u zidu, {cm} cm od poda"
+    }
+  },
+  "cable": {
+    "ethernet": "Ethernet",
+    "hdmi": "HDMI",
+    "coax": "Antenski (koaksijalni)",
+    "usb": "USB",
+    "speaker": "Zvučnički",
+    "fiber": "Optički",
+    "phone": "Telefonski",
+    "alarm": "Alarm",
+    "other": "Drugi kabl"
   }
 }

@@ -6,7 +6,7 @@ type Any = Record<string, any>
 const doc = yaml.load(readFileSync('data/demo.yaml', 'utf8')) as Any
 const d = doc.data as Any
 
-d.meta.title = { ru: 'Квартира с KNX — щит ЩК-1', en: 'KNX apartment — panel DB-1', sr: 'KNX stan — tabla RT-1', es: 'Apartamento KNX — cuadro CG-1' }
+d.meta.title = { ru: 'Квартира с KNX, щит ЩК-1', en: 'KNX apartment, panel DB-1', sr: 'KNX stan, tabla RT-1', es: 'Apartamento KNX, cuadro CG-1' }
 d.meta.enclosure = 'Встраиваемый щит 5×18 модулей'
 
 d.rows.push({ id: 'r5', modules: 18, items: ['GB1', 'KF1', 'QA1', 'QA2', 'KI1', { blank: 4 }] })
@@ -69,7 +69,7 @@ d.devices.push(
     label: { ru: 'Модуль входов (датчики)', en: 'Binary input module', sr: 'Modul ulaza', es: 'Módulo de entradas' },
     brand: 'MDT',
     model: 'BE-04000.02',
-    smart: knx('1.1.4', [{ id: 'A', function: 'input', group: '0/0/1', label: { ru: 'Датчик протечки — ванная', en: 'Leak sensor — bathroom' }, points: ['bt-leak'] }]),
+    smart: knx('1.1.4', [{ id: 'A', function: 'input', group: '0/0/1', label: { ru: 'Датчик протечки: ванная', en: 'Leak sensor: bathroom' }, points: ['bt-leak'] }]),
     tags: ['knx'],
   },
 )

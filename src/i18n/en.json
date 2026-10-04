@@ -93,8 +93,9 @@
     "passwordHint": "The password encrypts all data. Without it the file cannot be opened and it cannot be recovered.",
     "passwordMismatch": "Passwords don't match or are shorter than 4 characters",
     "createSubmit": "Create",
-    "encrypted": "“{name}” is encrypted. Enter the password.",
-    "invalid": "Could not read the file"
+    "encrypted": "\"{name}\" is encrypted. Enter the password.",
+    "invalid": "Could not read the file",
+    "replaceDraft": "Open \"{name}\"? Unsaved changes in the draft will be lost."
   },
   "device": {
     "type": {
@@ -157,7 +158,7 @@
     "notes": "Notes",
     "addNote": "Add note",
     "noteAuthor": "Your name",
-    "notePlaceholder": "E.g. “replaced the window socket with a double one”",
+    "notePlaceholder": "E.g. \"replaced the window socket with a double one\"",
     "noteDraftHint": "Goes into the draft. Publish it in the editor so everyone sees it.",
     "anonymous": "Anonymous",
     "noNotes": "No notes yet."
@@ -221,7 +222,7 @@
     "clearFilters": "Reset",
     "simulate": "Simulation",
     "zoom": "Zoom",
-    "simHint": "Tap devices to “switch them off” and see what loses power.",
+    "simHint": "Tap devices to \"switch them off\" and see what loses power.",
     "simStatus": "Devices off: {devices}. Points without power: {points}.",
     "simShowPlan": "On the plan",
     "simReset": "Turn everything on",
@@ -274,7 +275,7 @@
   },
   "emergency": {
     "title": "Something tripped",
-    "subtitle": "Stay calm. Answer a couple of questions and we'll sort it out.",
+    "subtitle": "Answer a couple of questions and we'll work out what to do.",
     "scenario": {
       "partial": {
         "title": "Part of the apartment went dark",
@@ -282,7 +283,7 @@
       },
       "rcd": {
         "title": "An RCD or RCBO tripped",
-        "hint": "A blue or purple lever with a “T” button is down"
+        "hint": "A blue or purple lever with a \"T\" button is down"
       },
       "all": {
         "title": "Everything went dark",
@@ -328,7 +329,7 @@
         "why": "The relay disconnects the apartment when grid voltage leaves the safe range, protecting your appliances from surges.",
         "steps": [
           "Look at the relay display to see the voltage.",
-          "Wait: when the voltage is back to normal the relay restores power by itself (usually in 30–60 seconds).",
+          "Wait: once the voltage is back to normal, the relay restores power by itself, usually within 30 to 60 seconds.",
           "Don't flip other breakers or try to bypass the relay.",
           "If it happens often, tell the building management: the problem is in the building's supply."
         ]
@@ -344,7 +345,7 @@
         ]
       },
       "other": {
-        "title": "This device doesn't usually “trip”",
+        "title": "This device doesn't usually \"trip\"",
         "why": "Looks like the wrong device was picked. Find the lever that is down on a breaker, RCD or RCBO.",
         "steps": [
           "Go back and pick the breaker whose lever is down.",
@@ -362,7 +363,7 @@
       "s3": "If there is smoke or fire, leave the apartment and close the door.",
       "s4": "Call 112 and report an electrical fire."
     },
-    "never": "Never hold a lever up by hand so it “stays on”, and never tape breakers. That disables protection against fire and electric shock.",
+    "never": "Never hold a lever up by hand so it \"stays on\", and never tape breakers. That disables protection against fire and electric shock.",
     "contacts": "Who to call"
   },
   "contact": {
@@ -378,7 +379,7 @@
     "title": "Single-line diagram",
     "subtitle": "Built automatically from the panel description: from the supply to every circuit.",
     "grid": "Grid {v} V",
-    "hint": "Tap a device to open its card. Turn on simulation to “switch off” devices on the diagram."
+    "hint": "Tap a device to open its card. Turn on simulation to \"switch off\" devices on the diagram."
   },
   "checks": {
     "title": "Checks",
@@ -392,14 +393,14 @@
     "totalHint": "With diversity applied. Total power of all appliances: {nameplate} kW.",
     "issues": "Findings",
     "showInfo": "Show hints",
-    "allGood": "No issues. The panel is put together neatly.",
+    "allGood": "No issues found.",
     "circuits": "Load per circuit",
     "rulesTitle": "What is checked and how",
     "disclaimer": "These checks are simplified and do not replace a design or an inspection by an electrician. Copper, concealed installation, voltage from settings.",
     "code": {
       "cycle": {
         "title": "Loop in the supply chain",
-        "hint": "{device} ends up feeding itself through other devices. Check the “Fed from” field."
+        "hint": "{device} ends up feeding itself through other devices. Check the \"Fed from\" field."
       },
       "cable-overload": {
         "title": "Breaker too large for the cable",
@@ -451,15 +452,15 @@
       },
       "point-unassigned": {
         "title": "Point without a breaker",
-        "hint": "“{point}” isn't linked to a breaker."
+        "hint": "\"{point}\" isn't linked to a breaker."
       },
       "wet-no-rcd": {
         "title": "Wet zone without RCD",
-        "hint": "“{point}” is in a wet room but has no RCD or RCBO of 30 mA or less in front of it. This is mandatory."
+        "hint": "\"{point}\" is in a wet room but has no RCD or RCBO of 30 mA or less in front of it. This is mandatory."
       },
       "socket-no-rcd": {
         "title": "Socket without RCD",
-        "hint": "“{point}” isn't protected by a 30 mA RCD. Socket circuits require one."
+        "hint": "\"{point}\" isn't protected by a 30 mA RCD. Socket circuits require one."
       },
       "rcd-class": {
         "title": "Type AC RCD in front of inverter equipment",
@@ -487,11 +488,11 @@
       },
       "channel-mismatch": {
         "title": "Channel controls a point on another circuit",
-        "hint": "Channel {channel} is linked to “{point}”, but that point isn't fed by this actuator."
+        "hint": "Channel {channel} is linked to \"{point}\", but that point isn't fed by this actuator."
       },
       "ga-unknown": {
         "title": "Group address leads nowhere",
-        "hint": "“{point}” sends to {group}, but no actuator channel listens to it."
+        "hint": "\"{point}\" sends to {group}, but no actuator channel listens to it."
       }
     },
     "rules": {
@@ -501,7 +502,7 @@
       },
       "load": {
         "title": "Circuit load",
-        "body": "Current is derived from appliance power with demand factors: sockets 0.3, lights 1, appliances 0.7–1. The whole panel also gets an overall factor based on the number of circuits."
+        "body": "Current is derived from appliance power with demand factors: sockets 0.3, lights 1, appliances 0.7 to 1. The whole panel also gets an overall factor based on the number of circuits."
       },
       "selectivity": {
         "title": "Selectivity",
@@ -509,11 +510,11 @@
       },
       "rcd": {
         "title": "RCDs and cascades",
-        "body": "A 30 mA RCD protects people. Two RCDs in series without selectivity trip together, so the upstream one should be selective (S) at 100–300 mA."
+        "body": "A 30 mA RCD protects people. Two RCDs in series without selectivity trip together, so the upstream one should be selective (S), rated 100 or 300 mA."
       },
       "wet": {
         "title": "Wet zones",
-        "body": "Everything in bathrooms and toilets must be behind an RCD or RCBO of 10–30 mA."
+        "body": "Everything in bathrooms and toilets must sit behind a 10 or 30 mA RCD or RCBO."
       },
       "class": {
         "title": "RCD type",
@@ -530,7 +531,7 @@
     "subtitle": "Bus devices (KNX and others), their addresses and what controls what.",
     "empty": "This panel has no bus devices. If you have KNX, DALI or Modbus, add actuators, a bus power supply and control panels in the editor.",
     "openDemo": "View the KNX demo",
-    "safety": "Actuator channels are relays driven by software. A light switched off from a panel is not de-energised. Switch off the breaker before touching wires.",
+    "safety": "An actuator channel is a relay driven by software. A light switched off from a panel is still live. Switch off the breaker before touching wires.",
     "topology": "Devices on the bus",
     "address": "Address",
     "device": "Device",
@@ -602,7 +603,7 @@
     "perDevice": "QR for every device",
     "height": "Strip height",
     "print": "Print",
-    "printHint": "Print at 100% scale without “fit to page”. Each cell is 17.5 mm per module.",
+    "printHint": "Print at 100% scale without \"fit to page\". Each cell is 17.5 mm per module.",
     "scan": "Point your phone camera here: see which breaker cuts what and what to do if something trips.",
     "emergencyLine": "Tripped? Scan me",
     "row": "Row {n}"
@@ -669,7 +670,7 @@
     "general": {
       "title": "Name",
       "location": "Where the panel is",
-      "locationHint": "So it can be found in the dark: “hallway, behind the mirror”",
+      "locationHint": "So it can be found in the dark: \"hallway, behind the mirror\"",
       "enclosure": "Enclosure",
       "address": "Address",
       "addressHint": "Optional. Stored only encrypted.",
@@ -706,14 +707,14 @@
       "idTaken": "That designation already exists",
       "type": "Type",
       "label": "Label",
-      "labelHint": "Clear to anyone: “Kitchen — worktop sockets”",
+      "labelHint": "Clear to anyone: \"Kitchen worktop sockets\"",
       "curve": "Curve",
       "width": "Width, mod.",
       "widthHint": "Empty: by type",
       "selective": "Selective (S)",
       "upstream": "Fed from",
       "upstreamHint": "The device above it in the chain",
-      "noUpstream": "— supply —",
+      "noUpstream": "Supply (nothing upstream)",
       "circuit": "Circuit",
       "brand": "Manufacturer",
       "model": "Model",
@@ -739,9 +740,9 @@
       },
       "hint": {
         "select": "Tap a point, room or photo to edit it. Drag the handles to move. Wheel or pinch to zoom.",
-        "room": "Place the room corners one by one. Tap the first corner or “Done” to close it.",
+        "room": "Place the room corners one by one. Tap the first corner or \"Done\" to close it.",
         "point": "Pick a type and a breaker, then tap the plan to place points.",
-        "route": "Trace the cable route point by point and tap “Done”. A no-drill zone appears around it.",
+        "route": "Trace the cable route point by point and tap \"Done\". A no-drill zone appears around it.",
         "photo": "Tap where the photo was taken and pick the image."
       },
       "noDevice": "No breaker",
@@ -783,7 +784,7 @@
       "rooms": "Rooms",
       "routes": "Routes",
       "addCable": "Add cable",
-      "cableLabel": "Tag, e.g. “port 3”",
+      "cableLabel": "Tag, e.g. \"port 3\"",
       "cables": "Cables inside",
       "ceiling": "Ceiling height",
       "ceilingHint": "Empty: same as the whole apartment ({cm} cm)",
@@ -797,7 +798,7 @@
       "wallHeight": "Ceiling height"
     },
     "media": {
-      "photosHint": "Photograph walls before plastering: years later it's the best wiring map you'll have.",
+      "photosHint": "Photograph the walls before plastering: years later these photos are the easiest way to see where the cables run.",
       "addPhotos": "Add photos",
       "added": "Photos added: {n}",
       "notOnPlan": "Not marked on the plan (Plan tab → Photo)",
@@ -874,7 +875,7 @@
     "hero": {
       "badge": "A QR code inside the panel",
       "title": "An electrical panel that explains itself",
-      "subtitle": "Stick a QR code on the panel door. Anyone who scans it sees which breaker cuts what, where the cables run in the walls and what to do when something trips. Works offline, data is encrypted.",
+      "subtitle": "Stick a QR code on the panel door. Anyone who scans it sees which breaker cuts what, where the cables run in the walls and what to do when something trips. The site works offline and the data is encrypted.",
       "tap": "Flip some breakers",
       "live": "Points without power on the plan: {n}"
     },
@@ -886,23 +887,23 @@
       },
       "encrypt": {
         "title": "The data is encrypted with a password",
-        "body": "The result is a single .panel file. Send it to the owner or publish it to GitHub Pages with one button."
+        "body": "The result is a single .panel file. Send it to the owner or publish it to GitHub Pages straight from the editor."
       },
       "stick": {
         "title": "A QR code on the panel door",
-        "body": "The password is built into the QR. Scan it and the site opens even offline, because the phone keeps a copy."
+        "body": "The password is built into the QR, so nobody has to type it. After the first visit the phone keeps a copy and the site works offline."
       }
     },
     "features": {
       "title": "Everything about your panel on your phone",
-      "subtitle": "From “which breaker do I switch off to replace a socket” to checking cable sizes.",
+      "subtitle": "From \"which breaker do I switch off to replace a socket\" to checking cable sizes.",
       "panel": {
         "title": "A realistic panel",
         "body": "Every breaker looks like the real one: rating, curve, residual current. Tap it to see what it supplies and how loaded it is."
       },
       "find": {
         "title": "What to switch off?",
-        "body": "Pick a socket or the water heater and get the answer: “row 2, fifth from the left”, highlighted on the panel."
+        "body": "Pick a socket or the water heater and get the answer: \"row 2, fifth from the left\", highlighted on the panel."
       },
       "emergency": {
         "title": "Something tripped",
@@ -930,11 +931,11 @@
       },
       "offline": {
         "title": "Works without power",
-        "body": "When the main breaker trips, the router is off too. The site opens from the phone's storage."
+        "body": "When the main breaker trips, the router loses power too. A site you have opened once loads from the phone's storage."
       }
     },
     "privacy": {
-      "title": "Your floor plan stays yours",
+      "title": "Only people with the password can see your floor plan",
       "p1": "Data is encrypted with AES-256-GCM right in the browser, with the key derived from the password via PBKDF2.",
       "p2": "The host only stores an encrypted file. There is no server and no database.",
       "p3": "The password in the QR travels after the # sign, so the browser never sends it to the server.",
@@ -943,17 +944,17 @@
     },
     "diy": {
       "title": "Make your own",
-      "subtitle": "Free: GitHub Pages and half an hour. Your electrician can fill in the panel in the browser or in the desktop app.",
+      "subtitle": "All you need is a free GitHub account. Your electrician can fill in the panel in the browser or in the desktop app.",
       "steps": [
         "Fork the repository and enable GitHub Pages (Settings → Pages → GitHub Actions).",
-        "Open the app, choose “Create a new panel” and set a password. Or open the .panel file from your electrician.",
+        "Open the app, choose \"Create a new panel\" and set a password. Or open the .panel file from your electrician.",
         "Fill in the panel and the plan. Set the site address on the General tab; QR codes need it.",
-        "Press “Publish” with a GitHub token, or replace public/app/panel.enc.json by hand.",
-        "Print the labels in “Labels & QR” and stick the QR on the panel door.",
-        "Done. Press TEST on the RCDs once a month; the app will remind you."
+        "Press \"Publish\" with a GitHub token, or replace public/app/panel.enc.json by hand.",
+        "Print the labels in \"Labels & QR\" and stick the QR on the panel door.",
+        "Press TEST on the RCDs once a month. The app reminds you if you miss it."
       ]
     },
-    "footer": "Not a substitute for a design or an electrician. Made for a calm life after renovation."
+    "footer": "Not a substitute for a wiring design or an inspection by an electrician."
   },
   "network": {
     "title": "Networks & conduits",

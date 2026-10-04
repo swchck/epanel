@@ -49,7 +49,8 @@
       "plan": "Plano",
       "find": "Buscar",
       "emergency": "Saltó"
-    }
+    },
+    "network": "Redes y tubos"
   },
   "banner": {
     "demo": "Este es un piso de demostración. Los datos son inventados y los cambios no se guardan en ningún sitio.",
@@ -93,7 +94,8 @@
     "passwordMismatch": "Las contraseñas no coinciden o tienen menos de 4 caracteres",
     "createSubmit": "Crear",
     "encrypted": "«{name}» está cifrado. Introduce la contraseña.",
-    "invalid": "No se ha podido leer el archivo"
+    "invalid": "No se ha podido leer el archivo",
+    "replaceDraft": "¿Abrir «{name}»? Se perderán los cambios sin guardar del borrador."
   },
   "device": {
     "type": {
@@ -173,7 +175,8 @@
       "network": "Baja tensión",
       "panel": "Panel de control",
       "sensor": "Sensor",
-      "other": "Punto"
+      "other": "Punto",
+      "data": "Toma de datos"
     },
     "kinds": {
       "socket": "Enchufes",
@@ -186,7 +189,8 @@
       "network": "Baja tensión",
       "panel": "Paneles de control",
       "sensor": "Sensores",
-      "other": "Otros"
+      "other": "Otros",
+      "data": "Tomas de datos"
     },
     "profile": {
       "generic": "Aparato genérico",
@@ -239,7 +243,9 @@
       "bus": "Bus domótico",
       "photos": "Fotos de las paredes",
       "labels": "Etiquetas de los automáticos",
-      "background": "Fondo del plano"
+      "background": "Fondo del plano",
+      "lowvoltage": "Baja tensión y tubos",
+      "dimensions": "Medidas"
     },
     "zoomIn": "Acercar",
     "zoomOut": "Alejar",
@@ -269,7 +275,7 @@
   },
   "emergency": {
     "title": "Ha saltado algo",
-    "subtitle": "Tranquilidad. Responde un par de preguntas y lo resolvemos.",
+    "subtitle": "Responde un par de preguntas y vemos qué hacer.",
     "scenario": {
       "partial": {
         "title": "Se ha ido la luz en parte del piso",
@@ -323,7 +329,7 @@
         "why": "El relé desconecta el piso cuando la tensión de la red se sale del rango seguro, para proteger tus aparatos de los picos.",
         "steps": [
           "Mira la pantalla del relé para ver la tensión.",
-          "Espera: cuando la tensión vuelva a la normalidad, el relé restablecerá la corriente solo (normalmente en 30–60 segundos).",
+          "Espera: cuando la tensión vuelva a la normalidad, el relé restablecerá la corriente solo, normalmente en 30 a 60 segundos.",
           "No toques otros automáticos ni intentes puentear el relé.",
           "Si pasa a menudo, avisa a la comunidad o al administrador: el problema está en el suministro del edificio."
         ]
@@ -387,7 +393,7 @@
     "totalHint": "Con coeficiente de simultaneidad. Potencia total de todos los aparatos: {nameplate} kW.",
     "issues": "Resultados",
     "showInfo": "Mostrar consejos",
-    "allGood": "Sin incidencias. El cuadro está bien montado.",
+    "allGood": "No se han encontrado incidencias.",
     "circuits": "Carga por circuito",
     "rulesTitle": "Qué se revisa y cómo",
     "disclaimer": "Estas comprobaciones son simplificadas y no sustituyen a un proyecto ni a la revisión de un electricista. Cobre, instalación empotrada, tensión según los ajustes.",
@@ -496,7 +502,7 @@
       },
       "load": {
         "title": "Carga del circuito",
-        "body": "La corriente se calcula a partir de la potencia de los aparatos con coeficientes de simultaneidad: enchufes 0,3, luces 1, aparatos 0,7–1. Al cuadro entero se le aplica además un coeficiente general según el número de circuitos."
+        "body": "La corriente se calcula a partir de la potencia de los aparatos con coeficientes de simultaneidad: enchufes 0,3, luces 1, aparatos de 0,7 a 1. Al cuadro entero se le aplica además un coeficiente general según el número de circuitos."
       },
       "selectivity": {
         "title": "Selectividad",
@@ -504,11 +510,11 @@
       },
       "rcd": {
         "title": "Diferenciales y cascadas",
-        "body": "Un diferencial de 30 mA protege a las personas. Dos diferenciales en serie sin selectividad saltan a la vez, así que el de arriba debe ser selectivo (S) de 100–300 mA."
+        "body": "Un diferencial de 30 mA protege a las personas. Dos diferenciales en serie sin selectividad saltan a la vez, así que el de arriba debe ser selectivo (S), de 100 o 300 mA."
       },
       "wet": {
         "title": "Zonas húmedas",
-        "body": "Todo lo que hay en baños y aseos debe estar detrás de un diferencial o RCBO de 10–30 mA."
+        "body": "Todo lo que hay en baños y aseos debe estar detrás de un diferencial o RCBO de 10 o 30 mA."
       },
       "class": {
         "title": "Tipo de diferencial",
@@ -525,7 +531,7 @@
     "subtitle": "Dispositivos de bus (KNX y otros), sus direcciones y qué controla qué.",
     "empty": "Este cuadro no tiene dispositivos de bus. Si tienes KNX, DALI o Modbus, añade en el editor los actuadores, la fuente de alimentación del bus y los paneles de control.",
     "openDemo": "Ver la demo de KNX",
-    "safety": "Los canales de los actuadores son relés controlados por software. Una luz apagada desde un panel no está sin tensión. Baja el automático antes de tocar cables.",
+    "safety": "Un canal de actuador es un relé controlado por software. Una luz apagada desde un panel sigue con tensión. Baja el automático antes de tocar cables.",
     "topology": "Dispositivos en el bus",
     "address": "Dirección",
     "device": "Dispositivo",
@@ -701,14 +707,14 @@
       "idTaken": "Esa referencia ya existe",
       "type": "Tipo",
       "label": "Etiqueta",
-      "labelHint": "Que lo entienda cualquiera: «Cocina — enchufes de la encimera»",
+      "labelHint": "Que lo entienda cualquiera: «Enchufes de la encimera de la cocina»",
       "curve": "Curva",
       "width": "Ancho, mód.",
       "widthHint": "Vacío: según el tipo",
       "selective": "Selectivo (S)",
       "upstream": "Alimentado desde",
       "upstreamHint": "El dispositivo que tiene por encima en la cadena",
-      "noUpstream": "— acometida —",
+      "noUpstream": "Acometida (nada por encima)",
       "circuit": "Circuito",
       "brand": "Fabricante",
       "model": "Modelo",
@@ -767,7 +773,8 @@
       "routeKinds": {
         "power": "Potencia",
         "bus": "Bus domótico",
-        "low": "Baja tensión"
+        "low": "Baja tensión",
+        "conduit": "Tubo corrugado"
       },
       "routeNote": "Por dónde va",
       "safeWidth": "Zona sin taladrar",
@@ -775,10 +782,23 @@
       "replace": "Reemplazar",
       "summary": "En el plano",
       "rooms": "Estancias",
-      "routes": "Recorridos"
+      "routes": "Recorridos",
+      "addCable": "Añadir cable",
+      "cableLabel": "Etiqueta, p. ej. «puerto 3»",
+      "cables": "Cables dentro",
+      "ceiling": "Altura del techo",
+      "ceilingHint": "Vacío: la misma que en todo el piso ({cm} cm)",
+      "diameter": "Diámetro del tubo",
+      "elevation": "Altura desde el suelo",
+      "elevationHint": "P. ej. 30 cm a la altura de los enchufes o 90 cm a la de los interruptores",
+      "from": "Desde",
+      "to": "Hasta",
+      "mount": "Por dónde va",
+      "pullString": "Tiene guía pasacables",
+      "wallHeight": "Altura del techo"
     },
     "media": {
-      "photosHint": "Fotografía las paredes antes de enlucir: con los años será el mejor mapa de la instalación que tendrás.",
+      "photosHint": "Fotografía las paredes antes de enlucir: años después, estas fotos son la forma más fácil de saber por dónde van los cables.",
       "addPhotos": "Añadir fotos",
       "added": "Fotos añadidas: {n}",
       "notOnPlan": "Sin marcar en el plano (pestaña Plano → Foto)",
@@ -855,7 +875,7 @@
     "hero": {
       "badge": "Un código QR dentro del cuadro",
       "title": "Un cuadro eléctrico que se explica solo",
-      "subtitle": "Pega un código QR en la puerta del cuadro. Quien lo escanee verá qué automático corta qué, por dónde van los cables en las paredes y qué hacer cuando salta algo. Funciona sin conexión y los datos van cifrados.",
+      "subtitle": "Pega un código QR en la puerta del cuadro. Quien lo escanee verá qué automático corta qué, por dónde van los cables en las paredes y qué hacer cuando salta algo. La web funciona sin conexión y los datos van cifrados.",
       "tap": "Prueba a bajar algún automático",
       "live": "Puntos sin corriente en el plano: {n}"
     },
@@ -867,11 +887,11 @@
       },
       "encrypt": {
         "title": "Los datos se cifran con una contraseña",
-        "body": "El resultado es un único archivo .panel. Envíaselo al propietario o publícalo en GitHub Pages con un botón."
+        "body": "El resultado es un único archivo .panel. Envíaselo al propietario o publícalo en GitHub Pages directamente desde el editor."
       },
       "stick": {
         "title": "Un código QR en la puerta del cuadro",
-        "body": "La contraseña va incluida en el QR. Lo escaneas y la web se abre incluso sin conexión, porque el móvil guarda una copia."
+        "body": "La contraseña va incluida en el QR, así que nadie tiene que escribirla. Tras la primera visita, el móvil guarda una copia y la web funciona sin conexión."
       }
     },
     "features": {
@@ -911,11 +931,11 @@
       },
       "offline": {
         "title": "Funciona sin luz",
-        "body": "Cuando salta el interruptor general, el router también se apaga. La web se abre desde la memoria del móvil."
+        "body": "Cuando salta el interruptor general, el router también se queda sin corriente. Una web que hayas abierto una vez se carga desde la memoria del móvil."
       }
     },
     "privacy": {
-      "title": "Tu plano sigue siendo tuyo",
+      "title": "Solo quien tiene la contraseña puede ver tu plano",
       "p1": "Los datos se cifran con AES-256-GCM directamente en el navegador, con una clave derivada de la contraseña mediante PBKDF2.",
       "p2": "El alojamiento solo guarda un archivo cifrado. No hay servidor ni base de datos.",
       "p3": "La contraseña del QR va después del signo #, así que el navegador nunca la envía al servidor.",
@@ -924,16 +944,48 @@
     },
     "diy": {
       "title": "Hazte el tuyo",
-      "subtitle": "Gratis: GitHub Pages y media hora. Tu electricista puede rellenar el cuadro en el navegador o en la app de escritorio.",
+      "subtitle": "Solo necesitas una cuenta gratuita de GitHub. Tu electricista puede rellenar el cuadro en el navegador o en la app de escritorio.",
       "steps": [
         "Haz un fork del repositorio y activa GitHub Pages (Settings → Pages → GitHub Actions).",
         "Abre la app, elige «Crear un cuadro nuevo» y pon una contraseña. O abre el archivo .panel de tu electricista.",
         "Rellena el cuadro y el plano. Indica la dirección web en la pestaña General; los códigos QR la necesitan.",
         "Pulsa «Publicar» con un token de GitHub o reemplaza public/app/panel.enc.json a mano.",
         "Imprime las etiquetas en «Etiquetas y QR» y pega el QR en la puerta del cuadro.",
-        "Listo. Pulsa TEST en los diferenciales una vez al mes; la app te lo recordará."
+        "Pulsa TEST en los diferenciales una vez al mes. La app te avisa si se te pasa."
       ]
     },
-    "footer": "No sustituye a un proyecto ni a un electricista. Hecho para vivir tranquilo después de la reforma."
+    "footer": "No sustituye a un proyecto de instalación eléctrica ni a la revisión de un electricista."
+  },
+  "network": {
+    "title": "Redes y tubos",
+    "subtitle": "Ethernet, HDMI, antena y tubos vacíos: dónde empieza y dónde termina cada cable.",
+    "empty": "Aún no hay líneas de baja tensión ni tubos. Añádelos en el plano desde el editor: Cable → Baja tensión o Tubo corrugado.",
+    "all": "Todos",
+    "pull": "guía pasacables",
+    "conduitHint": "Tubos con guía pasacables: {n} de {total}. Por ellos puedes pasar otro cable sin abrir la pared."
+  },
+  "route": {
+    "inside": "Dentro: {n}",
+    "empty": "Vacío",
+    "pullYes": "Tiene guía pasacables: se puede pasar otro cable.",
+    "pullNo": "Sin guía pasacables: pasar un cable nuevo será difícil.",
+    "nodrill": "No taladres a menos de {cm} cm del recorrido.",
+    "mount": {
+      "floor": "en el recrecido del suelo",
+      "wall": "por la pared",
+      "ceiling": "por el techo",
+      "wallAt": "por la pared, a {cm} cm del suelo"
+    }
+  },
+  "cable": {
+    "ethernet": "Ethernet",
+    "hdmi": "HDMI",
+    "coax": "Antena (coaxial)",
+    "usb": "USB",
+    "speaker": "Altavoz",
+    "fiber": "Fibra",
+    "phone": "Teléfono",
+    "alarm": "Alarma",
+    "other": "Otro cable"
   }
 }

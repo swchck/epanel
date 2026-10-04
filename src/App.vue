@@ -11,6 +11,7 @@ import StartView from '@/views/StartView.vue'
 import { useTheme } from '@/composables/useTheme'
 import { useData } from '@/stores/data'
 import { isDesktop, onOpenFile } from '@/platform'
+import { i18n } from '@/i18n'
 
 useTheme()
 const data = useData()
@@ -30,7 +31,7 @@ onMounted(async () => {
 async function openFromOs(f: { name: string; path?: string; text: string }) {
   if (data.hasDraft) {
     const { ask } = await import('@tauri-apps/plugin-dialog')
-    if (!(await ask(f.name, { title: '⚠', kind: 'warning' }))) return
+    if (!(await ask(i18n.global.t('start.replaceDraft', { name: f.name }), { kind: 'warning' }))) return
   }
   const r = await data.loadText(f.text, { name: f.name, path: f.path })
   if (r.ok) return router.push('/')
