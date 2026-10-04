@@ -91,7 +91,7 @@
     "create": "Napravi novu tablu",
     "createHint": "Prazan projekat: redovi, osigurači, plan stana",
     "demo": "Otvori demo",
-    "demoHint": "Dvosoban stan, 27 uređaja, 48 tačaka",
+    "demoHint": "Dvosoban stan, 28 uređaja, 48 tačaka",
     "name": "Naziv",
     "defaultTitle": "Moj stan",
     "password": "Lozinka",
@@ -150,7 +150,8 @@
       "length": "Dužina strujnog kola",
       "model": "Model",
       "phase": "Faza",
-      "rcd": "FID zaštita"
+      "rcd": "FID zaštita",
+      "serial": "Fabrički broj"
     },
     "place": "Red {row}, {pos}. sleva",
     "showOnPlan": "Na planu",
@@ -246,7 +247,11 @@
     },
     "pickHint": "Izaberite osigurač na tabli da vidite šta napaja, njegovo opterećenje i beleške.",
     "details": "Detalji uređaja",
-    "types": "Vrste uređaja"
+    "types": "Vrste uređaja",
+    "outside": {
+      "title": "Van table",
+      "account": "Broj računa:"
+    }
   },
   "plan": {
     "layers": "Slojevi",
@@ -353,6 +358,7 @@
           "Proverite da li komšije i stepenište imaju svetlo. Ako nemaju, nestalo je struje u zgradi: pozovite upravnika ili distribuciju.",
           "Pogledajte naponski relej. Crtice ili cifre koje trepću znače da treba sačekati, sam će se uključiti.",
           "Ako je glavni osigurač spušten, isključite jake uređaje i podignite ga.",
+          "Ako je u tabli stana sve uključeno, proverite osigurač pored brojila. Često je u spratnoj tabli na stepeništu.",
           "Ako glavni osigurač ponovo izbaci, nemojte više pokušavati. Pozovite električara."
         ]
       },
@@ -402,6 +408,11 @@
     "outage": {
       "title": "Izgleda da je nestalo struje u celoj zgradi",
       "text": "Vaša tabla nije problem. Pozovite upravnika zgrade. Dok čekate, isključite jake uređaje iz utičnica da ih ne udari skok napona kad struja dođe."
+    },
+    "outside": {
+      "title": "Brojilo i osigurač van stana",
+      "hint": "Ako je u tabli stana sve uključeno, a komšije imaju struju, proverite osigurač ovde.",
+      "callHint": "Dispečer će pitati broj brojila ili broj računa."
     }
   },
   "contact": {
@@ -738,7 +749,9 @@
       "role": "Ko",
       "name": "Ime",
       "phone": "Telefon",
-      "contactNote": "Komentar"
+      "contactNote": "Komentar",
+      "account": "Broj računa",
+      "accountHint": "Traže ga kada zovete elektrodistribuciju ili upravnika zgrade"
     },
     "panel": {
       "used": "{used} od {total} modula",
@@ -783,7 +796,9 @@
       "position": "Položaj u tabli",
       "blankShort": "Slepi modul",
       "unplacedOne": "Nije postavljen u tablu",
-      "rcdClass": "Tip FID"
+      "rcdClass": "Tip FID",
+      "location": "Gde se nalazi",
+      "locationPlaceholder": "Ako nije u ovoj tabli: spratna tabla na stepeništu, levo od lifta. Ključ je kod domara."
     },
     "smart": {
       "title": "Magistrala pametne kuće",

@@ -54,6 +54,10 @@ export const Device = z.object({
   selective: z.boolean().optional(),
   brand: z.string().optional(),
   model: z.string().optional(),
+  // utilities identify a meter by the number on its faceplate
+  serial: z.string().optional(),
+  // where to find a device that is not in this panel: a meter or breaker in the floor box on the landing
+  location: LocalizedText.optional(),
   upstream: z.string().optional(),
   phase: z.enum(['L1', 'L2', 'L3', 'L1L2L3']).optional(),
   circuit: Circuit.optional(),
@@ -215,6 +219,8 @@ export const PanelData = z.object({
     // kilowatts allowed by the grid contract
     maxPowerKw: z.number().positive().optional(),
     input: z.string().optional(),
+    // utility account number, asked for on every outage call
+    account: z.string().optional(),
   }),
   rows: z.array(Row).default([]),
   devices: z.array(Device).default([]),

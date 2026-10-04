@@ -30,7 +30,7 @@ function addContact() {
 
     <section>
       <h3 class="mb-3 font-semibold">{{ t('editor.general.supply') }}</h3>
-      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <FormRow :label="t('editor.general.phases')">
           <Select :model-value="String(d.supply.phases)" @update:model-value="(v) => (d.supply.phases = Number(v) as 1 | 3)">
             <SelectTrigger class="w-full"><SelectValue /></SelectTrigger>
@@ -50,6 +50,9 @@ function addContact() {
               <SelectItem v-for="dev in d.devices.filter((x) => ['mcb', 'switch', 'rcd'].includes(x.type))" :key="dev.id" :value="dev.id">{{ dev.id }} · {{ tx(dev.label) }}</SelectItem>
             </SelectContent>
           </Select>
+        </FormRow>
+        <FormRow :label="t('editor.general.account')" :hint="t('editor.general.accountHint')">
+          <Input :model-value="d.supply.account ?? ''" class="font-mono" @update:model-value="(v) => (d.supply.account = String(v) || undefined)" />
         </FormRow>
       </div>
     </section>

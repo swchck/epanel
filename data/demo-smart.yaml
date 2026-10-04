@@ -25,10 +25,11 @@ data:
     voltage: 230
     maxPowerKw: 10
     input: QF0
+    account: 7712-004-581
   rows:
     - id: r1
       modules: 18
-      items: [QF0, PM1, KV1, FV1, QF14, XS1, {blank: 4}]
+      items: [QF0, KV1, FV1, QF14, XS1, {blank: 8}]
     - id: r2
       modules: 18
       items: [QD1, QF1, QF2, QF3, QF4, QFD1, QD2, QF5, QF6, QF7, QF8, {blank: 4}]
@@ -50,17 +51,28 @@ data:
       poles: 2
       brand: ABB
       model: S202 C40
+      upstream: PM1
       circuit: {cable: ВВГнг(А)-LS 3×10, crossSection: 10, lengthM: 18}
       tags: [ввод]
-      notes: [{author: Иван, date: '2026-09-12', text: Опломбирован УК вместе со счётчиком. Не выключать без необходимости.}]
+      notes: [{author: Иван, date: '2026-09-12', text: 'Отключает всю квартиру. Автомат перед счётчиком стоит в этажном щите, его опломбировала УК.'}]
+    - id: QF00
+      type: mcb
+      label: {ru: Автомат квартиры в этажном щите, en: Flat breaker in the floor box, sr: Osigurač stana u spratnoj tabli, es: Interruptor de la vivienda en el cuarto de contadores}
+      rating: 50
+      curve: C
+      poles: 2
+      tags: [ввод]
+      location: {ru: 'Этажный щит на площадке 5 этажа, слева от лифта. Ряд с подписью «кв. 42», автомат под счётчиком. Щит открывается ключом-треугольником, запасной у консьержа.', en: 'Floor box on the 5th floor landing, left of the lift. Row labelled “flat 42”, breaker below the meter. Opens with a triangle key; the concierge has a spare.'}
     - id: PM1
       type: meter
       label: {ru: Счётчик электроэнергии, en: Energy meter, sr: Brojilo električne energije, es: Contador de energía}
       poles: 2
       brand: Энергомера
       model: CE208 S7
-      upstream: QF0
+      serial: '011234567890123'
+      upstream: QF00
       tags: [ввод]
+      location: {ru: 'В том же этажном щите, над автоматом квартиры. Показания передавать до 25 числа.', en: 'In the same floor box, above the flat breaker. Submit readings before the 25th.'}
     - id: KV1
       type: voltage-relay
       label: {ru: Реле напряжения, en: Voltage relay, sr: Naponski relej, es: Relé de tensión}
@@ -68,7 +80,7 @@ data:
       poles: 2
       brand: Новатек
       model: УЗМ-51М
-      upstream: PM1
+      upstream: QF0
       tags: [ввод, защита]
       notes: [{author: Иван, date: '2026-09-12', text: 'Уставки от 170 до 260 В, задержка включения 30 с. Если всё погасло и через минуту включилось само, сработало реле: авария в сети.'}]
     - id: FV1

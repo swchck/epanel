@@ -91,7 +91,7 @@
     "create": "Crear un cuadro nuevo",
     "createHint": "Proyecto vacío: filas, magnetotérmicos, plano",
     "demo": "Abrir demo",
-    "demoHint": "Piso de dos dormitorios, 27 dispositivos, 48 puntos",
+    "demoHint": "Piso de dos dormitorios, 28 dispositivos, 48 puntos",
     "name": "Nombre",
     "defaultTitle": "Mi piso",
     "password": "Contraseña",
@@ -150,7 +150,8 @@
       "length": "Longitud del circuito",
       "model": "Modelo",
       "phase": "Fase",
-      "rcd": "Protección diferencial"
+      "rcd": "Protección diferencial",
+      "serial": "Número de serie"
     },
     "place": "Fila {row}, n.º {pos} desde la izquierda",
     "showOnPlan": "En el plano",
@@ -246,7 +247,11 @@
     },
     "pickHint": "Elige un magnetotérmico del cuadro para ver qué alimenta, su carga y sus notas.",
     "details": "Detalles del dispositivo",
-    "types": "Tipos de dispositivo"
+    "types": "Tipos de dispositivo",
+    "outside": {
+      "title": "Fuera del cuadro",
+      "account": "Número de contrato:"
+    }
   },
   "plan": {
     "layers": "Capas",
@@ -353,6 +358,7 @@
           "Comprueba si los vecinos y la escalera tienen luz. Si no, es un corte en el edificio: llama a la distribuidora o al administrador.",
           "Mira el relé de tensión. Si ves guiones o cifras parpadeando, espera: volverá a conectar solo.",
           "Si el interruptor general está bajado, desenchufa los aparatos potentes y súbelo.",
+          "Si en el cuadro de la vivienda todo está encendido, revisa el interruptor junto al contador. Suele estar en el cuarto de contadores de la planta.",
           "Si el general vuelve a saltar, no insistas. Llama a un electricista."
         ]
       },
@@ -402,6 +408,11 @@
     "outage": {
       "title": "Parece un corte en todo el edificio",
       "text": "Tu cuadro no es el problema. Llama a la administración. Mientras esperas, desenchufa los aparatos potentes para que no les afecte el pico cuando vuelva la luz."
+    },
+    "outside": {
+      "title": "Contador e interruptor fuera de la vivienda",
+      "hint": "Si en el cuadro de la vivienda todo está encendido y los vecinos tienen luz, revisa el interruptor aquí.",
+      "callHint": "Te pedirán el número del contador o del contrato."
     }
   },
   "contact": {
@@ -738,7 +749,9 @@
       "role": "Quién",
       "name": "Nombre",
       "phone": "Teléfono",
-      "contactNote": "Comentario"
+      "contactNote": "Comentario",
+      "account": "Número de contrato",
+      "accountHint": "Te lo piden al llamar a la compañía eléctrica o a la administración"
     },
     "panel": {
       "used": "{used} de {total} módulos",
@@ -783,7 +796,9 @@
       "position": "Posición en el cuadro",
       "blankShort": "Tapa",
       "unplacedOne": "Sin colocar en el cuadro",
-      "rcdClass": "Tipo de diferencial"
+      "rcdClass": "Tipo de diferencial",
+      "location": "Dónde está",
+      "locationPlaceholder": "Si no está en este cuadro: cuarto de contadores de la planta, a la izquierda del ascensor. La llave la tiene el conserje."
     },
     "smart": {
       "title": "Bus domótico",

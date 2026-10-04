@@ -10,6 +10,7 @@ import { Switch } from '@/components/ui/switch'
 import ContactList from '@/components/common/ContactList.vue'
 import DeviceDetails from '@/components/panel/DeviceDetails.vue'
 import PanelEnclosure from '@/components/panel/PanelEnclosure.vue'
+import OutsideDevices from '@/components/panel/OutsideDevices.vue'
 import PanelList from '@/components/panel/PanelList.vue'
 import PanelViewToggle from '@/components/panel/PanelViewToggle.vue'
 import { TYPE_ACCENT } from '@/components/panel/geometry'
@@ -198,6 +199,7 @@ watch(
           <span class="flex items-center gap-1.5"><span class="inline-block size-3 rounded-full bg-warn text-center text-[8px] leading-3 font-bold text-white">!</span> {{ t('panel.legend.issue') }}</span>
           <span>{{ t('panel.legend.tap') }}</span>
         </div>
+        <OutsideDevices class="no-print mt-6" />
         <section v-if="!wide && data.data?.meta.contacts.length" class="no-print mt-6">
           <h2 class="mb-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase">{{ t('emergency.contacts') }}</h2>
           <ContactList compact />

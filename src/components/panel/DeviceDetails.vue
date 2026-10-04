@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { ArrowDownToLine, ArrowUpFromLine, Map as MapIcon, MessageSquarePlus, Power, QrCode, Send } from '@lucide/vue'
+import { ArrowDownToLine, ArrowUpFromLine, Map as MapIcon, MapPin, MessageSquarePlus, Power, QrCode, Send } from '@lucide/vue'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import DeviceChip from '@/components/common/DeviceChip.vue'
@@ -57,6 +57,7 @@ const specs = computed(() => {
   else if (d.circuit?.crossSection) rows.push([t('device.field.section'), `${d.circuit.crossSection} ${t('units.mm2')}`])
   if (d.circuit?.lengthM) rows.push([t('device.field.length'), `${d.circuit.lengthM} ${t('units.m')}`])
   if (d.brand || d.model) rows.push([t('device.field.model'), [d.brand, d.model].filter(Boolean).join(' ')])
+  if (d.serial) rows.push([t('device.field.serial'), d.serial])
   if (d.phase) rows.push([t('device.field.phase'), d.phase])
   if (rcd.value && rcd.value.id !== d.id) rows.push([t('device.field.rcd'), `${rcd.value.id} · ${rcd.value.leakage ?? '?'} mA`])
   return rows
@@ -103,6 +104,9 @@ function simulateOff() {
       <h2 class="text-xl leading-snug font-semibold text-balance">{{ tx(device.label) || t(`device.type.${device.type}`) }}</h2>
       <p v-if="place" class="text-sm text-muted-foreground">
         {{ t('device.place', { row: place.rowIndex + 1, pos: place.position }) }}
+      </p>
+      <p v-else-if="device.location" class="flex gap-1.5 text-sm text-muted-foreground">
+        <MapPin class="mt-0.5 size-4 shrink-0 text-primary" /><span class="whitespace-pre-line">{{ tx(device.location) }}</span>
       </p>
       <div v-if="device.tags.length" class="flex flex-wrap gap-1.5">
         <button

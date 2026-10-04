@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
 import { DEVICE_TYPES, SMART_TYPES, type Device } from '@/domain/model'
-import { renameDevice } from '@/editor/ops'
+import { findItem, renameDevice } from '@/editor/ops'
 import { useDraft } from '@/composables/useDraft'
 import { useText } from '@/composables/useText'
 import { useUi } from '@/stores/ui'
@@ -21,6 +21,7 @@ const props = defineProps<{ id: string }>()
 const { d } = useDraft()
 // resolved from the draft instead of passed in, so the form edits the store directly
 const device = computed(() => d.value.devices.find((x) => x.id === props.id)!)
+const placed = computed(() => !!findItem(d.value, props.id))
 const ui = useUi()
 const { t, tx } = useText()
 
@@ -132,6 +133,9 @@ function circuit() {
 
     <section class="space-y-3">
       <h3 class="section-title">{{ t('editor.panel.section.wiring') }}</h3>
+      <FormRow v-if="!placed || device.location" :label="t('editor.panel.location')">
+        <LocalizedInput v-model="device.location" multiline :placeholder="t('editor.panel.locationPlaceholder')" />
+      </FormRow>
       <FormRow :label="t('editor.panel.upstream')">
         <Select :model-value="device.upstream ?? '__'" @update:model-value="(v) => (device.upstream = v === '__' ? undefined : (v as string))">
           <SelectTrigger class="w-full"><SelectValue /></SelectTrigger>
@@ -172,6 +176,9 @@ function circuit() {
       <div class="grid grid-cols-2 gap-3">
         <FormRow :label="t('editor.panel.brand')"><Input :model-value="device.brand ?? ''" placeholder="ABB" @update:model-value="(v) => (device.brand = String(v) || undefined)" /></FormRow>
         <FormRow :label="t('editor.panel.model')"><Input :model-value="device.model ?? ''" placeholder="S201 C16" @update:model-value="(v) => (device.model = String(v) || undefined)" /></FormRow>
+        <FormRow v-if="device.type === 'meter' || device.serial" :label="t('device.field.serial')" class="col-span-2">
+          <Input :model-value="device.serial ?? ''" class="font-mono" @update:model-value="(v) => (device.serial = String(v) || undefined)" />
+        </FormRow>
       </div>
       <FormRow :label="t('editor.panel.tags')"><Input v-model="tagsText" :placeholder="t('editor.panel.tagsPlaceholder')" /></FormRow>
     </section>

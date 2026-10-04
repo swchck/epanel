@@ -97,7 +97,7 @@ export function runChecks(data: PanelData, g: PowerGraph): CheckResult[] {
     const isFinal = OVERCURRENT.includes(d.type) && !(g.children.get(d.id)?.length)
     if (isFinal && !hasLoad) out.push({ level: 'info', code: 'empty-circuit', device: d.id, params: {} })
 
-    if (!placed.has(d.id) && d.type !== 'meter') out.push({ level: 'info', code: 'unplaced', device: d.id, params: {} })
+    if (!placed.has(d.id) && d.type !== 'meter' && !d.location) out.push({ level: 'info', code: 'unplaced', device: d.id, params: {} })
   }
 
   const wetRooms = new Set(data.rooms.filter((r) => r.wet).map((r) => r.id))

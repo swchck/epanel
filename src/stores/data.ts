@@ -100,6 +100,14 @@ export const useData = defineStore('data', () => {
   const graph = computed(() => (data.value ? buildGraph(data.value) : null))
   const layout = computed(() => (data.value ? layoutPanel(data.value) : []))
   const checks = computed(() => (data.value && graph.value ? runChecks(data.value, graph.value) : []))
+  // devices that live elsewhere, feed-first: the floor-box breaker, then the meter
+  const outside = computed(() => {
+    const d = data.value
+    const g = graph.value
+    if (!d || !g) return []
+    const placed = new Set(d.rows.flatMap((r) => r.items.filter((i) => typeof i === 'string')))
+    return d.devices.filter((x) => x.location && !placed.has(x.id)).sort((a, b) => g.depth(a.id) - g.depth(b.id))
+  })
   const issues = computed(() => (data.value ? referenceIssues(data.value) : []))
   // fuse.js loads on the first search, not with the app
   const fuse = shallowRef<typeof import('fuse.js').default | null>(null)
@@ -358,6 +366,7 @@ export const useData = defineStore('data', () => {
     assets,
     graph,
     layout,
+    outside,
     checks,
     issues,
     search,

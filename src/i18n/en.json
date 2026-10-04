@@ -91,7 +91,7 @@
     "create": "Create a new panel",
     "createHint": "Empty project: rows, breakers, floor plan",
     "demo": "Open demo",
-    "demoHint": "Two-room apartment, 27 devices, 48 points",
+    "demoHint": "Two-room apartment, 28 devices, 48 points",
     "name": "Name",
     "defaultTitle": "My apartment",
     "password": "Password",
@@ -150,7 +150,8 @@
       "length": "Circuit length",
       "model": "Model",
       "phase": "Phase",
-      "rcd": "RCD protection"
+      "rcd": "RCD protection",
+      "serial": "Serial number"
     },
     "place": "Row {row}, #{pos} from the left",
     "showOnPlan": "On the plan",
@@ -246,7 +247,11 @@
     },
     "pickHint": "Pick a breaker on the panel to see what it supplies, its load and notes.",
     "details": "Device details",
-    "types": "Device types"
+    "types": "Device types",
+    "outside": {
+      "title": "Outside the panel",
+      "account": "Account number:"
+    }
   },
   "plan": {
     "layers": "Layers",
@@ -353,6 +358,7 @@
           "Check whether neighbours and the stairwell have light. If not, it's a building outage: call the management company.",
           "Look at the voltage relay. Dashes or blinking digits mean wait, it will turn back on by itself.",
           "If the main breaker is down, unplug powerful appliances and push it up.",
+          "If everything in the flat panel is on, check the breaker next to the meter. It is often in the floor box on the landing.",
           "If the main breaker trips again, don't keep trying. Call an electrician."
         ]
       },
@@ -402,6 +408,11 @@
     "outage": {
       "title": "Looks like the whole building is down",
       "text": "Your panel isn’t the problem. Call the management company. While you wait, unplug powerful appliances so the surge doesn’t hit them when power returns."
+    },
+    "outside": {
+      "title": "Meter and breaker outside the flat",
+      "hint": "If everything in the flat panel is on but the neighbours have power, check the breaker here.",
+      "callHint": "The dispatcher will ask for the meter or account number."
     }
   },
   "contact": {
@@ -738,7 +749,9 @@
       "role": "Who",
       "name": "Name",
       "phone": "Phone",
-      "contactNote": "Comment"
+      "contactNote": "Comment",
+      "account": "Account number",
+      "accountHint": "Asked for when you call the utility or the building management"
     },
     "panel": {
       "used": "{used} of {total} modules",
@@ -783,7 +796,9 @@
       "position": "Position in the panel",
       "blankShort": "Blank",
       "unplacedOne": "Not placed in the panel",
-      "rcdClass": "RCD type"
+      "rcdClass": "RCD type",
+      "location": "Where it is",
+      "locationPlaceholder": "If not in this panel: floor box on the landing, left of the lift. The concierge has the key."
     },
     "smart": {
       "title": "Smart-home bus",

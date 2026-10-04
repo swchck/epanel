@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import ContactList from '@/components/common/ContactList.vue'
 import DeviceChip from '@/components/common/DeviceChip.vue'
 import { POINT_ICONS } from '@/components/common/kinds'
+import OutsideDevices from '@/components/panel/OutsideDevices.vue'
 import PanelEnclosure from '@/components/panel/PanelEnclosure.vue'
 import { locate } from '@/domain/layout'
 import { useText } from '@/composables/useText'
@@ -92,7 +93,7 @@ const relay = computed(() => data.data?.devices.find((d) => d.type === 'voltage-
 const main = computed(() => (data.data?.supply.input ? data.graph?.byId.get(data.data.supply.input) : undefined))
 const hasAside = computed(() => {
   const g = guideScreen.value?.guide
-  return (g === 'rcd' && children.value.length > 0) || heavy.value.length > 0 || (g === 'relay' && !!relay.value)
+  return (g === 'rcd' && children.value.length > 0) || heavy.value.length > 0 || (g === 'relay' && !!relay.value) || (g === 'all' && data.outside.length > 0)
 })
 </script>
 
@@ -170,6 +171,10 @@ const hasAside = computed(() => {
         <h2 class="mb-1 text-lg font-semibold">{{ t('emergency.outage.title') }}</h2>
         <p class="text-muted-foreground">{{ t('emergency.outage.text') }}</p>
       </div>
+      <OutsideDevices :title="t('emergency.outside.title')" :hint="t('emergency.outside.callHint')" />
+      <p v-if="!data.outside.length && data.data?.supply.account" class="rounded-2xl border bg-card p-4 text-sm">
+        {{ t('panel.outside.account') }} <span class="font-mono">{{ data.data.supply.account }}</span>
+      </p>
       <ContactList first="management" />
     </div>
 
@@ -204,6 +209,7 @@ const hasAside = computed(() => {
       </div>
 
       <aside v-if="hasAside" class="space-y-3 lg:min-h-0 lg:overflow-y-auto">
+        <OutsideDevices v-if="guideScreen.guide === 'all'" :title="t('emergency.outside.title')" :hint="t('emergency.outside.hint')" />
         <div v-if="guideScreen.guide === 'rcd' && children.length" class="rounded-2xl border bg-card p-4">
           <h3 class="mb-2 text-sm font-medium">{{ t('emergency.rcdLines') }}</h3>
           <div class="flex flex-wrap gap-1.5">

@@ -114,6 +114,13 @@ describe('checks', () => {
     expect(codes(tiny()).filter((c) => !c.startsWith('info'))).toEqual([])
   })
 
+  it('does not report a device with a known location outside the panel as unplaced', () => {
+    const d = tiny()
+    d.devices.push({ ...d.devices[0]!, id: 'Q00' }, { ...d.devices[0]!, id: 'Q01', location: 'floor box' })
+    expect(codes(d)).toContain('info:unplaced:Q00')
+    expect(codes(d)).not.toContain('info:unplaced:Q01')
+  })
+
   it('flags an oversized breaker on a thin cable', () => {
     const d = tiny()
     d.devices[3]!.rating = 25
