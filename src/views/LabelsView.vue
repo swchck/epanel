@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useElementSize } from '@vueuse/core'
 import { Printer, TriangleAlert } from '@lucide/vue'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
@@ -18,16 +17,25 @@ const showLabels = ref(true)
 // millimetres; one DIN module is 17.5 mm
 const MODULE_MM = 17.5
 const labelHeight = ref(14)
-const MM_PX = 96 / 25.4
+// an 18-module row is 315 mm, wider than A4 even in landscape; 10 modules (175 mm) fit the 190 mm
+// printable width of portrait A4 with 10 mm margins, so rows are cut into pieces at device boundaries
+const PIECE_MODULES = 10
 
-// a full 18-module strip is 315 mm, wider than the page column; the preview scales down to fit and
-// print keeps the real size. transform, not zoom: WebKit (the desktop window) lays zoomed boxes out at full width
-const strips = ref<HTMLElement | null>(null)
-const { width: stripsWidth } = useElementSize(strips)
-const stripZoom = computed(() => {
-  const widest = Math.max(1, ...data.layout.map((r) => r.modules)) * MODULE_MM * MM_PX
-  return stripsWidth.value ? Math.min(1, stripsWidth.value / widest) : 1
-})
+const pieces = computed(() =>
+  data.layout.map((row) => {
+    const out: (typeof row.items)[] = [[]]
+    let width = 0
+    for (const item of row.items) {
+      if (width + item.width > PIECE_MODULES && out.at(-1)!.length) {
+        out.push([])
+        width = 0
+      }
+      out.at(-1)!.push(item)
+      width += item.width
+    }
+    return out.filter((p) => p.length)
+  }),
+)
 
 const mainUrl = computed(() => appUrl(data.data?.meta.publicUrl, '/', withKey.value ? data.password : null))
 const deviceUrl = (id: string) => appUrl(data.data?.meta.publicUrl, `/d/${id}`, withKey.value ? data.password : null)
@@ -45,7 +53,7 @@ function rating(id: string) {
 </script>
 
 <template>
-  <div class="mx-auto max-w-6xl px-4 pt-5 lg:px-8 lg:pt-8">
+  <div class="mx-auto max-w-6xl px-4 pt-5 lg:px-8 lg:pt-8 print:max-w-none print:p-0">
     <div class="no-print">
       <h1 class="text-2xl font-semibold tracking-tight lg:text-3xl">{{ t('labels.title') }}</h1>
       <p class="mt-1 text-muted-foreground">{{ t('labels.subtitle') }}</p>
@@ -77,13 +85,15 @@ function rating(id: string) {
         </div>
       </section>
 
-      <section v-if="showLabels" ref="strips" class="strips space-y-[6mm]">
-        <div v-for="(row, ri) in data.layout" :key="row.id" class="strip-wrap">
-          <div class="no-print mb-1 text-xs text-muted-foreground">{{ t('labels.row', { n: ri + 1 }) }}</div>
-          <div class="strip-box overflow-hidden" :style="{ height: `${labelHeight * MM_PX * stripZoom}px` }">
-            <div class="strip flex origin-top-left bg-white text-black" :style="{ width: `${row.modules * MODULE_MM}mm`, transform: `scale(${stripZoom})` }">
+      <section v-if="showLabels" class="space-y-[5mm]">
+        <template v-for="(row, ri) in pieces" :key="ri">
+          <div v-for="(piece, pi) in row" :key="pi" class="strip-wrap max-w-full overflow-x-auto">
+            <div class="mb-1 text-xs text-muted-foreground print:text-[2.4mm] print:text-neutral-500">
+              {{ t('labels.row', { n: ri + 1 }) }}<template v-if="row.length > 1"> · {{ pi + 1 }}/{{ row.length }}</template>
+            </div>
+            <div class="flex w-max bg-white text-black">
               <div
-                v-for="item in row.items"
+                v-for="item in piece"
                 :key="item.device?.id ?? `b${item.start}`"
                 class="flex shrink-0 flex-col items-center justify-center overflow-hidden border-[0.25mm] border-black/70 px-[0.6mm] text-center"
                 :style="{ width: `${item.width * MODULE_MM}mm`, height: `${labelHeight}mm` }"
@@ -96,7 +106,7 @@ function rating(id: string) {
               </div>
             </div>
           </div>
-        </div>
+        </template>
       </section>
 
       <section v-if="perDeviceQr" class="grid grid-cols-[repeat(auto-fill,minmax(28mm,1fr))] gap-[3mm]">
@@ -118,11 +128,7 @@ function rating(id: string) {
   .strip-wrap {
     break-inside: avoid;
   }
-  .strip {
-    transform: none !important;
-  }
-  .strip-box {
-    height: auto !important;
+  .strip-wrap {
     overflow: visible;
   }
 }

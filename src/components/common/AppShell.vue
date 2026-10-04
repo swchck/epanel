@@ -106,7 +106,7 @@ whenever(
 </script>
 
 <template>
-  <div class="min-h-dvh bg-background lg:grid lg:h-dvh lg:grid-cols-[var(--sidebar-w)_1fr] lg:overflow-hidden">
+  <div class="min-h-dvh bg-background lg:grid lg:h-dvh lg:grid-cols-[var(--sidebar-w)_1fr] lg:overflow-hidden print:block print:h-auto print:overflow-visible">
     <aside class="no-print sticky top-0 hidden h-dvh flex-col border-r border-sidebar-border bg-sidebar lg:flex">
       <RouterLink to="/" class="flex items-center gap-3 pt-[calc(var(--titlebar)+1rem)] pb-3" :class="collapsed ? 'justify-center px-2' : 'px-5'">
         <BrandMark class="size-9 shrink-0" />
@@ -189,9 +189,9 @@ whenever(
       </div>
     </aside>
 
-    <div class="relative flex min-w-0 flex-col overflow-x-clip lg:h-dvh lg:overflow-hidden">
+    <div class="relative flex min-w-0 flex-col overflow-x-clip lg:h-dvh lg:overflow-hidden print:block print:h-auto print:overflow-visible">
       <!-- the window has no title bar: the banners are the drag handle when shown, otherwise this strip over the page's top padding -->
-      <div v-if="overlayTitlebar && !banner" data-tauri-drag-region class="absolute inset-x-0 top-0 z-20 h-(--titlebar)" />
+      <div v-if="overlayTitlebar && !banner" data-tauri-drag-region class="no-print absolute inset-x-0 top-0 z-20 h-(--titlebar)" />
       <header class="no-print sticky top-0 z-30 flex items-center gap-2 border-b bg-background/85 px-4 pt-[calc(var(--titlebar)+0.625rem)] pb-2.5 backdrop-blur-md lg:hidden">
         <RouterLink to="/" class="flex min-w-0 flex-1 items-center gap-2.5">
           <BrandMark class="size-8 shrink-0" />
@@ -215,7 +215,7 @@ whenever(
         <RouterLink to="/edit/publish" class="font-medium underline-offset-2 hover:underline">{{ t('banner.draftAction') }}</RouterLink>
       </div>
 
-      <main ref="scroller" class="flex-1 pb-24 lg:min-h-0 lg:overflow-y-auto lg:overscroll-none" :class="fill ? 'lg:pb-0' : 'lg:pb-10'">
+      <main ref="scroller" class="flex-1 pb-24 lg:min-h-0 lg:overflow-y-auto lg:overscroll-none print:block print:overflow-visible print:p-0" :class="fill ? 'lg:pb-0' : 'lg:pb-10'">
         <RouterView v-slot="{ Component }">
           <Transition name="page" mode="out-in">
             <component :is="Component" :key="pageKey" />
