@@ -13,7 +13,8 @@
     "add": "Add",
     "prev": "Previous",
     "next": "Next",
-    "noRoom": "No room"
+    "noRoom": "No room",
+    "done": "Done"
   },
   "units": {
     "m2": "m²",
@@ -915,7 +916,8 @@
       "passwordHint": "The new password applies on the next save or publish. Old QR codes will stop working."
     },
     "undo": "Undo (⌘Z)",
-    "redo": "Redo (⇧⌘Z)"
+    "redo": "Redo (⇧⌘Z)",
+    "translationsHint": "An empty language shows the English text, or the Russian one if there is no English."
   },
   "landing": {
     "nav": {

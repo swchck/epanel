@@ -13,7 +13,8 @@
     "add": "Dodaj",
     "prev": "Prethodno",
     "next": "Sledeće",
-    "noRoom": "Bez prostorije"
+    "noRoom": "Bez prostorije",
+    "done": "Gotovo"
   },
   "units": {
     "m2": "m²",
@@ -915,7 +916,8 @@
       "passwordHint": "Nova lozinka važi od sledećeg čuvanja ili objavljivanja. Stari QR kodovi prestaće da rade."
     },
     "undo": "Poništi (⌘Z)",
-    "redo": "Ponovi (⇧⌘Z)"
+    "redo": "Ponovi (⇧⌘Z)",
+    "translationsHint": "Ako jezik nije popunjen, prikazuje se engleski tekst, a bez njega ruski."
   },
   "landing": {
     "nav": {
