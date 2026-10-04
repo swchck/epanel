@@ -61,6 +61,9 @@ const current = computed<NavName>(() => {
 
 // full-height views (the plan) take exactly what is left under the banners instead of the whole viewport
 const fill = computed(() => route.meta.fill === true)
+const overlayTitlebar = document.documentElement.dataset.titlebar === 'overlay'
+const draftBanner = computed(() => data.hasDraft && current.value !== 'edit')
+const banner = computed(() => data.source === 'demo' || draftBanner.value)
 
 const overdue = computed(() => data.overdue)
 
@@ -139,7 +142,9 @@ whenever(
       </div>
     </aside>
 
-    <div class="flex min-w-0 flex-col lg:pt-(--titlebar)" :class="{ 'lg:h-dvh lg:overflow-hidden': fill }">
+    <div class="relative flex min-w-0 flex-col" :class="{ 'lg:h-dvh lg:overflow-hidden': fill }">
+      <!-- the window has no title bar: the banners are the drag handle when shown, otherwise this strip over the page's top padding -->
+      <div v-if="overlayTitlebar && !banner" data-tauri-drag-region class="absolute inset-x-0 top-0 z-20 h-(--titlebar)" />
       <header class="no-print sticky top-0 z-30 flex items-center gap-2 border-b bg-background/85 px-4 pt-[calc(var(--titlebar)+0.625rem)] pb-2.5 backdrop-blur-md lg:hidden">
         <RouterLink to="/" class="flex min-w-0 flex-1 items-center gap-2.5">
           <BrandMark class="size-8 shrink-0" />
@@ -152,20 +157,16 @@ whenever(
         <ThemeToggle />
       </header>
 
-      <div v-if="data.source === 'demo'" class="no-print flex items-center gap-2 border-b bg-info/10 px-4 py-2 text-sm text-info lg:px-8">
-        <FlaskConical class="size-4 shrink-0" />
-        <span class="flex-1">{{ t('banner.demo') }}</span>
+      <div v-if="data.source === 'demo'" data-tauri-drag-region class="no-print flex items-center gap-2 border-b bg-info/10 px-4 py-2 text-sm text-info lg:px-8">
+        <FlaskConical class="pointer-events-none size-4 shrink-0" />
+        <span class="pointer-events-none flex-1">{{ t('banner.demo') }}</span>
         <Button variant="ghost" size="sm" class="h-7 shrink-0 text-info hover:text-info" @click="leave"><LogOut /> {{ t('banner.leaveDemo') }}</Button>
       </div>
-      <RouterLink
-        v-if="data.hasDraft && current !== 'edit'"
-        to="/edit/publish"
-        class="no-print flex items-center gap-2 border-b bg-warn/15 px-4 py-2 text-sm lg:px-8"
-      >
-        <PencilLine class="size-4 shrink-0 text-warn" />
-        <span class="flex-1">{{ t('banner.draft') }}</span>
-        <span class="font-medium underline-offset-2 hover:underline">{{ t('banner.draftAction') }}</span>
-      </RouterLink>
+      <div v-if="draftBanner" data-tauri-drag-region class="no-print flex items-center gap-2 border-b bg-warn/15 px-4 py-2 text-sm lg:px-8">
+        <PencilLine class="pointer-events-none size-4 shrink-0 text-warn" />
+        <span class="pointer-events-none flex-1">{{ t('banner.draft') }}</span>
+        <RouterLink to="/edit/publish" class="font-medium underline-offset-2 hover:underline">{{ t('banner.draftAction') }}</RouterLink>
+      </div>
 
       <main class="flex-1 pb-24" :class="fill ? 'lg:min-h-0 lg:pb-0' : 'lg:pb-10'">
         <RouterView v-slot="{ Component }">

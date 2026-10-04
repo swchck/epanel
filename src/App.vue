@@ -50,7 +50,7 @@ async function openFromOs(f: { name: string; path?: string; text: string }) {
 
 <template>
   <TooltipProvider :delay-duration="250">
-    <div v-if="overlayTitlebar" data-tauri-drag-region class="fixed inset-x-0 top-0 z-[60] h-(--titlebar)" />
+    <div v-if="overlayTitlebar" data-tauri-drag-region class="fixed top-0 left-0 z-[60] h-(--titlebar)" :class="data.status === 'ready' ? 'w-[15.5rem]' : 'right-0'" />
     <SplashScreen v-if="data.status === 'idle' || data.status === 'loading'" />
     <UnlockView v-else-if="data.status === 'locked'" />
     <StartView v-else-if="data.status === 'empty' || data.status === 'error'" />

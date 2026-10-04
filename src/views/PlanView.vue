@@ -102,7 +102,7 @@ const kindsPresent = computed(() => POINT_KINDS.filter((k) => data.data?.points.
 </script>
 
 <template>
-  <div class="flex h-[calc(100dvh-7.5rem)] flex-col px-4 pt-4 lg:h-full lg:px-8 lg:pt-6 lg:pb-6">
+  <div class="flex h-[calc(100dvh-7.5rem)] flex-col px-4 pt-4 lg:h-full lg:px-8 lg:pt-8 lg:pb-6">
     <div class="no-print mb-3 flex flex-wrap items-center gap-2">
       <h1 class="mr-auto text-xl font-semibold tracking-tight lg:text-2xl">{{ t('nav.plan') }}</h1>
       <div class="flex overflow-hidden rounded-full border bg-card text-xs font-medium">
