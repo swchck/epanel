@@ -237,7 +237,8 @@
       "tap": "Toca un dispositivo para ver los detalles"
     },
     "pickHint": "Elige un magnetotérmico del cuadro para ver qué alimenta, su carga y sus notas.",
-    "details": "Detalles del dispositivo"
+    "details": "Detalles del dispositivo",
+    "types": "Tipos de dispositivo"
   },
   "plan": {
     "layers": "Capas",

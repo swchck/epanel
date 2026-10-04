@@ -237,7 +237,8 @@
       "tap": "Dodirnite uređaj za detalje"
     },
     "pickHint": "Izaberite osigurač na tabli da vidite šta napaja, njegovo opterećenje i beleške.",
-    "details": "Detalji uređaja"
+    "details": "Detalji uređaja",
+    "types": "Vrste uređaja"
   },
   "plan": {
     "layers": "Slojevi",

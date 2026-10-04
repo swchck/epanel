@@ -2,7 +2,7 @@
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useMediaQuery } from '@vueuse/core'
-import { FilterX, MapPin, Power, RotateCcw, ScanSearch, X, ZoomIn, ZoomOut } from '@lucide/vue'
+import { FilterX, MapPin, Power, RotateCcw, ScanSearch, TriangleAlert, X, ZoomIn, ZoomOut } from '@lucide/vue'
 import { Button } from '@/components/ui/button'
 import { Drawer, DrawerContent, DrawerDescription, DrawerTitle } from '@/components/ui/drawer'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -118,50 +118,56 @@ watch(
       </dl>
     </div>
 
-    <div class="no-print mb-4 flex flex-wrap items-center gap-2">
-      <div class="flex flex-wrap gap-1.5">
-        <button
-          v-for="tp in presentTypes"
-          :key="tp"
-          class="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs transition"
-          :class="ui.filterTypes.includes(tp) ? 'border-foreground/40 bg-foreground text-background' : 'bg-card hover:border-foreground/30'"
-          @click="toggleType(tp)"
-        >
-          <span class="size-2 rounded-full" :style="{ background: TYPE_ACCENT[tp] }" />
-          {{ t(`device.typeShort.${tp}`) }}
-        </button>
+    <div class="no-print mb-4 space-y-2">
+      <div class="flex flex-wrap items-center gap-2">
+        <div class="mr-auto flex flex-wrap gap-0.5 rounded-xl border bg-card p-1" role="group" :aria-label="t('panel.types')">
+          <button
+            v-for="tp in presentTypes"
+            :key="tp"
+            class="inline-flex h-7 items-center gap-1.5 rounded-lg px-2.5 text-sm transition"
+            :class="ui.filterTypes.includes(tp) ? 'bg-accent text-foreground ring-1 ring-foreground/15' : 'text-muted-foreground hover:bg-accent/60 hover:text-foreground'"
+            :aria-pressed="ui.filterTypes.includes(tp)"
+            @click="toggleType(tp)"
+          >
+            <span class="size-2 rounded-full" :style="{ background: TYPE_ACCENT[tp] }" />
+            {{ t(`device.typeShort.${tp}`) }}
+          </button>
+        </div>
+        <label class="flex h-9 items-center gap-2 rounded-xl border bg-card px-3 text-sm" :class="{ 'border-live/60 bg-live/10': ui.simulate }">
+          <Power class="size-4" :class="ui.simulate ? 'text-live' : 'text-muted-foreground'" />
+          {{ t('panel.simulate') }}
+          <Switch v-model="ui.simulate" />
+        </label>
+        <Button variant="outline" size="icon" class="hidden size-9 rounded-xl md:inline-flex" :aria-label="t('panel.zoom')" @click="zoomed = !zoomed">
+          <component :is="zoomed ? ZoomOut : ZoomIn" />
+        </Button>
       </div>
-      <Select :model-value="ui.filterRoom ?? '__all'" @update:model-value="(v) => (ui.filterRoom = v === '__all' ? null : (v as string))">
-        <SelectTrigger class="h-7 w-auto min-w-36 rounded-full text-xs" :aria-label="t('panel.allRooms')"><SelectValue /></SelectTrigger>
-        <SelectContent>
-          <SelectItem value="__all">{{ t('panel.allRooms') }}</SelectItem>
-          <SelectItem v-for="r in data.data?.rooms" :key="r.id" :value="r.id">{{ tx(r.name) }}</SelectItem>
-        </SelectContent>
-      </Select>
-      <Select v-if="tags.length" :model-value="ui.filterTag ?? '__all'" @update:model-value="(v) => (ui.filterTag = v === '__all' ? null : (v as string))">
-        <SelectTrigger class="h-7 w-auto min-w-28 rounded-full text-xs" :aria-label="t('panel.allTags')"><SelectValue /></SelectTrigger>
-        <SelectContent>
-          <SelectItem value="__all">{{ t('panel.allTags') }}</SelectItem>
-          <SelectItem v-for="tag in tags" :key="tag" :value="tag">#{{ tag }}</SelectItem>
-        </SelectContent>
-      </Select>
-      <button
-        class="rounded-full border px-2.5 py-1 text-xs transition"
-        :class="ui.filterIssues ? 'border-warn bg-warn/20' : 'bg-card hover:border-foreground/30'"
-        @click="ui.filterIssues = !ui.filterIssues"
-      >
-        {{ t('panel.onlyIssues') }}
-      </button>
-      <Button v-if="ui.filtersActive" variant="ghost" size="sm" class="h-7 rounded-full text-xs" @click="ui.clearFilters()"><FilterX /> {{ t('panel.clearFilters') }}</Button>
-      <div class="flex-1" />
-      <label class="flex items-center gap-2 rounded-full border bg-card px-3 py-1 text-xs" :class="{ 'border-live bg-live/15': ui.simulate }">
-        <Power class="size-3.5" :class="ui.simulate ? 'text-live' : ''" />
-        {{ t('panel.simulate') }}
-        <Switch v-model="ui.simulate" class="scale-90" />
-      </label>
-      <Button variant="outline" size="icon-sm" class="hidden rounded-full md:inline-flex" :aria-label="t('panel.zoom')" @click="zoomed = !zoomed">
-        <component :is="zoomed ? ZoomOut : ZoomIn" />
-      </Button>
+      <div class="flex flex-wrap items-center gap-2">
+        <Select :model-value="ui.filterRoom ?? '__all'" @update:model-value="(v) => (ui.filterRoom = v === '__all' ? null : (v as string))">
+          <SelectTrigger class="min-w-40 bg-card" :aria-label="t('panel.allRooms')"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="__all">{{ t('panel.allRooms') }}</SelectItem>
+            <SelectItem v-for="r in data.data?.rooms" :key="r.id" :value="r.id">{{ tx(r.name) }}</SelectItem>
+          </SelectContent>
+        </Select>
+        <Select v-if="tags.length" :model-value="ui.filterTag ?? '__all'" @update:model-value="(v) => (ui.filterTag = v === '__all' ? null : (v as string))">
+          <SelectTrigger class="min-w-32 bg-card" :aria-label="t('panel.allTags')"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="__all">{{ t('panel.allTags') }}</SelectItem>
+            <SelectItem v-for="tag in tags" :key="tag" :value="tag">#{{ tag }}</SelectItem>
+          </SelectContent>
+        </Select>
+        <button
+          class="inline-flex h-8 items-center gap-1.5 rounded-lg border px-2.5 text-sm transition"
+          :class="ui.filterIssues ? 'border-warn/60 bg-warn/15 text-foreground' : 'bg-card text-muted-foreground hover:text-foreground'"
+          :aria-pressed="ui.filterIssues"
+          @click="ui.filterIssues = !ui.filterIssues"
+        >
+          <TriangleAlert class="size-4" :class="ui.filterIssues ? 'text-warn' : ''" />
+          {{ t('panel.onlyIssues') }}
+        </button>
+        <Button v-if="ui.filtersActive" variant="ghost" size="sm" class="h-8" @click="ui.clearFilters()"><FilterX /> {{ t('panel.clearFilters') }}</Button>
+      </div>
     </div>
 
     <Transition name="fade">

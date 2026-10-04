@@ -237,7 +237,8 @@
       "tap": "Tap a device for details"
     },
     "pickHint": "Pick a breaker on the panel to see what it supplies, its load and notes.",
-    "details": "Device details"
+    "details": "Device details",
+    "types": "Device types"
   },
   "plan": {
     "layers": "Layers",
