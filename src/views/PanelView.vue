@@ -104,21 +104,18 @@ watch(
           <MapPin class="size-4" /> {{ tx(data.data.meta.location) }}
         </p>
       </div>
-      <div class="flex flex-wrap gap-2">
-        <div v-for="s in stats" :key="s.k" class="rounded-xl border bg-card px-3 py-1.5">
-          <div class="font-mono text-base font-semibold tabular">{{ s.v }}</div>
-          <div class="text-[11px] text-muted-foreground">{{ s.k }}</div>
+      <dl class="flex overflow-hidden rounded-xl border bg-card">
+        <div v-for="s in stats" :key="s.k" class="flex flex-col-reverse border-r px-4 py-2 last:border-r-0">
+          <dt class="text-xs whitespace-nowrap text-muted-foreground">{{ s.k }}</dt>
+          <dd class="text-lg leading-tight font-semibold tabular">{{ s.v }}</dd>
         </div>
-        <RouterLink
-          v-if="errors || warns"
-          to="/checks"
-          class="rounded-xl border px-3 py-1.5 transition hover:border-foreground/30"
-          :class="errors ? 'border-danger/40 bg-danger/10' : 'border-warn/40 bg-warn/10'"
-        >
-          <div class="font-mono text-base font-semibold tabular">{{ errors || warns }}</div>
-          <div class="text-[11px] text-muted-foreground">{{ errors ? t('panel.stat.errors') : t('panel.stat.warnings') }}</div>
+        <RouterLink v-if="errors || warns" to="/checks" class="group flex flex-col-reverse px-4 py-2 transition hover:bg-accent">
+          <dt class="text-xs whitespace-nowrap text-muted-foreground group-hover:text-foreground">{{ errors ? t('panel.stat.errors') : t('panel.stat.warnings') }}</dt>
+          <dd class="flex items-center gap-1.5 text-lg leading-tight font-semibold tabular" :class="errors ? 'text-danger' : 'text-warn'">
+            <span class="size-2 rounded-full" :class="errors ? 'bg-danger' : 'bg-warn'" />{{ errors || warns }}
+          </dd>
         </RouterLink>
-      </div>
+      </dl>
     </div>
 
     <div class="no-print mb-4 flex flex-wrap items-center gap-2">
