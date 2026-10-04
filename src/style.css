@@ -229,5 +229,6 @@
   --titlebar: 0px;
 }
 :root[data-titlebar] {
-  --titlebar: 28px;
+  /* matches trafficLightPosition in tauri.conf.json: buttons inset 22px from the top */
+  --titlebar: 40px;
 }
