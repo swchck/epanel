@@ -102,7 +102,7 @@ const kindsPresent = computed(() => POINT_KINDS.filter((k) => data.data?.points.
 </script>
 
 <template>
-  <div class="flex h-[calc(100dvh-7.5rem)] flex-col px-4 pt-4 lg:h-dvh lg:px-8 lg:pt-6 lg:pb-6">
+  <div class="flex h-[calc(100dvh-7.5rem)] flex-col px-4 pt-4 lg:h-full lg:px-8 lg:pt-6 lg:pb-6">
     <div class="no-print mb-3 flex flex-wrap items-center gap-2">
       <h1 class="mr-auto text-xl font-semibold tracking-tight lg:text-2xl">{{ t('nav.plan') }}</h1>
       <div class="flex overflow-hidden rounded-full border bg-card text-xs font-medium">
@@ -118,14 +118,14 @@ const kindsPresent = computed(() => POINT_KINDS.filter((k) => data.data?.points.
         <PopoverTrigger as-child>
           <Button variant="outline" size="sm" class="rounded-full"><Layers /> {{ t('plan.layers') }}</Button>
         </PopoverTrigger>
-        <PopoverContent align="end" class="w-64 space-y-1 p-2">
-          <label v-for="k in kindsPresent" :key="k" class="flex items-center gap-2.5 rounded-md px-2 py-1.5 text-sm hover:bg-accent">
+        <PopoverContent align="end" class="max-h-(--reka-popover-content-available-height) w-64 overflow-y-auto p-1.5">
+          <label v-for="k in kindsPresent" :key="k" class="flex items-center gap-2.5 rounded-md px-2 py-1 text-sm hover:bg-accent">
             <component :is="POINT_ICONS[k]" class="size-4" :style="{ color: POINT_COLORS[k] }" />
             <span class="flex-1">{{ t(`point.kinds.${k}`) }}</span>
             <Switch v-model="ui.planLayers[k]" class="scale-90" />
           </label>
           <div class="my-1 border-t" />
-          <label v-for="k in ['routes', 'lowvoltage', 'bus', 'dimensions', 'photos', 'labels', 'background'] as const" :key="k" class="flex items-center gap-2.5 rounded-md px-2 py-1.5 text-sm hover:bg-accent">
+          <label v-for="k in ['routes', 'lowvoltage', 'bus', 'dimensions', 'photos', 'labels', 'background'] as const" :key="k" class="flex items-center gap-2.5 rounded-md px-2 py-1 text-sm hover:bg-accent">
             <span class="flex-1">{{ t(`plan.layer.${k}`) }}</span>
             <Switch v-model="ui.planLayers[k]" class="scale-90" />
           </label>

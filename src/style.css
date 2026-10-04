@@ -6,6 +6,13 @@
 @import "@fontsource/ibm-plex-mono/600.css";
 
 @custom-variant dark (&:is(.dark *));
+/* reka-ui exposes state as data-state / data-orientation, while the shadcn-vue components are written against these short variants */
+@custom-variant data-open (&:where([data-state="open"], [data-open]:not([data-open="false"])));
+@custom-variant data-closed (&:where([data-state="closed"], [data-closed]:not([data-closed="false"])));
+@custom-variant data-checked (&:where([data-state="checked"], [data-checked]:not([data-checked="false"])));
+@custom-variant data-unchecked (&:where([data-state="unchecked"], [data-unchecked]:not([data-unchecked="false"])));
+@custom-variant data-horizontal (&:where([data-orientation="horizontal"], [data-horizontal]));
+@custom-variant data-vertical (&:where([data-orientation="vertical"], [data-vertical]));
 
 @theme inline {
   --font-sans: "IBM Plex Sans Variable", ui-sans-serif, system-ui, sans-serif;
@@ -209,4 +216,11 @@
     background: white;
     color: black;
   }
+}
+
+:root {
+  --titlebar: 0px;
+}
+:root[data-titlebar] {
+  --titlebar: 28px;
 }

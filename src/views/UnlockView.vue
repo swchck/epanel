@@ -27,7 +27,7 @@ async function submit() {
 <template>
   <div class="relative grid min-h-dvh place-items-center overflow-hidden bg-background px-4">
     <div class="pointer-events-none absolute inset-0 opacity-[0.07] [background-image:radial-gradient(var(--foreground)_1px,transparent_1px)] [background-size:18px_18px]" />
-    <div class="absolute top-3 right-3 flex gap-1">
+    <div class="absolute top-[calc(var(--titlebar)+0.75rem)] right-3 flex gap-1">
       <LangSwitch />
       <ThemeToggle />
     </div>

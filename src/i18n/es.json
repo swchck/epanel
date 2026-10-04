@@ -50,7 +50,9 @@
       "find": "Buscar",
       "emergency": "Saltó"
     },
-    "network": "Redes y tubos"
+    "network": "Redes y tubos",
+    "leave": "Volver al inicio",
+    "leaveUnsaved": "Los cambios sin guardar se perderán. Si los necesitas, guarda primero el archivo en el editor. ¿Volver al inicio?"
   },
   "banner": {
     "demo": "Este es un piso de demostración. Los datos son inventados y los cambios no se guardan en ningún sitio.",

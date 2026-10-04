@@ -25,7 +25,7 @@ export const router = createRouter({
   routes: [
     { path: '/', name: 'panel', component: PanelView },
     { path: '/d/:id', name: 'device', component: PanelView, props: true },
-    { path: '/plan', name: 'plan', component: () => import('@/views/PlanView.vue') },
+    { path: '/plan', name: 'plan', component: () => import('@/views/PlanView.vue'), meta: { fill: true } },
     { path: '/find', name: 'find', component: () => import('@/views/FindView.vue') },
     { path: '/emergency', name: 'emergency', component: () => import('@/views/EmergencyView.vue') },
     { path: '/schema', name: 'schema', component: () => import('@/views/SchemaView.vue') },

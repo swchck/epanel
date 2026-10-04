@@ -2,11 +2,12 @@
 import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useMagicKeys, whenever } from '@vueuse/core'
-import { Ellipsis, FlaskConical, LogOut, PencilLine, Search } from '@lucide/vue'
+import { Ellipsis, FlaskConical, House, LogOut, PencilLine, Search } from '@lucide/vue'
 import { Button } from '@/components/ui/button'
 import { Kbd } from '@/components/ui/kbd'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { useText } from '@/composables/useText'
+import { confirmAction, isDesktop } from '@/platform'
 import { NAV, type NavName } from '@/router'
 import { useData } from '@/stores/data'
 import { useUi } from '@/stores/ui'
@@ -22,8 +23,15 @@ const ui = useUi()
 const route = useRoute()
 const router = useRouter()
 
-// `?demo` would put the visitor straight back into the demo on the next load, so it goes first
-async function leaveDemo() {
+// on the web a published panel is the home page itself; everywhere else there is a start screen to go back to
+const canLeave = computed(() => isDesktop || data.source !== 'published')
+
+async function leave() {
+  // only the published panel's draft is autosaved; a file or a new project lives in memory until saved
+  const unsaved = (data.source === 'new' && !data.file) || (data.hasDraft && (data.source === 'file' || data.source === 'new'))
+  if (unsaved && !(await confirmAction(t('nav.leaveUnsaved')))) return
+  moreOpen.value = false
+  // `?demo` would put the visitor straight back into the demo on the next load, so it goes first
   await router.replace({ path: '/', query: {} })
   ui.resetSimulation()
   ui.clearFilters()
@@ -50,6 +58,9 @@ const current = computed<NavName>(() => {
   if (n === 'device') return 'panel'
   return (NAV.find((x) => x.name === n)?.name ?? 'panel') as NavName
 })
+
+// full-height views (the plan) take exactly what is left under the banners instead of the whole viewport
+const fill = computed(() => route.meta.fill === true)
 
 const overdue = computed(() => data.overdue)
 
@@ -81,7 +92,7 @@ whenever(
 <template>
   <div class="min-h-dvh bg-background lg:grid lg:grid-cols-[15.5rem_1fr]">
     <aside class="no-print sticky top-0 hidden h-dvh flex-col border-r border-sidebar-border bg-sidebar lg:flex">
-      <RouterLink to="/" class="flex items-center gap-3 px-5 pt-5 pb-4">
+      <RouterLink to="/" class="flex items-center gap-3 px-5 pt-[calc(var(--titlebar)+1rem)] pb-3">
         <BrandMark class="size-9 shrink-0" />
         <div class="min-w-0">
           <div class="truncate text-sm font-semibold leading-tight">{{ tx(data.data?.meta.title) || t('app.name') }}</div>
@@ -89,21 +100,21 @@ whenever(
         </div>
       </RouterLink>
       <button
-        class="mx-4 mb-3 flex items-center gap-2 rounded-lg border bg-background px-3 py-2 text-left text-sm text-muted-foreground transition hover:border-primary/50"
+        class="mx-4 mb-2 flex items-center gap-2 rounded-lg border bg-background px-3 py-1.5 text-left text-sm text-muted-foreground transition hover:border-primary/50"
         @click="ui.searchOpen = true"
       >
         <Search class="size-4" />
         <span class="flex-1">{{ t('search.placeholderShort') }}</span>
         <Kbd>⌘K</Kbd>
       </button>
-      <nav class="flex-1 overflow-y-auto px-3 pb-4">
-        <div v-for="g in GROUPS" :key="g.key" class="mb-4">
-          <div class="px-2 pb-1.5 text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">{{ t(`nav.group.${g.key}`) }}</div>
+      <nav class="flex-1 overflow-y-auto px-3 pb-2">
+        <div v-for="g in GROUPS" :key="g.key" class="mb-2.5">
+          <div class="px-2 pt-1 pb-1 text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">{{ t(`nav.group.${g.key}`) }}</div>
           <RouterLink
             v-for="n in g.items.filter(visible)"
             :key="n"
             :to="pathOf(n)"
-            class="group flex items-center gap-3 rounded-lg px-2.5 py-2 text-sm transition"
+            class="group flex items-center gap-3 rounded-lg px-2.5 py-1.5 text-sm transition"
             :class="current === n ? 'bg-sidebar-accent font-medium text-foreground' : 'text-muted-foreground hover:bg-sidebar-accent/60 hover:text-foreground'"
           >
             <component :is="NAV_ICONS[n]" class="size-4.5 shrink-0" :class="current === n ? 'text-primary' : n === 'emergency' ? 'text-danger' : ''" />
@@ -112,16 +123,24 @@ whenever(
           </RouterLink>
         </div>
       </nav>
-      <div class="flex items-center gap-1 border-t border-sidebar-border px-3 py-3">
+      <div class="flex items-center gap-1 border-t border-sidebar-border px-3 py-2.5">
         <OfflineBadge />
-        <div class="flex-1" />
+        <button
+          v-if="canLeave"
+          class="flex min-w-0 flex-1 items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-muted-foreground transition hover:bg-sidebar-accent/60 hover:text-foreground"
+          @click="leave"
+        >
+          <House class="size-4 shrink-0" />
+          <span class="truncate">{{ t('nav.leave') }}</span>
+        </button>
+        <div v-else class="flex-1" />
         <LangSwitch />
         <ThemeToggle />
       </div>
     </aside>
 
-    <div class="flex min-w-0 flex-col">
-      <header class="no-print sticky top-0 z-30 flex items-center gap-2 border-b bg-background/85 px-4 py-2.5 backdrop-blur-md lg:hidden">
+    <div class="flex min-w-0 flex-col lg:pt-(--titlebar)" :class="{ 'lg:h-dvh lg:overflow-hidden': fill }">
+      <header class="no-print sticky top-0 z-30 flex items-center gap-2 border-b bg-background/85 px-4 pt-[calc(var(--titlebar)+0.625rem)] pb-2.5 backdrop-blur-md lg:hidden">
         <RouterLink to="/" class="flex min-w-0 flex-1 items-center gap-2.5">
           <BrandMark class="size-8 shrink-0" />
           <span class="truncate text-sm font-semibold">{{ t(`nav.${current}`) }}</span>
@@ -136,7 +155,7 @@ whenever(
       <div v-if="data.source === 'demo'" class="no-print flex items-center gap-2 border-b bg-info/10 px-4 py-2 text-sm text-info lg:px-8">
         <FlaskConical class="size-4 shrink-0" />
         <span class="flex-1">{{ t('banner.demo') }}</span>
-        <Button variant="ghost" size="sm" class="h-7 shrink-0 text-info hover:text-info" @click="leaveDemo"><LogOut /> {{ t('banner.leaveDemo') }}</Button>
+        <Button variant="ghost" size="sm" class="h-7 shrink-0 text-info hover:text-info" @click="leave"><LogOut /> {{ t('banner.leaveDemo') }}</Button>
       </div>
       <RouterLink
         v-if="data.hasDraft && current !== 'edit'"
@@ -148,7 +167,7 @@ whenever(
         <span class="font-medium underline-offset-2 hover:underline">{{ t('banner.draftAction') }}</span>
       </RouterLink>
 
-      <main class="flex-1 pb-24 lg:pb-10">
+      <main class="flex-1 pb-24" :class="fill ? 'lg:min-h-0 lg:pb-0' : 'lg:pb-10'">
         <RouterView v-slot="{ Component }">
           <Transition name="page" mode="out-in">
             <component :is="Component" :key="route.name === 'device' ? 'panel' : route.path" />
@@ -193,6 +212,10 @@ whenever(
             {{ t(`nav.${n}`) }}
             <span v-if="badge[n]" class="absolute top-2 right-2 rounded-full px-1.5 text-[10px] font-semibold" :class="badge[n]!.tone">{{ badge[n]!.n }}</span>
           </RouterLink>
+          <button v-if="canLeave" class="flex flex-col items-center gap-2 rounded-xl border bg-card px-2 py-4 text-center text-xs" @click="leave">
+            <House class="size-6 text-primary" />
+            {{ t('nav.leave') }}
+          </button>
         </div>
       </SheetContent>
     </Sheet>

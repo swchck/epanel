@@ -86,3 +86,10 @@ export async function onOpenFile(cb: (f: OpenedText) => void) {
   await listen('open-file', take)
   await take()
 }
+
+/** Asks a yes/no question, with the native dialog on desktop. */
+export async function confirmAction(message: string): Promise<boolean> {
+  if (!isDesktop) return window.confirm(message)
+  const { ask } = await import('@tauri-apps/plugin-dialog')
+  return ask(message, { kind: 'warning' })
+}

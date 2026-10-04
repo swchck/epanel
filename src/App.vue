@@ -10,7 +10,7 @@ import UnlockView from '@/views/UnlockView.vue'
 import StartView from '@/views/StartView.vue'
 import { useTheme } from '@/composables/useTheme'
 import { useData } from '@/stores/data'
-import { isDesktop, onOpenFile } from '@/platform'
+import { confirmAction, isDesktop, onOpenFile } from '@/platform'
 import { i18n } from '@/i18n'
 import { tr } from '@/domain/model'
 
@@ -18,6 +18,7 @@ useTheme()
 const data = useData()
 const router = useRouter()
 const route = useRoute()
+const overlayTitlebar = document.documentElement.dataset.titlebar === 'overlay'
 
 watchEffect(() => {
   const title = tr(data.data?.meta.title, i18n.global.locale.value)
@@ -36,8 +37,7 @@ onMounted(async () => {
 
 async function openFromOs(f: { name: string; path?: string; text: string }) {
   if (data.hasDraft) {
-    const { ask } = await import('@tauri-apps/plugin-dialog')
-    if (!(await ask(i18n.global.t('start.replaceDraft', { name: f.name }), { kind: 'warning' }))) return
+    if (!(await confirmAction(i18n.global.t('start.replaceDraft', { name: f.name })))) return
   }
   const r = await data.loadText(f.text, { name: f.name, path: f.path })
   if (r.ok) return router.push('/')
@@ -50,6 +50,7 @@ async function openFromOs(f: { name: string; path?: string; text: string }) {
 
 <template>
   <TooltipProvider :delay-duration="250">
+    <div v-if="overlayTitlebar" data-tauri-drag-region class="fixed inset-x-0 top-0 z-[60] h-(--titlebar)" />
     <SplashScreen v-if="data.status === 'idle' || data.status === 'loading'" />
     <UnlockView v-else-if="data.status === 'locked'" />
     <StartView v-else-if="data.status === 'empty' || data.status === 'error'" />

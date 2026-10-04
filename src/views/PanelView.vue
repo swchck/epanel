@@ -193,7 +193,7 @@ watch(
       </div>
 
       <aside v-if="wide" class="no-print">
-        <div class="sticky top-6 max-h-[calc(100dvh-3rem)] overflow-y-auto rounded-2xl border bg-card p-5">
+        <div class="sticky top-[calc(var(--titlebar)+1.5rem)] max-h-[calc(100dvh-3rem-var(--titlebar))] overflow-y-auto rounded-2xl border bg-card p-5">
           <template v-if="ui.selectedDevice">
             <button class="float-right -mt-1 -mr-1 rounded-md p-1 text-muted-foreground hover:bg-accent" :aria-label="t('common.close')" @click="ui.select(null)">
               <X class="size-4" />
