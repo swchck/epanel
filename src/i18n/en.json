@@ -85,7 +85,7 @@
     "create": "Create a new panel",
     "createHint": "Empty project: rows, breakers, floor plan",
     "demo": "Open demo",
-    "demoHint": "Two-room apartment, 27 devices, 44 points",
+    "demoHint": "Two-room apartment, 27 devices, 48 points",
     "name": "Name",
     "defaultTitle": "My apartment",
     "password": "Password",
