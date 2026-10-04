@@ -1,5 +1,5 @@
 import type { PowerGraph } from './graph'
-import type { ApplianceProfile, Device, PlanPoint, PointKind } from './schema'
+import type { ApplianceProfile, Device, PlanPoint, PointKind } from './model'
 
 // demand factors: the share of nameplate power that realistically runs at the same time
 const KIND_FACTOR: Record<PointKind, number> = {

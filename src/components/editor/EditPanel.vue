@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import DeviceChip from '@/components/common/DeviceChip.vue'
 import PanelEnclosure from '@/components/panel/PanelEnclosure.vue'
 import { TYPE_ACCENT } from '@/components/panel/geometry'
-import { DEVICE_TYPES, type DeviceType } from '@/domain/schema'
+import { DEVICE_TYPES, type DeviceType } from '@/domain/model'
 import { addDevice, addRow, findItem, insertBlank, moveItem, moveToRow, removeDevice, removeRow } from '@/editor/ops'
 import { useDraft } from '@/composables/useDraft'
 import { useText } from '@/composables/useText'
@@ -46,7 +46,6 @@ function used(i: number) {
 <template>
   <div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_28rem]">
     <div class="min-w-0 space-y-4">
-      <!-- palette -->
       <div class="rounded-2xl border bg-card p-3">
         <div class="mb-2 text-xs font-medium text-muted-foreground">{{ t('editor.panel.palette', { row: targetRow + 1 }) }}</div>
         <div class="flex flex-wrap gap-1.5">
@@ -63,13 +62,12 @@ function used(i: number) {
         </div>
       </div>
 
-      <!-- rows -->
       <div class="space-y-2">
         <div v-for="(row, ri) in d.rows" :key="row.id" class="rounded-xl border bg-card p-3">
           <div class="mb-2 flex flex-wrap items-center gap-3">
             <span class="text-sm font-medium">{{ t('labels.row', { n: ri + 1 }) }}</span>
             <span class="text-xs text-muted-foreground" :class="{ 'text-danger': used(ri) > row.modules }">{{ t('editor.panel.used', { used: used(ri), total: row.modules }) }}</span>
-            <div class="w-28"><NumberInput v-model="row.modules" :suffix="t('editor.panel.mod')" /></div>
+            <div class="w-28"><NumberInput v-model="row.modules" integer :max="48" :suffix="t('editor.panel.mod')" /></div>
             <div class="flex-1" />
             <Button variant="ghost" size="icon-sm" :aria-label="t('common.delete')" :disabled="row.items.length > 0" @click="removeRow(d, ri)"><Trash2 /></Button>
           </div>

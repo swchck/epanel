@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { MIN_PASSWORD_LENGTH } from '@/domain/crypto'
 import { ref } from 'vue'
 import { FilePlus2, FlaskConical, FolderOpen, LoaderCircle, TriangleAlert } from '@lucide/vue'
 import { toast } from 'vue-sonner'
@@ -55,7 +56,7 @@ async function openWithPassword() {
 }
 
 function create() {
-  if (pw.value.length < 4 || pw.value !== pw2.value) {
+  if (pw.value.length < MIN_PASSWORD_LENGTH || pw.value !== pw2.value) {
     err.value = t('start.passwordMismatch')
     return
   }

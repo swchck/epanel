@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import { Network, TabletSmartphone } from '@lucide/vue'
 import DeviceChip from '@/components/common/DeviceChip.vue'
 import { POINT_ICONS } from '@/components/common/kinds'
-import { SMART_TYPES, type Channel, type Device, type PlanPoint } from '@/domain/schema'
+import { SMART_TYPES, type Channel, type Device, type PlanPoint } from '@/domain/model'
 import { useText } from '@/composables/useText'
 import { useData } from '@/stores/data'
 

@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { computed, ref, toRef, watch } from 'vue'
+import { computed, ref, toRef, watch, watchEffect } from 'vue'
 import { Camera, Maximize, Minus, Plus } from '@lucide/vue'
-import { resolveAsset } from '@/domain/bundle'
+import { resolveAsset } from '@/domain/model'
 import { areaM2, polygonCentroid } from '@/domain/geometry'
-import type { PanelData, PlanPoint, Route } from '@/domain/schema'
+import type { PanelData, Route } from '@/domain/model'
 import { CABLE_COLORS, POINT_COLORS, POINT_ICONS } from '@/components/common/kinds'
 import { TYPE_ACCENT } from '@/components/panel/geometry'
 import { usePanZoom } from '@/composables/usePanZoom'
@@ -68,23 +68,21 @@ function routeStroke(r: Route) {
 }
 const bg = computed(() => resolveAsset(d.value.plan.background, assets.value))
 const hasHighlight = computed(() => (props.highlightPoints?.size ?? 0) > 0)
+const rooms = computed(() => d.value.rooms.filter((r) => r.polygon.length >= 3))
 
 const roomLabels = computed(() =>
-  d.value.rooms
-    .filter((r) => r.polygon.length >= 3)
-    .map((r) => {
-      // corner placement: fixtures usually sit in the middle of a room, labels there collide with them
-      const xs = r.polygon.map((p) => p[0])
-      const ys = r.polygon.map((p) => p[1])
-      const c = props.mini ? polygonCentroid(r.polygon) : ([Math.min(...xs) + 16, Math.min(...ys) + 34] as const)
-      return { room: r, c, area: areaM2(r.polygon) }
-    }),
+  rooms.value.map((r) => {
+    // corner placement: fixtures usually sit in the middle of a room, labels there collide with them
+    const xs = r.polygon.map((p) => p[0])
+    const ys = r.polygon.map((p) => p[1])
+    const c = props.mini ? polygonCentroid(r.polygon) : ([Math.min(...xs) + 16, Math.min(...ys) + 34] as const)
+    return { room: r, c, area: areaM2(r.polygon) }
+  }),
 )
 
 // wall lengths, labelled just inside each room so shared walls read from both sides
 const dimensions = computed(() =>
-  d.value.rooms
-    .filter((r) => r.polygon.length >= 3)
+  rooms.value
     .flatMap((r) => {
       const c = polygonCentroid(r.polygon)
       return r.polygon.map((a, i) => {
@@ -104,15 +102,40 @@ const dimensions = computed(() =>
     .filter((x) => x.len >= 60),
 )
 
-const markerR = computed(() => (props.mini ? 15 : 13) / Math.sqrt(Math.max(1, pz.scale.value)))
+const markerR = computed(() => (props.mini ? 15 : 13))
 
-function pointState(p: PlanPoint) {
-  const dead = props.deadPoints?.has(p.id) ?? false
-  const lit = props.highlightPoints?.has(p.id) ?? false
-  const focus = props.focusPoint === p.id
-  const dim = (hasHighlight.value && !lit && !focus) || (!!props.highlightRoom && p.room !== props.highlightRoom)
-  return { dead, lit, focus, dim }
-}
+// pan and zoom touch the DOM directly: going through the template would re-render every layer per frame
+watchEffect(
+  () => {
+    const el = svg.value
+    if (!el) return
+    el.setAttribute('viewBox', pz.viewBox.value)
+    el.style.setProperty('--mk', String(1 / Math.sqrt(Math.max(1, pz.scale.value))))
+  },
+  { flush: 'post' },
+)
+
+const roomPolygons = computed(() => rooms.value.map((r) => ({ room: r, points: r.polygon.map((p) => p.join(',')).join(' ') })))
+const photos = computed(() => d.value.photos.filter((p) => p.x !== undefined && p.y !== undefined))
+
+const points = computed(() =>
+  d.value.points
+    .filter((p) => layer(p.kind))
+    .map((p) => {
+      const dead = props.deadPoints?.has(p.id) ?? false
+      const lit = props.highlightPoints?.has(p.id) ?? false
+      const focus = props.focusPoint === p.id
+      const dim = (hasHighlight.value && !lit && !focus) || (!!props.highlightRoom && p.room !== props.highlightRoom)
+      return { p, dead, lit, focus, dim }
+    }),
+)
+
+const litDevices = computed(() => {
+  const out = new Set<string>()
+  if (!hasHighlight.value) return out
+  for (const p of d.value.points) if (p.device && props.highlightPoints!.has(p.id)) out.add(p.device)
+  return out
+})
 
 function routeColor(device?: string) {
   const dev = device ? store.graph?.byId.get(device) : undefined
@@ -120,8 +143,7 @@ function routeColor(device?: string) {
 }
 
 function routeLit(device?: string) {
-  if (!hasHighlight.value || !device) return false
-  return d.value.points.some((p) => p.device === device && props.highlightPoints!.has(p.id))
+  return !!device && litDevices.value.has(device)
 }
 
 function onPointClick(id: string) {
@@ -156,7 +178,6 @@ defineExpose({ pz })
   <div class="relative h-full w-full">
     <svg
       ref="svg"
-      :viewBox="pz.viewBox.value"
       class="block h-full w-full touch-none select-none"
       :class="[interactive ? (pz.dragging.value ? 'cursor-grabbing' : 'cursor-grab') : '', cursor]"
       preserveAspectRatio="xMidYMid meet"
@@ -187,12 +208,11 @@ defineExpose({ pz })
         pointer-events="none"
       />
 
-      <!-- rooms -->
       <g>
         <polygon
-          v-for="r in d.rooms.filter((x) => x.polygon.length >= 3)"
+          v-for="{ room: r, points: poly } in roomPolygons"
           :key="r.id"
-          :points="r.polygon.map((p) => p.join(',')).join(' ')"
+          :points="poly"
           :fill="r.color ?? (r.wet ? 'var(--plan-wet)' : 'var(--plan-floor)')"
           :fill-opacity="bg && layer('background') ? 0.55 : 1"
           stroke="var(--plan-wall)"
@@ -224,7 +244,6 @@ defineExpose({ pz })
         </text>
       </g>
 
-      <!-- cable routes and no-drill strips -->
       <g>
         <g
           v-for="r in visibleRoutes"
@@ -255,50 +274,47 @@ defineExpose({ pz })
         </g>
       </g>
 
-      <!-- photo markers -->
       <g v-if="layer('photos') && !mini">
         <g
-          v-for="ph in d.photos.filter((p) => p.x !== undefined && p.y !== undefined)"
+          v-for="ph in photos"
           :key="ph.id"
           :transform="`translate(${ph.x}, ${ph.y})`"
           class="cursor-pointer"
           @click.stop="!pz.wasDrag() && emit('photo', ph.id)"
         >
-          <rect :x="-markerR" :y="-markerR" :width="markerR * 2" :height="markerR * 2" :rx="markerR * 0.35" fill="var(--foreground)" opacity="0.85" />
-          <Camera :x="-markerR * 0.62" :y="-markerR * 0.62" :width="markerR * 1.24" :height="markerR * 1.24" color="var(--background)" :stroke-width="2.2" />
+          <g class="marker">
+            <rect :x="-markerR" :y="-markerR" :width="markerR * 2" :height="markerR * 2" :rx="markerR * 0.35" fill="var(--foreground)" opacity="0.85" />
+            <Camera :x="-markerR * 0.62" :y="-markerR * 0.62" :width="markerR * 1.24" :height="markerR * 1.24" color="var(--background)" :stroke-width="2.2" />
+          </g>
         </g>
       </g>
 
-      <!-- points -->
       <g>
         <g
-          v-for="p in d.points.filter((x) => layer(x.kind))"
+          v-for="{ p, dead, lit, focus, dim } in points"
           :key="p.id"
           :transform="`translate(${p.x}, ${p.y})`"
           class="point cursor-pointer"
-          :class="{ 'is-dim': pointState(p).dim, 'is-dead': pointState(p).dead }"
+          :class="{ 'is-dim': dim, 'is-dead': dead }"
           role="button"
           :aria-label="tx(p.label, t(`point.kind.${p.kind}`))"
           @click.stop="onPointClick(p.id)"
         >
-          <circle v-if="pointState(p).lit || pointState(p).focus" :r="markerR * 1.6" :fill="POINT_COLORS[p.kind]" class="pulse" />
-          <circle
-            :r="pointState(p).focus ? markerR * 1.3 : markerR"
-            :fill="pointState(p).dead ? '#6b7280' : POINT_COLORS[p.kind]"
-            stroke="var(--background)"
-            :stroke-width="markerR * 0.22"
-          />
-          <component
-            :is="POINT_ICONS[p.kind]"
-            :x="-markerR * 0.58"
-            :y="-markerR * 0.58"
-            :width="markerR * 1.16"
-            :height="markerR * 1.16"
-            color="white"
-            :stroke-width="2.4"
-          />
-          <line v-if="pointState(p).dead" :x1="-markerR" :y1="markerR" :x2="markerR" :y2="-markerR" stroke="var(--danger)" :stroke-width="markerR * 0.25" stroke-linecap="round" />
-          <text v-if="layer('labels') && !mini && p.device" :y="markerR + 13" text-anchor="middle" class="pid">{{ p.device }}</text>
+          <g class="marker">
+            <circle v-if="lit || focus" :r="markerR * 1.6" :fill="POINT_COLORS[p.kind]" class="pulse" />
+            <circle :r="focus ? markerR * 1.3 : markerR" :fill="dead ? '#6b7280' : POINT_COLORS[p.kind]" stroke="var(--background)" :stroke-width="markerR * 0.22" />
+            <component
+              :is="POINT_ICONS[p.kind]"
+              :x="-markerR * 0.58"
+              :y="-markerR * 0.58"
+              :width="markerR * 1.16"
+              :height="markerR * 1.16"
+              color="white"
+              :stroke-width="2.4"
+            />
+            <line v-if="dead" :x1="-markerR" :y1="markerR" :x2="markerR" :y2="-markerR" stroke="var(--danger)" :stroke-width="markerR * 0.25" stroke-linecap="round" />
+            <text v-if="layer('labels') && !mini && p.device" :y="markerR + 13" text-anchor="middle" class="pid">{{ p.device }}</text>
+          </g>
         </g>
       </g>
       <slot :pz="pz" />
@@ -347,6 +363,9 @@ defineExpose({ pz })
 }
 .point {
   transition: opacity 0.25s ease;
+}
+.marker {
+  transform: scale(var(--mk, 1));
 }
 .point.is-dim {
   opacity: 0.22;

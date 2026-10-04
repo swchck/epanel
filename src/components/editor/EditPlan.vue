@@ -9,10 +9,10 @@ import { Slider } from '@/components/ui/slider'
 import { Switch } from '@/components/ui/switch'
 import { POINT_COLORS, POINT_ICONS } from '@/components/common/kinds'
 import FloorPlan from '@/components/plan/FloorPlan.vue'
-import { ASSET_PREFIX } from '@/domain/bundle'
+import { ASSET_PREFIX } from '@/domain/model'
 import { pointInPolygon, snap as snapTo } from '@/domain/geometry'
-import { APPLIANCE_PROFILES, CABLE_TYPES, MOUNT_DEFAULT, POINT_KINDS, ROUTE_KINDS, type Point2, type PointKind, type RouteKind } from '@/domain/schema'
-import { uniqueId } from '@/editor/ops'
+import { APPLIANCE_PROFILES, CABLE_TYPES, MOUNT_DEFAULT, POINT_KINDS, ROUTE_KINDS, type Point2, type PointKind, type RouteKind } from '@/domain/model'
+import { removePoint, removeRoom, uniqueId } from '@/editor/ops'
 import { compressImage, newId, planImageFrom } from '@/lib/media'
 import { useDraft } from '@/composables/useDraft'
 import { useText } from '@/composables/useText'
@@ -135,13 +135,15 @@ function onPoint(id: string) {
 }
 
 function onKey(e: KeyboardEvent) {
-  if ((e.target as HTMLElement)?.closest('input,textarea')) return
+  const target = e.target as HTMLElement | null
+  if (target?.closest('input,textarea,[contenteditable]')) return
   if (e.key === 'Escape') {
     pending.value = []
     if (mode.value !== 'select') mode.value = 'select'
     else sel.value = null
   } else if (e.key === 'Enter' && pending.value.length) finish()
-  else if ((e.key === 'Delete' || e.key === 'Backspace') && sel.value) removeSelected()
+  // Backspace on a focused button or select trigger must not delete the selection
+  else if ((e.key === 'Delete' || e.key === 'Backspace') && sel.value && !target?.closest('button,a,[role=combobox],[role=listbox],[role=dialog]')) removeSelected()
 }
 onMounted(() => window.addEventListener('keydown', onKey))
 onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
@@ -149,11 +151,8 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 function removeSelected() {
   const s = sel.value
   if (!s) return
-  if (s.kind === 'point') d.value.points = d.value.points.filter((p) => p.id !== s.id)
-  if (s.kind === 'room') {
-    d.value.rooms = d.value.rooms.filter((p) => p.id !== s.id)
-    for (const p of d.value.points) if (p.room === s.id) p.room = undefined
-  }
+  if (s.kind === 'point') removePoint(d.value, s.id)
+  if (s.kind === 'room') removeRoom(d.value, s.id)
   if (s.kind === 'route') d.value.routes = d.value.routes.filter((p) => p.id !== s.id)
   if (s.kind === 'photo') d.value.photos = d.value.photos.filter((p) => p.id !== s.id)
   sel.value = null
@@ -281,7 +280,6 @@ const hint = computed(() => t(`editor.plan.hint.${mode.value}`))
           @photo="(id) => (sel = { kind: 'photo', id })"
           @move="(x, y) => (cursor = [sn(x), sn(y)])"
         >
-          <!-- in-progress shape -->
           <g v-if="pending.length" pointer-events="none">
             <polyline
               :points="[...pending, ...(cursor ? [cursor] : [])].map((p) => p.join(',')).join(' ')"
@@ -293,7 +291,6 @@ const hint = computed(() => t(`editor.plan.hint.${mode.value}`))
             <circle v-for="(p, i) in pending" :key="i" :cx="p[0]" :cy="p[1]" :r="handleR" fill="var(--primary)" />
             <text v-if="cursor && pending.length" :x="cursor[0] + 14" :y="cursor[1] - 14" class="seg-len">{{ (Math.hypot(cursor[0] - pending.at(-1)![0], cursor[1] - pending.at(-1)![1]) / 100).toFixed(2) }} {{ t('units.m') }}</text>
           </g>
-          <!-- handles -->
           <template v-if="mode === 'select'">
             <circle
               v-if="point"
@@ -396,9 +393,9 @@ const hint = computed(() => t(`editor.plan.hint.${mode.value}`))
           </Select>
         </FormRow>
         <div class="grid grid-cols-3 gap-2">
-          <FormRow :label="t('editor.plan.power')"><NumberInput v-model="point.powerW" suffix="W" /></FormRow>
-          <FormRow :label="t('editor.plan.count')"><NumberInput :model-value="point.count" @update:model-value="(v) => (point!.count = Math.max(1, Math.round(v ?? 1)))" /></FormRow>
-          <FormRow :label="t('editor.plan.heightMm')"><NumberInput v-model="point.heightMm" :suffix="t('units.mm')" /></FormRow>
+          <FormRow :label="t('editor.plan.power')"><NumberInput v-model="point.powerW" optional allow-zero suffix="W" /></FormRow>
+          <FormRow :label="t('editor.plan.count')"><NumberInput v-model="point.count" integer /></FormRow>
+          <FormRow :label="t('editor.plan.heightMm')"><NumberInput v-model="point.heightMm" optional allow-zero :suffix="t('units.mm')" /></FormRow>
         </div>
         <FormRow v-if="point.kind === 'panel' || point.kind === 'sensor'" :label="t('editor.plan.controls')" :hint="t('editor.plan.controlsHint')">
           <Input
@@ -427,7 +424,7 @@ const hint = computed(() => t(`editor.plan.hint.${mode.value}`))
         </div>
         <FormRow :label="t('editor.plan.roomName')"><LocalizedInput v-model="room.name" /></FormRow>
         <label class="flex items-center gap-2 text-sm"><Switch v-model="room.wet" /> {{ t('editor.plan.wet') }}</label>
-        <FormRow :label="t('editor.plan.ceiling')" :hint="t('editor.plan.ceilingHint', { cm: d.plan.wallHeight })"><NumberInput v-model="room.ceilingCm" :suffix="t('units.cm')" :placeholder="String(d.plan.wallHeight)" /></FormRow>
+        <FormRow :label="t('editor.plan.ceiling')" :hint="t('editor.plan.ceilingHint', { cm: d.plan.wallHeight })"><NumberInput v-model="room.ceilingCm" optional :suffix="t('units.cm')" :placeholder="String(d.plan.wallHeight)" /></FormRow>
         <p class="text-xs text-muted-foreground">{{ t('editor.plan.roomHint') }}</p>
       </div>
 
@@ -457,14 +454,14 @@ const hint = computed(() => t(`editor.plan.hint.${mode.value}`))
                 <SelectTrigger class="w-full"><SelectValue /></SelectTrigger>
                 <SelectContent><SelectItem v-for="ct in CABLE_TYPES" :key="ct" :value="ct">{{ t(`cable.${ct}`) }}</SelectItem></SelectContent>
               </Select>
-              <NumberInput :model-value="c.count" @update:model-value="(v) => (c.count = Math.max(1, Math.round(v ?? 1)))" />
+              <NumberInput v-model="c.count" integer />
               <Input :model-value="c.label ?? ''" :placeholder="t('editor.plan.cableLabel')" @update:model-value="(v) => (c.label = String(v) || undefined)" />
               <Button variant="ghost" size="icon" :aria-label="t('common.delete')" @click="route.cables.splice(ci, 1)"><Trash2 /></Button>
             </div>
             <Button variant="outline" size="sm" @click="route.cables.push({ type: 'ethernet', count: 1 })">{{ t('editor.plan.addCable') }}</Button>
           </div>
           <div v-if="route.kind === 'conduit'" class="grid grid-cols-2 items-end gap-2">
-            <FormRow :label="t('editor.plan.diameter')"><NumberInput v-model="route.diameterMm" :suffix="t('units.mm')" /></FormRow>
+            <FormRow :label="t('editor.plan.diameter')"><NumberInput v-model="route.diameterMm" optional :suffix="t('units.mm')" /></FormRow>
             <label class="flex h-9 items-center gap-2 text-sm"><Switch :model-value="!!route.pullString" @update:model-value="(v) => (route!.pullString = v || undefined)" /> {{ t('editor.plan.pullString') }}</label>
           </div>
         </template>
@@ -490,7 +487,7 @@ const hint = computed(() => t(`editor.plan.hint.${mode.value}`))
           <FormRow :label="t('editor.plan.safeWidth')"><NumberInput v-model="route.safeWidth" :suffix="t('units.cm')" /></FormRow>
         </div>
         <FormRow v-if="(route.mount ?? (route.elevation !== undefined ? 'wall' : MOUNT_DEFAULT[route.kind])) === 'wall'" :label="t('editor.plan.elevation')" :hint="t('editor.plan.elevationHint')">
-          <NumberInput v-model="route.elevation" :suffix="t('units.cm')" placeholder="30" />
+          <NumberInput v-model="route.elevation" optional allow-zero :suffix="t('units.cm')" placeholder="30" />
         </FormRow>
       </div>
 

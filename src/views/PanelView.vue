@@ -11,7 +11,7 @@ import DeviceDetails from '@/components/panel/DeviceDetails.vue'
 import PanelEnclosure from '@/components/panel/PanelEnclosure.vue'
 import { TYPE_ACCENT } from '@/components/panel/geometry'
 import { pointPowered } from '@/domain/graph'
-import type { DeviceType } from '@/domain/schema'
+import type { DeviceType } from '@/domain/model'
 import { useText } from '@/composables/useText'
 import { useData } from '@/stores/data'
 import { useUi } from '@/stores/ui'
@@ -97,7 +97,6 @@ watch(
 
 <template>
   <div class="mx-auto max-w-[1500px] px-4 pt-5 lg:px-8 lg:pt-8">
-    <!-- heading -->
     <div class="mb-5 flex flex-wrap items-end justify-between gap-4">
       <div class="min-w-0">
         <h1 class="text-2xl font-semibold tracking-tight lg:text-3xl">{{ tx(data.data?.meta.title) }}</h1>
@@ -122,7 +121,6 @@ watch(
       </div>
     </div>
 
-    <!-- toolbar -->
     <div class="no-print mb-4 flex flex-wrap items-center gap-2">
       <div class="flex flex-wrap gap-1.5">
         <button
@@ -137,14 +135,14 @@ watch(
         </button>
       </div>
       <Select :model-value="ui.filterRoom ?? '__all'" @update:model-value="(v) => (ui.filterRoom = v === '__all' ? null : (v as string))">
-        <SelectTrigger class="h-7 w-auto min-w-36 rounded-full text-xs"><SelectValue /></SelectTrigger>
+        <SelectTrigger class="h-7 w-auto min-w-36 rounded-full text-xs" :aria-label="t('panel.allRooms')"><SelectValue /></SelectTrigger>
         <SelectContent>
           <SelectItem value="__all">{{ t('panel.allRooms') }}</SelectItem>
           <SelectItem v-for="r in data.data?.rooms" :key="r.id" :value="r.id">{{ tx(r.name) }}</SelectItem>
         </SelectContent>
       </Select>
       <Select v-if="tags.length" :model-value="ui.filterTag ?? '__all'" @update:model-value="(v) => (ui.filterTag = v === '__all' ? null : (v as string))">
-        <SelectTrigger class="h-7 w-auto min-w-28 rounded-full text-xs"><SelectValue /></SelectTrigger>
+        <SelectTrigger class="h-7 w-auto min-w-28 rounded-full text-xs" :aria-label="t('panel.allTags')"><SelectValue /></SelectTrigger>
         <SelectContent>
           <SelectItem value="__all">{{ t('panel.allTags') }}</SelectItem>
           <SelectItem v-for="tag in tags" :key="tag" :value="tag">#{{ tag }}</SelectItem>
@@ -180,12 +178,11 @@ watch(
 
     <div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_26rem]">
       <div class="min-w-0">
-        <div class="overflow-x-auto rounded-2xl" :class="zoomed ? '' : ''">
+        <div class="overflow-x-auto rounded-2xl">
           <div :class="zoomed ? 'w-[1100px]' : 'mx-auto max-w-[900px]'">
             <PanelEnclosure @select="onSelect" />
           </div>
         </div>
-        <!-- legend -->
         <div class="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-xs text-muted-foreground">
           <span class="flex items-center gap-1.5"><span class="inline-block h-2 w-3 rounded-sm bg-[#d93a2b]" /> {{ t('panel.legend.on') }}</span>
           <span class="flex items-center gap-1.5"><span class="inline-block h-2 w-3 rounded-sm bg-[#2f9e44]" /> {{ t('panel.legend.off') }}</span>
@@ -195,7 +192,6 @@ watch(
         </div>
       </div>
 
-      <!-- side details on wide screens -->
       <aside v-if="wide" class="no-print">
         <div class="sticky top-6 max-h-[calc(100dvh-3rem)] overflow-y-auto rounded-2xl border bg-card p-5">
           <template v-if="ui.selectedDevice">

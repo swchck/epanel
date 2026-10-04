@@ -71,7 +71,6 @@ function needsPick(s: Scenario | null) {
       <ChevronLeft class="size-4" /> {{ t('common.back') }}
     </button>
 
-    <!-- step 1: what happened -->
     <div v-if="!scenario" class="mt-6 grid gap-2.5">
       <button
         v-for="s in SCENARIOS"
@@ -88,7 +87,6 @@ function needsPick(s: Scenario | null) {
       </button>
     </div>
 
-    <!-- danger -->
     <div v-else-if="scenario === 'smell'" class="mt-4 space-y-4 rounded-2xl border-2 border-danger bg-danger/10 p-5">
       <div class="flex items-center gap-3 text-lg font-semibold text-danger"><Flame class="size-6" /> {{ t('emergency.danger.title') }}</div>
       <ol class="list-decimal space-y-2 pl-5">
@@ -100,7 +98,6 @@ function needsPick(s: Scenario | null) {
       <Button as="a" href="tel:112" class="h-12 w-full bg-danger text-base text-white hover:bg-danger/90"><Phone /> 112</Button>
     </div>
 
-    <!-- step 2: point at the tripped device -->
     <div v-else-if="needsPick(scenario) && !tripped" class="mt-4">
       <p class="mb-3 font-medium">{{ t(scenario === 'rcd' ? 'emergency.pickRcd' : 'emergency.pick') }}</p>
       <div class="overflow-hidden rounded-2xl">
@@ -109,7 +106,6 @@ function needsPick(s: Scenario | null) {
       <p class="mt-3 text-sm text-muted-foreground">{{ t('emergency.pickHint') }}</p>
     </div>
 
-    <!-- step 3: guidance -->
     <div v-else class="mt-4 space-y-5">
       <div v-if="device" class="flex flex-wrap items-center gap-3 rounded-2xl border bg-card p-4">
         <DeviceChip :device="device" size="lg" />
@@ -158,7 +154,6 @@ function needsPick(s: Scenario | null) {
       <div class="rounded-2xl border border-warn/40 bg-warn/10 p-4 text-sm">{{ t('emergency.never') }}</div>
     </div>
 
-    <!-- contacts -->
     <section v-if="contacts.length" class="mt-8">
       <h2 class="mb-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">{{ t('emergency.contacts') }}</h2>
       <div class="grid gap-2 sm:grid-cols-2">

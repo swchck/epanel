@@ -1,13 +1,15 @@
+import Fuse from 'fuse.js'
 import { describe, expect, it } from 'vitest'
-import { makeBundle, parseText, pruneAssets, resolveAsset, toYaml } from '../bundle'
+import { makeBundle, parseText, toYaml } from '../bundle'
+import { pruneAssets, resolveAsset } from '../model'
 import { maxRatingFor, runChecks } from '../checks'
-import { decryptJson, encryptJson, WrongPasswordError } from '../crypto'
+import { decryptJson, encryptJson, isEnvelope, WrongPasswordError } from '../crypto'
 import { buildGraph } from '../graph'
 import { layoutPanel, locate } from '../layout'
 import { coincidence, deviceLoad, pointsLoad } from '../load'
 import { buildSearch, whatToSwitchOff } from '../lookup'
 import { taskStatuses } from '../maintenance'
-import { defaultWidth, referenceIssues, tr } from '../schema'
+import { defaultWidth, referenceIssues, tr } from '../model'
 import { demo, tiny } from './fixture'
 
 describe('schema', () => {
@@ -169,7 +171,7 @@ describe('layout', () => {
 describe('lookup', () => {
   const d = demo()
   const g = buildGraph(d)
-  const search = buildSearch(d)
+  const search = buildSearch(d, Fuse)
 
   it('finds devices, rooms and points in any language', () => {
     expect(search('QF7')[0]).toMatchObject({ kind: 'device', id: 'QF7' })
@@ -214,12 +216,20 @@ describe('bundle and crypto', () => {
     await expect(decryptJson(env, 'wrong')).rejects.toBeInstanceOf(WrongPasswordError)
   })
 
+  it('rejects envelopes that are malformed or would hang the key derivation', async () => {
+    const env = await encryptJson({ a: 1 }, 'p', 1000)
+    expect(isEnvelope(env)).toBe(true)
+    expect(isEnvelope({ ...env, kdf: { ...env.kdf, iterations: 2 ** 31 } })).toBe(false)
+    expect(isEnvelope({ ...env, kdf: { ...env.kdf, iterations: 10 } })).toBe(false)
+    expect(isEnvelope({ format: 'panel-enc', version: 1, data: env.data })).toBe(false)
+  })
+
   it('parses YAML, JSON, plain data and envelopes', async () => {
     const b = makeBundle(tiny())
-    expect(parseText(toYaml(b)).kind).toBe('bundle')
-    expect(parseText(JSON.stringify(b.data)).kind).toBe('bundle')
-    expect(parseText(JSON.stringify(await encryptJson(b, 'p', 1000))).kind).toBe('encrypted')
-    expect(parseText('meta: 1').kind).toBe('invalid')
+    expect((await parseText(await toYaml(b))).kind).toBe('bundle')
+    expect((await parseText(JSON.stringify(b.data))).kind).toBe('bundle')
+    expect((await parseText(JSON.stringify(await encryptJson(b, 'p', 1000)))).kind).toBe('encrypted')
+    expect((await parseText('meta: 1')).kind).toBe('invalid')
   })
 
   it('resolves and prunes assets', () => {

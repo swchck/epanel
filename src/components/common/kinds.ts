@@ -1,6 +1,6 @@
 import { AirVent, Cable, CircleDot, EthernetPort, Heater, Lightbulb, Plug, Radar, Router, TabletSmartphone, ToggleLeft, WashingMachine } from '@lucide/vue'
 import type { Component } from 'vue'
-import type { CableType, PointKind } from '@/domain/schema'
+import type { CableType, PointKind } from '@/domain/model'
 
 export const POINT_ICONS: Record<PointKind, Component> = {
   socket: Plug,

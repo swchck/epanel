@@ -70,7 +70,6 @@ whenever(
 
 <template>
   <div class="min-h-dvh bg-background lg:grid lg:grid-cols-[15.5rem_1fr]">
-    <!-- desktop sidebar -->
     <aside class="no-print sticky top-0 hidden h-dvh flex-col border-r border-sidebar-border bg-sidebar lg:flex">
       <RouterLink to="/" class="flex items-center gap-3 px-5 pt-5 pb-4">
         <BrandMark class="size-9 shrink-0" />
@@ -112,7 +111,6 @@ whenever(
     </aside>
 
     <div class="flex min-w-0 flex-col">
-      <!-- mobile top bar -->
       <header class="no-print sticky top-0 z-30 flex items-center gap-2 border-b bg-background/85 px-4 py-2.5 backdrop-blur-md lg:hidden">
         <RouterLink to="/" class="flex min-w-0 flex-1 items-center gap-2.5">
           <BrandMark class="size-8 shrink-0" />
@@ -148,7 +146,6 @@ whenever(
       </main>
     </div>
 
-    <!-- mobile bottom navigation -->
     <nav class="no-print safe-bottom fixed inset-x-0 bottom-0 z-30 border-t bg-background/92 backdrop-blur-md lg:hidden">
       <div class="grid grid-cols-5">
         <RouterLink

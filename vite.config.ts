@@ -1,7 +1,8 @@
 import { fileURLToPath, URL } from 'node:url'
 import { readFileSync, rmSync } from 'node:fs'
-import { defineConfig } from 'vite'
+import { defineConfig, type Plugin } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite'
 import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
@@ -10,6 +11,35 @@ const desktop = process.env.VITE_TARGET === 'desktop'
 const base = desktop ? '/' : (process.env.BASE_PATH ?? '/')
 const pkg = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8')) as { version: string }
 const page = (p: string) => fileURLToPath(new URL(p, import.meta.url))
+
+// The locale messages and the zod parser are dynamic imports, so the browser would only discover them
+// after main.js runs. Preloading them from the HTML saves that round trip on every cold start.
+function preloadStartupChunks(): Plugin {
+  const locales = ['ru', 'en', 'sr', 'es']
+  return {
+    name: 'preload-startup-chunks',
+    apply: 'build',
+    transformIndexHtml: {
+      order: 'post',
+      handler(html, ctx) {
+        if (!ctx.bundle) return html
+        const chunks = Object.values(ctx.bundle).flatMap((c) => (c.type === 'chunk' ? [c] : []))
+        const url = (file: string) => base + file
+        // compiled locale chunks get anonymous virtual ids, so they are told apart by one of their strings
+        const files: Record<string, string> = {}
+        for (const l of locales) {
+          const marker = (JSON.parse(readFileSync(page(`./src/i18n/${l}.json`), 'utf8')) as { common: { loading: string } }).common.loading
+          const chunk = chunks.find((c) => c.fileName.includes('intlify') && c.code.includes(marker))
+          if (chunk) files[l] = url(chunk.fileName)
+        }
+        const parser = chunks.find((c) => c.moduleIds.some((m) => m.endsWith('/src/domain/bundle.ts')))
+        const pick = `(function(){var f=${JSON.stringify(files)},l;try{l=localStorage.getItem('panel.locale')}catch(e){}l=f[l]?l:(navigator.language||'').slice(0,2);if(!f[l])l='ru';var e=document.createElement('link');e.rel='modulepreload';e.href=f[l];document.head.appendChild(e)})()`
+        const tags = [`<script>${pick}</script>`, parser ? `<link rel="modulepreload" href="${url(parser.fileName)}">` : '']
+        return html.replace('</head>', `    ${tags.join('\n    ')}\n  </head>`)
+      },
+    },
+  }
+}
 
 export default defineConfig({
   // the desktop build serves the app page as its root, so Tauri finds index.html where it expects it
@@ -31,7 +61,10 @@ export default defineConfig({
         if (desktop) rmSync(page('./dist-desktop/panel.enc.json'), { force: true })
       },
     },
+    preloadStartupChunks(),
     vue(),
+    // messages compiled at build time: the runtime-only vue-i18n ships no message compiler
+    VueI18nPlugin({ include: [page('./src/i18n/*.json')], runtimeOnly: true, compositionOnly: true, fullInstall: false }),
     tailwindcss(),
     VitePWA({
       disable: desktop,
@@ -57,8 +90,9 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,ico,woff2,webmanifest}', 'app/demo*.panel'],
-        // the PDF worker is 1.2 MB and only the editor's plan import needs it
-        globIgnores: ['**/pdf.worker*'],
+        // offline matters for the panel itself: PDF import is editor-only (pdf.js and its 1.2 MB worker),
+        // and font subsets for scripts the four locales don't use would only bloat the first install
+        globIgnores: ['**/pdf.worker*', '**/pdf-*.js', '**/*-{greek,greek-ext,vietnamese,cyrillic-ext}-*.woff2', 'index.html', '**/landing-*'],
         maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
         navigateFallback: `${base}app/index.html`,
         navigateFallbackAllowlist: [/\/app\//],

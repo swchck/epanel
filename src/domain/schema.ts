@@ -1,39 +1,8 @@
 import { z } from 'zod'
-
-export const LOCALES = ['ru', 'en', 'sr', 'es'] as const
-export type Locale = (typeof LOCALES)[number]
+import { APPLIANCE_PROFILES, BUS_SYSTEMS, CABLE_TYPES, CHANNEL_FUNCTIONS, DEVICE_TYPES, LOCALES, POINT_KINDS, ROUTE_KINDS, type ValidationIssue } from './model'
 
 export const LocalizedText = z.union([z.string(), z.partialRecord(z.enum(LOCALES), z.string())])
 export type LocalizedText = z.infer<typeof LocalizedText>
-
-export const DEVICE_TYPES = [
-  'mcb',
-  'rcd',
-  'rcbo',
-  'voltage-relay',
-  'spd',
-  'meter',
-  'switch',
-  'contactor',
-  'din-socket',
-  'bus',
-  'terminal',
-  'actuator',
-  'bus-psu',
-  'bus-gateway',
-  'bus-io',
-  'other',
-] as const
-export type DeviceType = (typeof DEVICE_TYPES)[number]
-
-export const RCD_TYPES: readonly DeviceType[] = ['rcd', 'rcbo']
-// devices that physically break the circuit and are safe to rely on before touching wires;
-// bus actuators and contactors are software-driven relays and never count as isolation
-export const ISOLATING_TYPES: readonly DeviceType[] = ['mcb', 'rcd', 'rcbo', 'switch']
-export const SMART_TYPES: readonly DeviceType[] = ['actuator', 'bus-psu', 'bus-gateway', 'bus-io']
-
-export const BUS_SYSTEMS = ['knx', 'dali', 'modbus', 'zigbee', 'other'] as const
-export const CHANNEL_FUNCTIONS = ['switch', 'dimmer', 'blind', 'heating', 'hvac', 'input', 'other'] as const
 
 export const Channel = z.object({
   id: z.string(),
@@ -121,36 +90,6 @@ export const Room = z.object({
 })
 export type Room = z.infer<typeof Room>
 
-export const POINT_KINDS = [
-  'socket',
-  'light',
-  'switch',
-  'appliance',
-  'heating',
-  'ac',
-  'junction',
-  'network',
-  'data',
-  'panel',
-  'sensor',
-  'other',
-] as const
-export type PointKind = (typeof POINT_KINDS)[number]
-
-export const APPLIANCE_PROFILES = [
-  'generic',
-  'washer',
-  'dishwasher',
-  'oven',
-  'cooktop',
-  'fridge',
-  'boiler',
-  'inverter-ac',
-  'floor-heating',
-  'ev',
-] as const
-export type ApplianceProfile = (typeof APPLIANCE_PROFILES)[number]
-
 export const PlanPoint = z.object({
   id: z.string(),
   kind: z.enum(POINT_KINDS),
@@ -170,11 +109,6 @@ export const PlanPoint = z.object({
   controls: z.array(z.string()).default([]),
 })
 export type PlanPoint = z.infer<typeof PlanPoint>
-
-export const ROUTE_KINDS = ['power', 'bus', 'low', 'conduit'] as const
-export type RouteKind = (typeof ROUTE_KINDS)[number]
-export const CABLE_TYPES = ['ethernet', 'hdmi', 'coax', 'usb', 'speaker', 'fiber', 'phone', 'alarm', 'other'] as const
-export type CableType = (typeof CABLE_TYPES)[number]
 
 export const Cable = z.object({
   type: z.enum(CABLE_TYPES),
@@ -300,46 +234,9 @@ export const PanelData = z.object({
 export type PanelData = z.infer<typeof PanelData>
 export type PanelInput = z.input<typeof PanelData>
 
-export function tr(text: LocalizedText | undefined, locale: string, fallback = ''): string {
-  if (text === undefined) return fallback
-  if (typeof text === 'string') return text
-  const t = text as Partial<Record<string, string>>
-  return t[locale] ?? t.en ?? t.ru ?? Object.values(t).find(Boolean) ?? fallback
-}
-
-export function defaultWidth(d: Pick<Device, 'type' | 'poles' | 'width'>): number {
-  if (d.width) return d.width
-  switch (d.type) {
-    case 'meter':
-      return d.poles >= 3 ? 7 : 4
-    case 'din-socket':
-      return 3
-    case 'voltage-relay':
-      return d.poles >= 3 ? 4 : 2
-    case 'bus':
-      return 4
-    case 'actuator':
-      return d.poles >= 3 ? 4 : d.poles >= 2 ? 4 : 2
-    case 'bus-psu':
-      return 4
-    case 'bus-gateway':
-      return 2
-    case 'bus-io':
-      return 2
-    case 'rcd':
-      return d.poles >= 3 ? 4 : 2
-    case 'rcbo':
-      return d.poles >= 3 ? 4 : 2
-    default:
-      return d.poles
-  }
-}
-
 export function parsePanel(input: unknown): PanelData {
   return PanelData.parse(input)
 }
-
-export type ValidationIssue = { path: string; message: string }
 
 export function safeParsePanel(input: unknown): { ok: true; data: PanelData } | { ok: false; issues: ValidationIssue[] } {
   const r = PanelData.safeParse(input)
@@ -350,39 +247,3 @@ export function safeParsePanel(input: unknown): { ok: true; data: PanelData } | 
   }
 }
 
-// referential integrity is outside zod's reach, so it is checked separately
-export function referenceIssues(d: PanelData): ValidationIssue[] {
-  const issues: ValidationIssue[] = []
-  const ids = new Set<string>()
-  d.devices.forEach((dev, i) => {
-    if (ids.has(dev.id)) issues.push({ path: `devices.${i}.id`, message: `duplicate id ${dev.id}` })
-    ids.add(dev.id)
-  })
-  const roomIds = new Set(d.rooms.map((r) => r.id))
-  d.devices.forEach((dev, i) => {
-    if (dev.upstream && !ids.has(dev.upstream))
-      issues.push({ path: `devices.${i}.upstream`, message: `unknown device ${dev.upstream}` })
-  })
-  d.rows.forEach((row, ri) =>
-    row.items.forEach((it, ii) => {
-      if (typeof it === 'string' && !ids.has(it))
-        issues.push({ path: `rows.${ri}.items.${ii}`, message: `unknown device ${it}` })
-    }),
-  )
-  d.points.forEach((p, i) => {
-    if (p.device && !ids.has(p.device))
-      issues.push({ path: `points.${i}.device`, message: `unknown device ${p.device}` })
-    if (p.room && !roomIds.has(p.room)) issues.push({ path: `points.${i}.room`, message: `unknown room ${p.room}` })
-  })
-  return issues
-}
-
-export const MOUNT_DEFAULT: Record<Route['kind'], 'floor' | 'wall' | 'ceiling'> = { power: 'wall', bus: 'wall', low: 'floor', conduit: 'floor' }
-
-// centimetres above the floor where a run actually sits
-export function routeHeight(r: Route, ceilingCm: number): number {
-  const mount = r.mount ?? (r.elevation !== undefined ? 'wall' : MOUNT_DEFAULT[r.kind])
-  if (mount === 'floor') return 4
-  if (mount === 'ceiling') return Math.max(0, ceilingCm - 6)
-  return r.elevation ?? 30
-}

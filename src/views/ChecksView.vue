@@ -63,7 +63,6 @@ const RULES = ['cable', 'load', 'selectivity', 'rcd', 'wet', 'class', 'input'] a
       </div>
     </div>
 
-    <!-- apartment load -->
     <section class="mt-6 rounded-2xl border bg-card p-5">
       <div class="flex flex-wrap items-baseline justify-between gap-2">
         <h2 class="font-semibold">{{ t('checks.totalLoad') }}</h2>
@@ -78,7 +77,6 @@ const RULES = ['cable', 'load', 'selectivity', 'rcd', 'wet', 'class', 'input'] a
       <p class="mt-2 text-xs text-muted-foreground">{{ t('checks.totalHint', { nameplate: (total.nameplateW / 1000).toFixed(1) }) }}</p>
     </section>
 
-    <!-- issues -->
     <section class="mt-6">
       <div class="mb-3 flex items-center justify-between">
         <h2 class="font-semibold">{{ t('checks.issues') }}</h2>
@@ -94,7 +92,6 @@ const RULES = ['cable', 'load', 'selectivity', 'rcd', 'wet', 'class', 'input'] a
       </div>
     </section>
 
-    <!-- circuits -->
     <section v-if="circuits.length" class="mt-8">
       <h2 class="mb-3 font-semibold">{{ t('checks.circuits') }}</h2>
       <div class="divide-y rounded-2xl border bg-card">

@@ -3,7 +3,7 @@ import { extname, join, dirname, basename } from 'node:path'
 import * as yaml from 'js-yaml'
 import { makeBundle } from '../src/domain/bundle'
 import { encryptJson } from '../src/domain/crypto'
-import { referenceIssues } from '../src/domain/schema'
+import { referenceIssues } from '../src/domain/model'
 
 const MIME: Record<string, string> = {
   '.svg': 'image/svg+xml',

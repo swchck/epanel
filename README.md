@@ -63,6 +63,7 @@ npm run i18n:check     # все ключи переведены на 4 язык�
 npm run build          # промо + приложение в dist/
 npm run desktop:build  # десктоп-сборка
 npm run seed:demo      # пересобрать демо-файлы из data/*.yaml
+npm run icons          # иконки PWA из public/icon.svg
 ```
 
 Структура:

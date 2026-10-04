@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { Cable as CableIcon, Spline } from '@lucide/vue'
-import { MOUNT_DEFAULT, routeHeight, type Route } from '@/domain/schema'
+import { MOUNT_DEFAULT, routeHeight, type Route } from '@/domain/model'
 import { useText } from '@/composables/useText'
 import { useData } from '@/stores/data'
 import DeviceChip from './DeviceChip.vue'

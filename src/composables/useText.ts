@@ -1,5 +1,5 @@
 import { useI18n } from 'vue-i18n'
-import { tr, type LocalizedText } from '@/domain/schema'
+import { tr, type LocalizedText } from '@/domain/model'
 
 export function useText() {
   const i18n = useI18n()

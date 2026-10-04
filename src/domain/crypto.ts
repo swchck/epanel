@@ -8,11 +8,22 @@ export interface EncryptedEnvelope {
 
 // OWASP 2023 guidance for PBKDF2-HMAC-SHA256
 const PBKDF2_ITERATIONS = 310_000
+// envelopes come from files people hand around: a huge count would hang the tab at unlock
+const MIN_ITERATIONS = 1_000
+const MAX_ITERATIONS = 5_000_000
+
+// the ciphertext is public and open to offline guessing; the password travels in the QR, so length costs nothing
+export const MIN_PASSWORD_LENGTH = 10
 
 const enc = new TextEncoder()
 const dec = new TextDecoder()
 
+type B64Native = { toBase64?: () => string }
+type B64NativeCtor = { fromBase64?: (s: string) => Uint8Array<ArrayBuffer> }
+
 function toB64(bytes: Uint8Array): string {
+  const native = (bytes as B64Native).toBase64
+  if (native) return native.call(bytes)
   let s = ''
   const chunk = 0x8000
   for (let i = 0; i < bytes.length; i += chunk) s += String.fromCharCode(...bytes.subarray(i, i + chunk))
@@ -20,6 +31,8 @@ function toB64(bytes: Uint8Array): string {
 }
 
 function fromB64(b64: string): Uint8Array<ArrayBuffer> {
+  const native = (Uint8Array as B64NativeCtor).fromBase64
+  if (native) return native(b64)
   const s = atob(b64)
   const out = new Uint8Array(s.length)
   for (let i = 0; i < s.length; i++) out[i] = s.charCodeAt(i)
@@ -84,5 +97,21 @@ export async function decryptJson<T = unknown>(env: EncryptedEnvelope, password:
 }
 
 export function isEnvelope(v: unknown): v is EncryptedEnvelope {
-  return typeof v === 'object' && v !== null && (v as { format?: unknown }).format === 'panel-enc'
+  if (typeof v !== 'object' || v === null) return false
+  const e = v as Partial<Record<keyof EncryptedEnvelope, unknown>>
+  const kdf = e.kdf as Partial<EncryptedEnvelope['kdf']> | undefined
+  const cipher = e.cipher as Partial<EncryptedEnvelope['cipher']> | undefined
+  return (
+    e.format === 'panel-enc' &&
+    e.version === 1 &&
+    typeof e.data === 'string' &&
+    kdf?.name === 'PBKDF2' &&
+    kdf.hash === 'SHA-256' &&
+    typeof kdf.salt === 'string' &&
+    Number.isInteger(kdf.iterations) &&
+    kdf.iterations! >= MIN_ITERATIONS &&
+    kdf.iterations! <= MAX_ITERATIONS &&
+    cipher?.name === 'AES-GCM' &&
+    typeof cipher.iv === 'string'
+  )
 }

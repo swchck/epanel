@@ -5,7 +5,7 @@ import DeviceChip from '@/components/common/DeviceChip.vue'
 import SwitchOffCard from '@/components/common/SwitchOffCard.vue'
 import { POINT_ICONS } from '@/components/common/kinds'
 import { locate } from '@/domain/layout'
-import { POINT_KINDS, type PlanPoint } from '@/domain/schema'
+import { POINT_KINDS, type PlanPoint } from '@/domain/model'
 import { useText } from '@/composables/useText'
 import { useData } from '@/stores/data'
 
@@ -68,7 +68,6 @@ function back() {
       />
     </div>
 
-    <!-- free-text results -->
     <div v-if="q.trim() && !pointId" class="mt-4 space-y-1.5">
       <button
         v-for="p in results"

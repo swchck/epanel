@@ -78,7 +78,11 @@ export async function onOpenFile(cb: (f: OpenedText) => void) {
   if (!isDesktop) return
   const { invoke } = await import('@tauri-apps/api/core')
   const { listen } = await import('@tauri-apps/api/event')
-  const pending = await invoke<OpenedText | null>('take_opened_file')
-  if (pending) cb(pending)
-  await listen<OpenedText>('open-file', (e) => cb(e.payload))
+  const take = async () => {
+    const pending = await invoke<OpenedText | null>('take_opened_file')
+    if (pending) cb(pending)
+  }
+  // listen before the first take, or a file opened in between is lost
+  await listen('open-file', take)
+  await take()
 }

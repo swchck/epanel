@@ -290,6 +290,7 @@ data:
       upstream: QF14
       brand: MDT
       model: STV-0640.01
+      rating: 0.64
       smart: {system: knx, channels: []}
       tags: [knx]
     - id: KF1

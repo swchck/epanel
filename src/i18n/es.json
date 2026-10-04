@@ -91,7 +91,7 @@
     "password": "Contraseña",
     "passwordRepeat": "Repite la contraseña",
     "passwordHint": "La contraseña cifra todos los datos. Sin ella el archivo no se puede abrir ni recuperar.",
-    "passwordMismatch": "Las contraseñas no coinciden o tienen menos de 4 caracteres",
+    "passwordMismatch": "Las contraseñas no coinciden o tienen menos de 10 caracteres",
     "createSubmit": "Crear",
     "encrypted": "«{name}» está cifrado. Introduce la contraseña.",
     "invalid": "No se ha podido leer el archivo",
@@ -805,6 +805,7 @@
       "addDoc": "Subir documento",
       "addLink": "Enlace",
       "tooBig": "El archivo ocupa más de {mb} MB",
+      "unreadable": "No se pudo leer «{name}»",
       "docTitle": "Título",
       "docKind": "Tipo",
       "link": "Enlace"

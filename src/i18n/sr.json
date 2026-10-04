@@ -91,7 +91,7 @@
     "password": "Lozinka",
     "passwordRepeat": "Ponovite lozinku",
     "passwordHint": "Lozinka šifruje sve podatke. Bez nje se fajl ne može otvoriti, a ne može se ni povratiti.",
-    "passwordMismatch": "Lozinke se ne poklapaju ili su kraće od 4 znaka",
+    "passwordMismatch": "Lozinke se ne poklapaju ili su kraće od 10 znakova",
     "createSubmit": "Napravi",
     "encrypted": "„{name}“ je šifrovan. Unesite lozinku.",
     "invalid": "Fajl nije moguće pročitati",
@@ -805,6 +805,7 @@
       "addDoc": "Otpremi dokument",
       "addLink": "Link",
       "tooBig": "Fajl je veći od {mb} MB",
+      "unreadable": "Fajl „{name}“ ne može da se pročita",
       "docTitle": "Naziv",
       "docKind": "Tip",
       "link": "Link"

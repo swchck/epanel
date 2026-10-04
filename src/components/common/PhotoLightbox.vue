@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { ChevronLeft, ChevronRight, MapPin } from '@lucide/vue'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
-import { resolveAsset } from '@/domain/bundle'
+import { resolveAsset } from '@/domain/model'
 import { useText } from '@/composables/useText'
 import { useData } from '@/stores/data'
 

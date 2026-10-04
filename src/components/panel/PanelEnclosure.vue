@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { tr } from '@/domain/schema'
+import { tr } from '@/domain/model'
 import { useData } from '@/stores/data'
 import { useUi } from '@/stores/ui'
 import DeviceModule from './DeviceModule.vue'
@@ -44,8 +44,15 @@ function isOn(id: string) {
   return !ui.off.has(id)
 }
 
+// computed once per simulation change, not on every hover re-render
+const deadDevices = computed(() => {
+  const g = data.graph
+  if (!g || !ui.off.size) return new Set<string>()
+  return new Set([...g.byId.keys()].filter((id) => !g.isPowered(id, ui.off)))
+})
+
 function isEnergized(id: string) {
-  return data.graph?.isPowered(id, ui.off) ?? true
+  return !deadDevices.value.has(id)
 }
 
 function isDimmed(id: string) {
@@ -78,18 +85,15 @@ function label(id: string) {
     :aria-label="$t('panel.title')"
   >
     <PanelDefs />
-    <!-- enclosure -->
     <rect x="0" y="0" :width="width" :height="height" rx="18" fill="url(#enclosure)" />
     <rect x="6" y="6" :width="width - 12" :height="height - 12" rx="14" fill="none" stroke="#ffffff" stroke-opacity="0.35" />
     <rect :x="frame" :y="frame" :width="innerW" :height="height - frame * 2" rx="8" fill="url(#backplate)" />
-    <!-- nameplate -->
     <g :transform="`translate(${frame + 12}, ${frame + 6})`">
       <rect width="168" height="20" rx="3" fill="#f7f5ee" stroke="#b4b0a2" />
       <text x="8" y="14" class="nameplate">{{ tr(data.data?.meta.title, locale) }}</text>
     </g>
 
     <g v-for="(row, ri) in rows" :key="row.id" :transform="`translate(${frame + RAIL_PAD}, ${rowY(ri)})`">
-      <!-- DIN rail -->
       <rect :x="-RAIL_PAD + 6" :y="HEIGHT / 2 - 17" :width="row.modules * MODULE + RAIL_PAD * 2 - 12" height="34" rx="2" fill="url(#rail)" />
       <g v-for="s in Math.floor((row.modules * MODULE + RAIL_PAD * 2) / 40)" :key="'slot' + s">
         <rect :x="-RAIL_PAD + (s - 1) * 40 + 14" :y="HEIGHT / 2 - 4" width="22" height="8" rx="4" fill="#6f747c" />
@@ -101,16 +105,7 @@ function label(id: string) {
       <template v-for="item in row.items" :key="item.device?.id ?? `blank-${item.start}`">
         <g v-if="item.kind === 'blank'" :transform="`translate(${item.start * MODULE}, 0)`">
           <rect x="1" y="38" :width="item.width * MODULE - 2" :height="HEIGHT - 76" rx="3" fill="url(#blank)" stroke="#b9b6aa" />
-          <line
-            v-for="k in Math.round(item.width)"
-            :key="k"
-            :x1="k * MODULE"
-            y1="44"
-            :x2="k * MODULE"
-            :y2="HEIGHT - 44"
-            stroke="#c8c5b9"
-            v-show="k < item.width"
-          />
+          <line v-for="k in Math.ceil(item.width) - 1" :key="k" :x1="k * MODULE" y1="44" :x2="k * MODULE" :y2="HEIGHT - 44" stroke="#c8c5b9" />
         </g>
         <g
           v-else-if="item.device"
@@ -130,6 +125,7 @@ function label(id: string) {
           @blur="ui.hoverDevice = null"
         >
           <DeviceModule
+            aria-hidden="true"
             :device="item.device"
             :width="item.width"
             :on="isOn(item.device.id)"
@@ -139,7 +135,7 @@ function label(id: string) {
             :issue="issueByDevice.get(item.device.id)"
           />
           <!-- marking strip under the device, like the label tape on a real cover -->
-          <g :transform="`translate(0, ${HEIGHT + 6})`" :class="{ 'opacity-30': isDimmed(item.device.id) }">
+          <g aria-hidden="true" :transform="`translate(0, ${HEIGHT + 6})`" :class="{ 'opacity-30': isDimmed(item.device.id) }">
             <rect x="1" y="0" :width="item.width * MODULE - 2" :height="LABEL_H" rx="2" fill="#fbfaf5" stroke="#cfccc0" />
             <text :x="(item.width * MODULE) / 2" y="15" text-anchor="middle" class="mark" :class="{ 'mark-sm': item.width < 1.5 && item.device.id.length > 3 }">
               {{ item.device.id }}

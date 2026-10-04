@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref, watch } from 'vue'
-import { SMART_TYPES, type Device } from '@/domain/schema'
+import { computed } from 'vue'
+import { SMART_TYPES, type Device } from '@/domain/model'
+import { useData } from '@/stores/data'
 import { HEIGHT, MODULE } from './geometry'
 
 const props = defineProps<{
@@ -15,6 +16,7 @@ const props = defineProps<{
   issue?: 'error' | 'warn'
 }>()
 
+const store = useData()
 const W = computed(() => props.width * MODULE)
 const poles = computed(() => Math.max(1, Math.min(props.device.poles, Math.round(props.width))))
 const t = computed(() => props.device.type)
@@ -42,25 +44,15 @@ const leverColor = computed(() => {
 
 const terminalsTop = computed(() => Array.from({ length: Math.max(1, Math.round(props.width)) }, (_, i) => i))
 
-// live readouts are cosmetic: a voltage that wanders by a couple of volts and a meter that ticks
-const volts = ref(230)
-const kwh = ref(12873.4)
-let timer: ReturnType<typeof setInterval> | undefined
-function tick() {
-  volts.value = 228 + Math.round(Math.random() * 5)
-  kwh.value = +(kwh.value + 0.1).toFixed(1)
+// no live data yet: the relay shows the nominal supply voltage and the meter no reading,
+// so nothing on screen can be mistaken for a measurement
+const nominalVolts = computed(() => store.data?.supply.voltage ?? 230)
+const psuCurrent = computed(() => (props.device.rating ? `${Math.round(props.device.rating * 1000)} mA` : ''))
+// squeeze long model names into the module face instead of letting them spill onto neighbours
+function fitWidth(text?: string) {
+  const room = W.value - 8
+  return text && text.length * 4.8 > room ? room : undefined
 }
-watch(
-  () => props.energized && (t.value === 'voltage-relay' || t.value === 'meter'),
-  (live) => {
-    clearInterval(timer)
-    if (live) timer = setInterval(tick, 2200 + Math.random() * 800)
-  },
-  { immediate: true },
-)
-onBeforeUnmount(() => clearInterval(timer))
-
-const kwhText = computed(() => kwh.value.toFixed(1).padStart(8, '0'))
 const busColor = computed(() => {
   const id = props.device.id.toUpperCase()
   if (id.includes('PE') || props.device.tags.some((x) => /pe|земл|earth/i.test(x))) return 'pe'
@@ -74,7 +66,6 @@ const busColor = computed(() => {
     :class="{ 'is-selected': selected, 'is-dimmed': dimmed, 'is-dead': !energized }"
     :data-type="t"
   >
-    <!-- selection glow -->
     <rect
       v-if="selected"
       :x="-4"
@@ -89,7 +80,6 @@ const busColor = computed(() => {
       class="sel-ring"
     />
 
-    <!-- body -->
     <template v-if="t !== 'bus' && t !== 'terminal'">
       <rect x="1" y="0" :width="W - 2" :height="HEIGHT" rx="4" fill="url(#body)" stroke="#a8a8a0" stroke-width="1" />
       <!-- terminal recesses -->
@@ -107,7 +97,6 @@ const busColor = computed(() => {
       <rect x="2" y="40" :width="W - 4" :height="HEIGHT - 80" rx="3" fill="url(#shoulder)" stroke="#c4c4bc" stroke-width="0.6" />
     </template>
 
-    <!-- breakers, RCDs, RCBOs, switches -->
     <template v-if="isBreakerLike">
       <text :x="W / 2" y="54" text-anchor="middle" class="brand">{{ device.brand ?? '' }}</text>
       <!-- lever slot -->
@@ -128,22 +117,20 @@ const busColor = computed(() => {
       <text :x="(t === 'rcd' || t === 'rcbo' ? leverW / 2 + leverX : W / 2)" y="128" text-anchor="middle" class="rating">{{ rating }}</text>
     </template>
 
-    <!-- voltage relay with an LCD -->
     <template v-else-if="t === 'voltage-relay'">
       <text :x="W / 2" y="54" text-anchor="middle" class="brand">{{ device.brand ?? '' }}</text>
       <rect x="6" y="62" :width="W - 12" height="30" rx="3" fill="url(#lcd)" stroke="#123" />
-      <text :x="W / 2" y="84" text-anchor="middle" class="seg" :class="{ off: !energized }">{{ energized ? volts : '---' }}</text>
+      <text :x="W / 2" y="84" text-anchor="middle" class="seg" :class="{ off: !energized }">{{ energized ? nominalVolts : '---' }}</text>
       <circle cx="12" cy="102" r="3" :fill="energized ? '#22c55e' : '#3a3a3a'" />
       <circle :cx="W - 20" cy="104" r="5" fill="#d1d1ca" stroke="#999" />
       <circle :cx="W - 8 - 0" cy="104" r="5" fill="#d1d1ca" stroke="#999" />
       <text :x="W / 2" y="128" text-anchor="middle" class="rating">{{ rating }}</text>
     </template>
 
-    <!-- energy meter -->
     <template v-else-if="t === 'meter'">
       <text x="8" y="54" class="brand" text-anchor="start">{{ device.brand ?? '' }}</text>
       <rect x="6" y="60" :width="W - 12" height="32" rx="3" fill="url(#lcd)" stroke="#123" />
-      <text :x="W - 12" y="83" text-anchor="end" class="seg seg-sm" :class="{ off: !energized }">{{ energized ? kwhText : '--------' }}</text>
+      <text :x="W - 12" y="83" text-anchor="end" class="seg seg-sm" :class="{ off: !energized }">------.-</text>
       <text :x="W - 10" y="104" text-anchor="end" class="small">kWh</text>
       <circle cx="14" cy="104" r="3.5" :fill="energized ? '#ef4444' : '#3a3a3a'" :class="{ blink: energized }" />
       <text x="22" y="107" class="tiny" text-anchor="start">imp</text>
@@ -157,10 +144,9 @@ const busColor = computed(() => {
         <rect :x="(i - 1) * MODULE + MODULE / 2 - 6" y="56" width="12" height="9" rx="1.5" fill="#22c55e" stroke="#166534" />
         <text :x="(i - 1) * MODULE + MODULE / 2" y="100" text-anchor="middle" class="tiny">{{ i === poles && poles > 1 ? 'N' : 'L' }}</text>
       </g>
-      <text :x="W / 2" y="126" text-anchor="middle" class="small">T2</text>
+      <text :x="W / 2" y="126" text-anchor="middle" class="small" :textLength="fitWidth(device.model)" lengthAdjust="spacingAndGlyphs">{{ device.model ?? '' }}</text>
     </template>
 
-    <!-- DIN rail socket -->
     <template v-else-if="t === 'din-socket'">
       <circle :cx="W / 2" cy="88" r="30" fill="#e9e9e3" stroke="#a0a098" />
       <circle :cx="W / 2" cy="88" r="24" fill="#d8d8d0" />
@@ -170,7 +156,6 @@ const busColor = computed(() => {
       <rect :x="W / 2 - 3" y="109" width="6" height="5" fill="#b0b0a8" />
     </template>
 
-    <!-- contactor -->
     <template v-else-if="t === 'contactor'">
       <rect x="8" y="64" :width="W - 16" height="26" rx="2" fill="#30302d" />
       <rect :x="W / 2 - 6" :y="on && energized ? 66 : 76" width="12" height="12" rx="2" fill="#e5e5e0" class="lever" />
@@ -178,7 +163,6 @@ const busColor = computed(() => {
       <text :x="W / 2" y="128" text-anchor="middle" class="rating">{{ rating }}</text>
     </template>
 
-    <!-- neutral / earth bus -->
     <template v-else-if="t === 'bus'">
       <rect x="1" y="60" :width="W - 2" height="56" rx="4" :fill="busColor === 'pe' ? 'url(#pe-base)' : 'url(#n-base)'" stroke="#334" stroke-opacity="0.4" />
       <rect x="6" y="76" :width="W - 12" height="24" rx="2" fill="url(#brass)" stroke="#7a5f17" />
@@ -188,7 +172,6 @@ const busColor = computed(() => {
       <text :x="W / 2" y="132" text-anchor="middle" class="busl">{{ busColor === 'pe' ? 'PE' : 'N' }}</text>
     </template>
 
-    <!-- terminal blocks -->
     <template v-else-if="t === 'terminal'">
       <g v-for="i in Math.max(1, Math.round(width * 2))" :key="'k' + i">
         <rect :x="(i - 1) * (W / Math.max(1, Math.round(width * 2))) + 1" y="40" :width="W / Math.max(1, Math.round(width * 2)) - 2" :height="HEIGHT - 80" rx="2" fill="#9aa4b2" stroke="#5b6470" />
@@ -222,7 +205,7 @@ const busColor = computed(() => {
         <text x="22" y="77" class="tiny" text-anchor="start">run</text>
         <circle cx="14" cy="88" r="3.2" fill="#3a3a3a" />
         <text x="22" y="91" class="tiny" text-anchor="start">I&gt;Imax</text>
-        <text :x="W / 2" y="112" text-anchor="middle" class="small">640 mA</text>
+        <text :x="W / 2" y="112" text-anchor="middle" class="small">{{ psuCurrent }}</text>
       </template>
       <text :x="W / 2" y="128" text-anchor="middle" class="small">{{ device.smart?.address ?? device.model ?? '' }}</text>
     </template>
@@ -230,7 +213,6 @@ const busColor = computed(() => {
       <text :x="W / 2" y="92" text-anchor="middle" class="rating">{{ rating || device.id }}</text>
     </template>
 
-    <!-- dead overlay: de-energised devices look cold -->
     <rect
       v-if="!energized"
       x="1"
@@ -260,7 +242,7 @@ const busColor = computed(() => {
   filter: grayscale(0.8);
 }
 .lever {
-  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), y 0.25s ease;
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
   transform-box: fill-box;
 }
 .sel-ring {

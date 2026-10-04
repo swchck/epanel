@@ -1,3 +1,5 @@
+import { decryptJson, encryptJson, isEnvelope } from '@/domain/crypto'
+
 export interface GithubTarget {
   owner: string
   repo: string
@@ -8,19 +10,29 @@ export interface GithubTarget {
 
 const STORAGE = 'panel.github'
 
-export function loadTarget(): GithubTarget {
-  try {
-    const raw = localStorage.getItem(STORAGE)
-    if (raw) return { branch: 'main', path: 'public/app/panel.enc.json', ...JSON.parse(raw) }
-  } catch {
-    // storage blocked or corrupted
-  }
+export function emptyTarget(): GithubTarget {
   return { owner: '', repo: '', branch: 'main', path: 'public/app/panel.enc.json', token: '' }
 }
 
-export function saveTarget(t: GithubTarget, rememberToken: boolean) {
+// the token can push to the repo, so it is kept encrypted with the panel password like the data itself
+export async function loadTarget(password: string | null): Promise<GithubTarget> {
   try {
-    localStorage.setItem(STORAGE, JSON.stringify(rememberToken ? t : { ...t, token: '' }))
+    const raw = localStorage.getItem(STORAGE)
+    if (!raw) return emptyTarget()
+    const { token, ...rest } = JSON.parse(raw) as Partial<GithubTarget> & { token?: unknown }
+    let plain = ''
+    if (password && isEnvelope(token)) plain = await decryptJson<string>(token, password).catch(() => '')
+    return { ...emptyTarget(), ...rest, token: plain }
+  } catch {
+    // storage blocked or corrupted
+    return emptyTarget()
+  }
+}
+
+export async function saveTarget(t: GithubTarget, rememberToken: boolean, password: string | null) {
+  const token = rememberToken && password && t.token ? await encryptJson(t.token, password, 60_000) : undefined
+  try {
+    localStorage.setItem(STORAGE, JSON.stringify({ ...t, token }))
   } catch {
     // storage blocked
   }

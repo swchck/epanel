@@ -1,3 +1,4 @@
+use std::ffi::OsString;
 use std::path::{Path, PathBuf};
 use std::sync::Mutex;
 
@@ -16,7 +17,23 @@ struct OpenedFile {
 #[derive(Default)]
 struct PendingOpen(Mutex<Option<PathBuf>>);
 
+// the commands take paths from the webview, so they only ever touch the file types the editor works with
+const ALLOWED_EXTENSIONS: [&str; 4] = ["panel", "json", "yaml", "yml"];
+
+fn check_extension(path: &Path) -> Result<(), String> {
+    let ok = path
+        .extension()
+        .and_then(|e| e.to_str())
+        .is_some_and(|e| ALLOWED_EXTENSIONS.contains(&e.to_ascii_lowercase().as_str()));
+    if ok {
+        Ok(())
+    } else {
+        Err(format!("unsupported file type: {}", path.display()))
+    }
+}
+
 fn load(path: &Path) -> Result<OpenedFile, String> {
+    check_extension(path)?;
     let text = std::fs::read_to_string(path).map_err(|e| e.to_string())?;
     Ok(OpenedFile {
         name: path
@@ -37,9 +54,15 @@ fn read_text(path: String) -> Result<OpenedFile, String> {
 fn write_text(path: String, text: String) -> Result<(), String> {
     // write next to the target and rename, so a crash mid-save never leaves a truncated file
     let target = PathBuf::from(&path);
-    let tmp = target.with_extension("tmp-save");
+    check_extension(&target)?;
+    let mut tmp_name = target.file_name().map(OsString::from).unwrap_or_default();
+    tmp_name.push(".tmp-save");
+    let tmp = target.with_file_name(tmp_name);
     std::fs::write(&tmp, text).map_err(|e| e.to_string())?;
-    std::fs::rename(&tmp, &target).map_err(|e| e.to_string())
+    std::fs::rename(&tmp, &target).map_err(|e| {
+        let _ = std::fs::remove_file(&tmp);
+        e.to_string()
+    })
 }
 
 #[tauri::command]
@@ -70,18 +93,14 @@ pub fn run() {
             let Some(path) = urls.iter().find_map(|u| u.to_file_path().ok()) else {
                 return;
             };
-            match load(&path) {
-                Ok(file) if handle.get_webview_window("main").is_some() => {
-                    let _ = handle.emit("open-file", file);
-                }
-                _ => {
-                    if let Some(pending) = handle.try_state::<PendingOpen>() {
-                        if let Ok(mut slot) = pending.0.lock() {
-                            *slot = Some(path);
-                        }
-                    }
+            // the event is only a nudge: on a cold start nobody listens yet, so the path waits in
+            // PendingOpen and the frontend takes it once its listener is up
+            if let Some(pending) = handle.try_state::<PendingOpen>() {
+                if let Ok(mut slot) = pending.0.lock() {
+                    *slot = Some(path);
                 }
             }
+            let _ = handle.emit("open-file", ());
         }
         let _ = (handle, event);
     });

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, watchEffect } from 'vue'
-import QRCode from 'qrcode'
 
 const props = withDefaults(defineProps<{ value: string; margin?: number; dark?: string; light?: string }>(), {
   margin: 1,
@@ -9,17 +8,18 @@ const props = withDefaults(defineProps<{ value: string; margin?: number; dark?: 
 })
 const svg = ref('')
 
-watchEffect(async () => {
+watchEffect(async (onCleanup) => {
+  let stale = false
+  onCleanup(() => (stale = true))
   if (!props.value) {
     svg.value = ''
     return
   }
-  svg.value = await QRCode.toString(props.value, {
-    type: 'svg',
-    errorCorrectionLevel: 'M',
-    margin: props.margin,
-    color: { dark: props.dark, light: props.light },
-  })
+  const opts = { type: 'svg', errorCorrectionLevel: 'M', margin: props.margin, color: { dark: props.dark, light: props.light } } as const
+  // qrcode is only needed on the few screens that show a code, so it isn't part of the startup bundle
+  const { default: QRCode } = await import('qrcode')
+  const out = await QRCode.toString(props.value, opts)
+  if (!stale) svg.value = out
 })
 
 defineExpose({ svg })

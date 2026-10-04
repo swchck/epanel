@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Device } from '@/domain/schema'
+import type { Device } from '@/domain/model'
 import { TYPE_ACCENT } from '@/components/panel/geometry'
 
 defineProps<{ device: Pick<Device, 'id' | 'type'>; size?: 'sm' | 'md' | 'lg' }>()

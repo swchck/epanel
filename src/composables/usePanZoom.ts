@@ -12,7 +12,7 @@ export function usePanZoom(svg: Ref<SVGSVGElement | null>, base: Ref<Box>, opts:
   const box = ref<Box>({ ...base.value })
   const minScale = opts.minScale ?? 0.8
   const maxScale = opts.maxScale ?? 8
-  watch(base, (b) => (box.value = { ...b }), { deep: true })
+  watch(base, (b) => (box.value = { ...b }))
 
   const scale = computed(() => base.value.w / box.value.w)
   const viewBox = computed(() => `${box.value.x} ${box.value.y} ${box.value.w} ${box.value.h}`)

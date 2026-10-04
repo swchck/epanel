@@ -1,5 +1,5 @@
-import type { Device, PanelData } from './schema'
-import { defaultWidth } from './schema'
+import type { Device, PanelData } from './model'
+import { defaultWidth } from './model'
 
 export interface PlacedItem {
   kind: 'device' | 'blank'

@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue'
 import { ExternalLink, FileText, MapPin } from '@lucide/vue'
 import PhotoLightbox from '@/components/common/PhotoLightbox.vue'
-import { resolveAsset } from '@/domain/bundle'
+import { resolveAsset } from '@/domain/model'
 import { useText } from '@/composables/useText'
 import { useData } from '@/stores/data'
 

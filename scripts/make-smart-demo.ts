@@ -20,6 +20,7 @@ d.devices.push(
     upstream: 'QF14',
     brand: 'MDT',
     model: 'STV-0640.01',
+    rating: 0.64,
     smart: knx(undefined),
     tags: ['knx'],
   },

@@ -41,7 +41,7 @@ function addContact() {
           </Select>
         </FormRow>
         <FormRow :label="t('editor.general.voltage')"><NumberInput v-model="d.supply.voltage" suffix="V" /></FormRow>
-        <FormRow :label="t('editor.general.maxPower')"><NumberInput v-model="d.supply.maxPowerKw" :suffix="t('units.kw')" /></FormRow>
+        <FormRow :label="t('editor.general.maxPower')"><NumberInput v-model="d.supply.maxPowerKw" optional :suffix="t('units.kw')" /></FormRow>
         <FormRow :label="t('editor.general.input')">
           <Select :model-value="d.supply.input ?? '__none'" @update:model-value="(v) => (d.supply.input = v === '__none' ? undefined : (v as string))">
             <SelectTrigger class="w-full"><SelectValue /></SelectTrigger>

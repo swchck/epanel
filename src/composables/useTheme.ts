@@ -1,4 +1,4 @@
-import { ref, watchEffect } from 'vue'
+import { computed, ref, watchEffect } from 'vue'
 
 export type ThemeMode = 'light' | 'dark' | 'auto'
 const STORAGE = 'panel.theme'
@@ -16,8 +16,10 @@ const media = typeof matchMedia === 'function' ? matchMedia('(prefers-color-sche
 const systemDark = ref(media?.matches ?? false)
 media?.addEventListener('change', (e) => (systemDark.value = e.matches))
 
+export const isDark = computed(() => mode.value === 'dark' || (mode.value === 'auto' && systemDark.value))
+
 watchEffect(() => {
-  const dark = mode.value === 'dark' || (mode.value === 'auto' && systemDark.value)
+  const dark = isDark.value
   document.documentElement.classList.toggle('dark', dark)
   document.querySelector('meta[name="theme-color"]')?.setAttribute('content', dark ? '#16181d' : '#f7f5ef')
   try {

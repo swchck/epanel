@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
-import { DEVICE_TYPES, SMART_TYPES, type Device } from '@/domain/schema'
+import { DEVICE_TYPES, SMART_TYPES, type Device } from '@/domain/model'
 import { renameDevice } from '@/editor/ops'
 import { useDraft } from '@/composables/useDraft'
 import { useText } from '@/composables/useText'
@@ -31,9 +31,10 @@ watch(
 )
 
 function commitId() {
+  idDraft.value = idDraft.value.trim()
   if (idDraft.value === device.value.id) return
   const old = device.value.id
-  if (renameDevice(d.value, old, idDraft.value)) ui.select(idDraft.value.trim())
+  if (renameDevice(d.value, old, idDraft.value)) ui.select(idDraft.value)
   else {
     toast.error(t('editor.panel.idTaken'))
     idDraft.value = old
@@ -87,7 +88,7 @@ function circuit() {
     <FormRow :label="t('editor.panel.label')" :hint="t('editor.panel.labelHint')"><LocalizedInput v-model="device.label" /></FormRow>
 
     <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
-      <FormRow :label="t('device.field.rating')"><NumberInput v-model="device.rating" suffix="A" /></FormRow>
+      <FormRow :label="t('device.field.rating')"><NumberInput v-model="device.rating" optional suffix="A" /></FormRow>
       <FormRow v-if="hasCurve" :label="t('editor.panel.curve')">
         <Select :model-value="device.curve ?? '__'" @update:model-value="(v) => (device.curve = v === '__' ? undefined : (v as Device['curve']))">
           <SelectTrigger class="w-full"><SelectValue /></SelectTrigger>
@@ -108,11 +109,11 @@ function circuit() {
           </SelectContent>
         </Select>
       </FormRow>
-      <FormRow :label="t('editor.panel.width')" :hint="t('editor.panel.widthHint')"><NumberInput v-model="device.width" :placeholder="t('editor.auto')" /></FormRow>
+      <FormRow :label="t('editor.panel.width')" :hint="t('editor.panel.widthHint')"><NumberInput v-model="device.width" optional :max="12" :placeholder="t('editor.auto')" /></FormRow>
     </div>
 
     <div v-if="isRcd" class="grid grid-cols-2 items-end gap-3 sm:grid-cols-3">
-      <FormRow :label="t('device.field.leakage')"><NumberInput v-model="device.leakage" suffix="mA" /></FormRow>
+      <FormRow :label="t('device.field.leakage')"><NumberInput v-model="device.leakage" optional suffix="mA" /></FormRow>
       <FormRow :label="t('device.field.class')">
         <Select :model-value="device.rcdClass ?? '__'" @update:model-value="(v) => (device.rcdClass = v === '__' ? undefined : (v as Device['rcdClass']))">
           <SelectTrigger class="w-full"><SelectValue /></SelectTrigger>
@@ -161,7 +162,7 @@ function circuit() {
             </SelectContent>
           </Select>
         </FormRow>
-        <FormRow :label="t('device.field.length')"><NumberInput :model-value="device.circuit?.lengthM" :suffix="t('units.m')" @update:model-value="(v) => (circuit().lengthM = v)" /></FormRow>
+        <FormRow :label="t('device.field.length')"><NumberInput :model-value="device.circuit?.lengthM" optional allow-zero :suffix="t('units.m')" @update:model-value="(v) => (circuit().lengthM = v)" /></FormRow>
       </div>
     </fieldset>
 

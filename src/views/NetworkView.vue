@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue'
 import { EthernetPort, Map as MapIcon } from '@lucide/vue'
 import { CABLE_COLORS } from '@/components/common/kinds'
-import { CABLE_TYPES, type CableType, type Route } from '@/domain/schema'
+import { CABLE_TYPES, type CableType, type Route } from '@/domain/model'
 import { useText } from '@/composables/useText'
 import { useData } from '@/stores/data'
 

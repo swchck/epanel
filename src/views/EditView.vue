@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount } from 'vue'
+import { computed, onBeforeUnmount, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { CalendarCheck, Images, Info, Map as MapIcon, PanelsTopLeft, Send } from '@lucide/vue'
 import EditGeneral from '@/components/editor/EditGeneral.vue'
@@ -29,17 +29,17 @@ const TABS = [
 
 const active = computed(() => TABS.find((x) => x.id === props.tab) ?? TABS[1])
 
-data.startDraft()
+// publishing, saving or discarding ends the draft; the editor keeps going on a fresh one
+watch(
+  () => data.draft,
+  (d) => d || data.startDraft(),
+  { immediate: true },
+)
 ui.simulate = false
 ui.clearFilters()
 
-// a draft that ended up identical to the published copy is just noise in the banner
 onBeforeUnmount(() => {
-  if (!data.draft || !data.published) return
-  const same =
-    JSON.stringify(data.draft.data) === JSON.stringify(data.published.data) &&
-    Object.keys(data.draft.assets).join() === Object.keys(data.published.assets).join()
-  if (same) data.discardDraft()
+  if (data.draft && !data.hasDraft) data.discardDraft()
 })
 </script>
 

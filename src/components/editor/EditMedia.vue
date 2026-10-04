@@ -5,7 +5,7 @@ import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { ASSET_PREFIX, resolveAsset } from '@/domain/bundle'
+import { ASSET_PREFIX, resolveAsset } from '@/domain/model'
 import { uniqueId } from '@/editor/ops'
 import { blobToDataUrl, compressImage, MAX_DOC_BYTES, newId } from '@/lib/media'
 import { useDraft } from '@/composables/useDraft'
@@ -23,9 +23,16 @@ async function addPhotos() {
   const files = await openBinaryFiles('image/*', true)
   if (!files.length) return
   busy.value = true
+  let added = 0
   try {
     for (const f of files) {
-      const img = await compressImage(f.blob)
+      // one HEIC or broken file must not abort the whole batch
+      const img = await compressImage(f.blob).catch(() => null)
+      if (!img) {
+        toast.error(t('editor.media.unreadable', { name: f.name }))
+        continue
+      }
+      added++
       const aid = newId('photo')
       assets.value[aid] = img.url
       d.value.photos.push({
@@ -38,7 +45,7 @@ async function addPhotos() {
         date: new Date().toISOString().slice(0, 10),
       })
     }
-    toast.success(t('editor.media.added', { n: files.length }))
+    if (added) toast.success(t('editor.media.added', { n: added }))
   } finally {
     busy.value = false
   }
@@ -66,6 +73,8 @@ async function addDocument() {
       href: ASSET_PREFIX + aid,
       date: new Date().toISOString().slice(0, 10),
     })
+  } catch {
+    toast.error(t('editor.media.unreadable', { name: f.name }))
   } finally {
     busy.value = false
   }

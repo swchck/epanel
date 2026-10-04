@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { tiny } from '@/domain/__tests__/fixture'
-import { addDevice, addRow, findItem, insertBlank, moveItem, moveToRow, nextDeviceId, removeDevice, removeRoom, renameDevice } from '../ops'
+import { addDevice, addRow, findItem, insertBlank, moveItem, moveToRow, nextDeviceId, removeDevice, removePoint, removeRoom, renameDevice } from '../ops'
+import { referenceIssues } from '@/domain/model'
 
 describe('editor ops', () => {
   it('numbers new devices by type prefix', () => {
@@ -51,5 +52,22 @@ describe('editor ops', () => {
     removeRoom(d, 'bath')
     expect(d.rooms).toEqual([])
     expect(d.points[0]!.room).toBeUndefined()
+  })
+
+  it('removes a point together with the bus channels that switch it', () => {
+    const d = tiny()
+    const pid = d.points[0]!.id
+    d.devices[0]!.smart = { system: 'knx', channels: [{ id: 'A', function: 'switch', points: [pid] }] }
+    removePoint(d, pid)
+    expect(d.points.find((p) => p.id === pid)).toBeUndefined()
+    expect(d.devices[0]!.smart!.channels[0]!.points).toEqual([])
+    expect(referenceIssues(d)).toEqual([])
+  })
+
+  it('reports channel points and routes that point nowhere', () => {
+    const d = tiny()
+    d.devices[0]!.smart = { system: 'knx', channels: [{ id: 'A', function: 'switch', points: ['ghost'] }] }
+    d.routes.push({ id: 'r', device: 'NOPE', points: [[0, 0], [1, 1]], kind: 'power', cables: [], safeWidth: 15 })
+    expect(referenceIssues(d).map((i) => i.message)).toEqual(['unknown device NOPE', 'unknown point ghost'])
   })
 })

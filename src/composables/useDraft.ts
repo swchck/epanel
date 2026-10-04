@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import type { PanelData } from '@/domain/schema'
+import type { PanelData } from '@/domain/model'
 import { useData } from '@/stores/data'
 
 // editor components only mount after EditView has started a draft

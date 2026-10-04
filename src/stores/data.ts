@@ -1,14 +1,13 @@
 import { defineStore } from 'pinia'
 import { computed, ref, shallowRef, toRaw, watch } from 'vue'
 import { del as idbDel, get as idbGet, set as idbSet } from 'idb-keyval'
-import { makeBundle, parseText, pruneAssets, type Bundle } from '@/domain/bundle'
 import { runChecks } from '@/domain/checks'
 import { decryptJson, encryptJson, isEnvelope, WrongPasswordError, type EncryptedEnvelope } from '@/domain/crypto'
 import { buildGraph } from '@/domain/graph'
 import { layoutPanel } from '@/domain/layout'
 import { taskStatuses } from '@/domain/maintenance'
 import { buildSearch } from '@/domain/lookup'
-import { referenceIssues, type PanelData, type PanelInput } from '@/domain/schema'
+import { pruneAssets, referenceIssues, type Bundle, type PanelData } from '@/domain/model'
 import { isDesktop } from '@/platform'
 
 export type Status = 'idle' | 'loading' | 'locked' | 'ready' | 'empty' | 'error'
@@ -17,6 +16,9 @@ export type Source = 'published' | 'demo' | 'file' | 'new'
 const KEY_STORAGE = 'panel.key'
 const DRAFT_KEY = 'panel.draft'
 const DEMO_PASSWORD = 'demo'
+
+// zod and js-yaml come with this module; it loads while the panel downloads and decrypts
+const parsing = () => import('@/domain/bundle')
 
 function readStoredKey(): string | null {
   try {
@@ -35,11 +37,24 @@ function writeStoredKey(v: string | null) {
   }
 }
 
+async function idbSafe<T>(op: () => Promise<T>): Promise<T | undefined> {
+  try {
+    return await op()
+  } catch {
+    // IndexedDB is unavailable in some private modes: drafts then live only in memory
+    return undefined
+  }
+}
+
 function clone<T>(v: T): T {
   return structuredClone(toRaw(v))
 }
 
-function emptyData(title = ''): PanelInput {
+function emptyBundle(title = ''): Bundle {
+  return { format: 'panel-bundle', version: 1, data: emptyData(title), assets: {} }
+}
+
+function emptyData(title: string): PanelData {
   return {
     meta: { title, contacts: [] },
     supply: { phases: 1, voltage: 230, maxPowerKw: 10 },
@@ -49,7 +64,7 @@ function emptyData(title = ''): PanelInput {
     ],
     devices: [],
     rooms: [],
-    plan: { width: 1200, height: 800, grid: 50, backgroundOpacity: 0.6 },
+    plan: { width: 1200, height: 800, grid: 50, backgroundOpacity: 0.6, wallHeight: 270 },
     points: [],
     routes: [],
     photos: [],
@@ -71,6 +86,8 @@ export const useData = defineStore('data', () => {
   const envelope = shallowRef<EncryptedEnvelope | null>(null)
   const published = shallowRef<Bundle | null>(null)
   const draft = ref<Bundle | null>(null)
+  // a fresh draft is a copy of the published data; it only counts once something in it changes
+  const dirty = ref(false)
   const password = ref<string | null>(null)
   const file = ref<{ name: string; path?: string } | null>(null)
   const draftSavedAt = ref<number>()
@@ -84,8 +101,21 @@ export const useData = defineStore('data', () => {
   const layout = computed(() => (data.value ? layoutPanel(data.value) : []))
   const checks = computed(() => (data.value && graph.value ? runChecks(data.value, graph.value) : []))
   const issues = computed(() => (data.value ? referenceIssues(data.value) : []))
-  const search = computed(() => (data.value ? buildSearch(data.value) : () => []))
-  const hasDraft = computed(() => draft.value !== null)
+  // fuse.js loads on the first search, not with the app
+  const fuse = shallowRef<typeof import('fuse.js').default | null>(null)
+  let fuseLoading = false
+  const search = computed(() => {
+    if (!data.value) return () => []
+    if (!fuse.value) {
+      if (!fuseLoading) {
+        fuseLoading = true
+        import('fuse.js').then((m) => (fuse.value = m.default))
+      }
+      return () => []
+    }
+    return buildSearch(data.value, fuse.value)
+  })
+  const hasDraft = computed(() => draft.value !== null && dirty.value)
   const maintenance = computed(() => (data.value ? taskStatuses(data.value.maintenance.tasks, data.value.maintenance.log) : []))
   const overdue = computed(() => maintenance.value.filter((m) => m.state === 'overdue').length)
 
@@ -101,17 +131,18 @@ export const useData = defineStore('data', () => {
   }
 
   async function restoreDraft(pw: string) {
-    const stored = await idbGet<EncryptedEnvelope>(DRAFT_KEY)
+    const stored = await idbSafe(() => idbGet<EncryptedEnvelope>(DRAFT_KEY))
     if (!stored) return
     try {
-      const b = await decryptJson<Bundle>(stored, pw)
-      draft.value = b
+      draft.value = await decryptJson<Bundle>(stored, pw)
+      dirty.value = true
     } catch {
       // a draft encrypted with another password belongs to someone else on this device
     }
   }
 
   async function init(opts: { key?: string; demo?: boolean | string; prefix?: string } = {}) {
+    void parsing()
     status.value = 'loading'
     error.value = undefined
     try {
@@ -136,7 +167,13 @@ export const useData = defineStore('data', () => {
       const candidate = opts.key ?? readStoredKey()
       if (candidate) {
         const ok = await unlock(candidate, true)
-        if (!ok && opts.key) error.value = 'wrong-password'
+        if (ok) return
+        if (opts.key) error.value = 'wrong-password'
+        else {
+          // the remembered password went stale, e.g. the site was republished with a new one
+          writeStoredKey(null)
+          error.value = undefined
+        }
         return
       }
       status.value = 'locked'
@@ -150,7 +187,7 @@ export const useData = defineStore('data', () => {
     if (!envelope.value) return false
     try {
       const raw = await decryptJson(envelope.value, pw)
-      const parsed = parseText(JSON.stringify(raw))
+      const parsed = (await parsing()).bundleFromUnknown(raw)
       if (parsed.kind !== 'bundle') throw new Error('invalid bundle')
       published.value = parsed.bundle
       password.value = pw
@@ -167,6 +204,7 @@ export const useData = defineStore('data', () => {
   }
 
   function lock() {
+    cancelAutosave()
     writeStoredKey(null)
     password.value = null
     published.value = null
@@ -176,15 +214,18 @@ export const useData = defineStore('data', () => {
 
   function startDraft(): Bundle {
     if (!draft.value) {
-      const base = published.value ?? makeBundle(emptyData())
+      const base = published.value ?? emptyBundle()
       draft.value = clone(base)
+      dirty.value = false
     }
     return draft.value as Bundle
   }
 
   async function discardDraft() {
+    cancelAutosave()
     draft.value = null
-    await idbDel(DRAFT_KEY)
+    dirty.value = false
+    await idbSafe(() => idbDel(DRAFT_KEY))
   }
 
   // the draft becomes the new baseline, e.g. after it was published or saved to a file
@@ -195,15 +236,27 @@ export const useData = defineStore('data', () => {
   }
 
   let saveTimer: ReturnType<typeof setTimeout> | undefined
+  // bumped on discard/lock so a save already past its timer can't write a dead draft back
+  let saveGeneration = 0
+  function cancelAutosave() {
+    clearTimeout(saveTimer)
+    saveGeneration++
+  }
+
+  // only the published panel is restored on the next visit; files and new panels are saved explicitly
   watch(
     draft,
-    (b) => {
+    (b, prev) => {
+      if (b && b === prev) dirty.value = true
       clearTimeout(saveTimer)
-      if (!b || !password.value || source.value === 'demo') return
+      if (!b || !dirty.value || !password.value || source.value !== 'published') return
       const pw = password.value
+      const generation = saveGeneration
       saveTimer = setTimeout(async () => {
         // fewer PBKDF2 rounds than the published file: this runs on every edit and stays on the device
-        await idbSet(DRAFT_KEY, await encryptJson(clone(b), pw, 60_000))
+        const env = await encryptJson(clone(b), pw, 60_000)
+        if (generation !== saveGeneration || draft.value !== b) return
+        await idbSafe(() => idbSet(DRAFT_KEY, env))
         draftSavedAt.value = Date.now()
       }, 1200)
     },
@@ -214,12 +267,15 @@ export const useData = defineStore('data', () => {
     if (!pw) throw new Error('no password')
     const b = active.value
     if (!b) throw new Error('nothing to export')
+    const issues = (await parsing()).validateData(b.data)
+    if (issues.length) throw new Error(issues.slice(0, 5).map((i) => `${i.path}: ${i.message}`).join('\n'))
     return encryptJson(pruneAssets(clone(b)), pw)
   }
 
   function adoptBundle(b: Bundle, pw: string | null, src: Source, f: { name: string; path?: string } | null = null) {
     published.value = b
     draft.value = null
+    dirty.value = false
     password.value = pw
     source.value = src
     file.value = f
@@ -229,7 +285,8 @@ export const useData = defineStore('data', () => {
   type LoadResult = { ok: true } | { ok: false; reason: 'needs-password' | 'wrong-password' | 'invalid'; details?: string[] }
 
   async function loadText(text: string, f: { name: string; path?: string }, pw?: string): Promise<LoadResult> {
-    const parsed = parseText(text)
+    const { parseText, bundleFromUnknown } = await parsing()
+    const parsed = await parseText(text)
     if (parsed.kind === 'invalid') return { ok: false, reason: 'invalid', details: parsed.issues.map((i) => `${i.path}: ${i.message}`) }
     if (parsed.kind === 'bundle') {
       adoptBundle(parsed.bundle, pw ?? password.value, 'file', f)
@@ -237,7 +294,7 @@ export const useData = defineStore('data', () => {
     }
     if (!pw) return { ok: false, reason: 'needs-password' }
     try {
-      const inner = parseText(JSON.stringify(await decryptJson(parsed.envelope, pw)))
+      const inner = bundleFromUnknown(await decryptJson(parsed.envelope, pw))
       if (inner.kind !== 'bundle') return { ok: false, reason: 'invalid' }
       envelope.value = parsed.envelope
       adoptBundle(inner.bundle, pw, 'file', f)
@@ -247,16 +304,17 @@ export const useData = defineStore('data', () => {
     }
   }
 
-  // merges an imported file into the current draft instead of replacing the session (owner receiving a file from the electrician)
+  // replaces the draft but keeps the session, so the owner can review an electrician's file before publishing it
   async function importIntoDraft(text: string, pw?: string): Promise<LoadResult> {
-    const parsed = parseText(text)
+    const { parseText, bundleFromUnknown } = await parsing()
+    const parsed = await parseText(text)
     if (parsed.kind === 'invalid') return { ok: false, reason: 'invalid', details: parsed.issues.map((i) => `${i.path}: ${i.message}`) }
     let bundle: Bundle
     if (parsed.kind === 'encrypted') {
       const tryPw = pw ?? password.value
       if (!tryPw) return { ok: false, reason: 'needs-password' }
       try {
-        const inner = parseText(JSON.stringify(await decryptJson(parsed.envelope, tryPw)))
+        const inner = bundleFromUnknown(await decryptJson(parsed.envelope, tryPw))
         if (inner.kind !== 'bundle') return { ok: false, reason: 'invalid' }
         bundle = inner.bundle
       } catch {
@@ -264,17 +322,18 @@ export const useData = defineStore('data', () => {
       }
     } else bundle = parsed.bundle
     draft.value = bundle
+    dirty.value = true
     return { ok: true }
   }
 
   function createNew(title: string, pw: string) {
-    adoptBundle(makeBundle(emptyData(title)), pw, 'new', null)
+    adoptBundle(emptyBundle(title), pw, 'new', null)
     startDraft()
   }
 
+  // the site keeps serving the old password until the next publish, so the remembered key stays as is
   function setPassword(pw: string) {
     password.value = pw
-    if (source.value === 'published') writeStoredKey(pw)
   }
 
   return {

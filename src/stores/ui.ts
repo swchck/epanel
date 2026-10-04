@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
-import type { DeviceType, PointKind } from '@/domain/schema'
+import type { DeviceType, PointKind } from '@/domain/model'
 import { useData } from './data'
 
 export const useUi = defineStore('ui', () => {

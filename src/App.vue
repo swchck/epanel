@@ -22,9 +22,9 @@ onMounted(async () => {
   await router.isReady()
   const { k, demo, ...rest } = route.query
   const key = typeof k === 'string' && k ? k : undefined
-  await data.init({ key, demo: demo === undefined ? false : typeof demo === 'string' && demo ? demo : true })
-  // the password from a QR code must not linger in the address bar or history
+  // the password from a QR code must not linger in the address bar or history, not even while PBKDF2 runs
   if (key) await router.replace({ path: route.path, query: { ...rest, ...(demo !== undefined ? { demo } : {}) } })
+  await data.init({ key, demo: demo === undefined ? false : typeof demo === 'string' && demo ? demo : true })
   if (isDesktop) onOpenFile(openFromOs)
 })
 

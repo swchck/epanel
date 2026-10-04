@@ -3,7 +3,7 @@ import { bundleFromUnknown } from '../src/domain/bundle'
 import { runChecks } from '../src/domain/checks'
 import { decryptJson, isEnvelope } from '../src/domain/crypto'
 import { buildGraph } from '../src/domain/graph'
-import { referenceIssues } from '../src/domain/schema'
+import { referenceIssues } from '../src/domain/model'
 
 const file = process.argv[2] ?? 'public/app/panel.enc.json'
 let raw: unknown = JSON.parse(readFileSync(file, 'utf8'))

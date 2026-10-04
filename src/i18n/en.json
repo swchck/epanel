@@ -91,7 +91,7 @@
     "password": "Password",
     "passwordRepeat": "Repeat password",
     "passwordHint": "The password encrypts all data. Without it the file cannot be opened and it cannot be recovered.",
-    "passwordMismatch": "Passwords don't match or are shorter than 4 characters",
+    "passwordMismatch": "Passwords don't match or are shorter than 10 characters",
     "createSubmit": "Create",
     "encrypted": "\"{name}\" is encrypted. Enter the password.",
     "invalid": "Could not read the file",
@@ -805,6 +805,7 @@
       "addDoc": "Upload document",
       "addLink": "Link",
       "tooBig": "File is larger than {mb} MB",
+      "unreadable": "Could not read “{name}”",
       "docTitle": "Title",
       "docKind": "Type",
       "link": "Link"

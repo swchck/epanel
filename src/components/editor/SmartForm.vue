@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { BUS_SYSTEMS, CHANNEL_FUNCTIONS } from '@/domain/schema'
+import { BUS_SYSTEMS, CHANNEL_FUNCTIONS } from '@/domain/model'
+import { uniqueId } from '@/editor/ops'
 import { useDraft } from '@/composables/useDraft'
 import { useText } from '@/composables/useText'
 import FormRow from './FormRow.vue'
@@ -24,8 +25,8 @@ const smart = computed(() => device.value.smart ?? { system: 'knx' as const, cha
 const candidates = computed(() => d.value.points.filter((p) => p.device === device.value.id || !p.device))
 
 function addChannel() {
-  const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-  const id = letters[smart.value.channels.length] ?? String(smart.value.channels.length + 1)
+  const used = new Set(smart.value.channels.map((c) => c.id))
+  const id = [...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'].find((l) => !used.has(l)) ?? uniqueId(used, 'C')
   smart.value.channels.push({ id, function: 'switch', points: [] })
 }
 

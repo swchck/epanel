@@ -1,14 +1,16 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { MIN_PASSWORD_LENGTH } from '@/domain/crypto'
+import { computed, ref, toRaw } from 'vue'
 import { CircleAlert, CloudUpload, Download, FileDown, FileUp, KeyRound, LoaderCircle, Save, Trash2, TriangleAlert } from '@lucide/vue'
 import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
-import { pruneAssets, toJson, toYaml, type Bundle } from '@/domain/bundle'
+import { toJson, toYaml } from '@/domain/bundle'
+import { pruneAssets, type Bundle } from '@/domain/model'
 import { isoDay } from '@/domain/maintenance'
-import { tr } from '@/domain/schema'
-import { GithubError, loadTarget, publishFile, saveTarget } from '@/lib/github'
+import { tr } from '@/domain/model'
+import { emptyTarget, GithubError, loadTarget, publishFile, saveTarget } from '@/lib/github'
 import { useDraft } from '@/composables/useDraft'
 import { useText } from '@/composables/useText'
 import { isDesktop, openTextFile, saveTextFile } from '@/platform'
@@ -56,8 +58,8 @@ async function saveFile(saveAs: boolean) {
 
 async function downloadPlain(kind: 'yaml' | 'json') {
   stamp()
-  const b = pruneAssets(structuredClone(JSON.parse(JSON.stringify(data.draft))) as Bundle)
-  await saveTextFile(`${fileBase.value}.${kind}`, kind === 'yaml' ? toYaml(b) : toJson(b))
+  const b = pruneAssets(structuredClone(toRaw(data.draft)) as Bundle)
+  await saveTextFile(`${fileBase.value}.${kind}`, kind === 'yaml' ? await toYaml(b) : toJson(b))
 }
 
 async function downloadPublishFile() {
@@ -83,14 +85,18 @@ async function runImport(text: string, pw?: string) {
   } else toast.error(t('start.invalid'), { description: r.details?.slice(0, 3).join('\n') })
 }
 
-const gh = ref(loadTarget())
-const rememberToken = ref(!!gh.value.token)
+const gh = ref(emptyTarget())
+const rememberToken = ref(false)
+loadTarget(data.password).then((target) => {
+  gh.value = target
+  rememberToken.value = !!target.token
+})
 const ghReady = computed(() => gh.value.owner && gh.value.repo && gh.value.branch && gh.value.path && gh.value.token)
 
 async function publish() {
   busy.value = 'publish'
   try {
-    saveTarget(gh.value, rememberToken.value)
+    await saveTarget(gh.value, rememberToken.value, data.password)
     const { commitUrl } = await publishFile(gh.value, await encrypted(), `Update panel data ${isoDay(new Date())}`)
     await data.commitDraft()
     toast.success(t('editor.publish.published'), {
@@ -110,7 +116,7 @@ async function publish() {
 const pw1 = ref('')
 const pw2 = ref('')
 function changePassword() {
-  if (pw1.value.length < 4 || pw1.value !== pw2.value) {
+  if (pw1.value.length < MIN_PASSWORD_LENGTH || pw1.value !== pw2.value) {
     toast.error(t('start.passwordMismatch'))
     return
   }
@@ -140,7 +146,6 @@ function changePassword() {
       <p v-if="errors" class="flex items-center gap-2 text-sm text-warn"><TriangleAlert class="size-4" /> {{ t('editor.publish.checkErrors', { n: errors }) }}</p>
     </section>
 
-    <!-- file exchange -->
     <section class="space-y-4 rounded-2xl border bg-card p-5">
       <div>
         <h3 class="font-semibold">{{ t('editor.publish.fileTitle') }}</h3>
@@ -168,7 +173,6 @@ function changePassword() {
       </details>
     </section>
 
-    <!-- publish to the website -->
     <section class="space-y-4 rounded-2xl border bg-card p-5">
       <div>
         <h3 class="font-semibold">{{ t('editor.publish.siteTitle') }}</h3>
@@ -193,7 +197,6 @@ function changePassword() {
       <p class="text-xs text-muted-foreground">{{ t('editor.publish.manual') }}</p>
     </section>
 
-    <!-- password -->
     <section class="space-y-3 rounded-2xl border bg-card p-5 lg:col-span-2">
       <h3 class="flex items-center gap-2 font-semibold"><KeyRound class="size-4.5" /> {{ t('editor.publish.passwordTitle') }}</h3>
       <form class="flex flex-wrap items-end gap-3" @submit.prevent="changePassword">

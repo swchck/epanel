@@ -3,7 +3,7 @@ import { computed, ref } from 'vue'
 import { Languages } from '@lucide/vue'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { LOCALES, type Locale, type LocalizedText } from '@/domain/schema'
+import { LOCALES, type Locale, type LocalizedText } from '@/domain/model'
 import { useText } from '@/composables/useText'
 
 const model = defineModel<LocalizedText | undefined>()

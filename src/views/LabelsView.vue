@@ -55,7 +55,6 @@ function rating(id: string) {
     </div>
 
     <div class="print-area mt-6 space-y-8">
-      <!-- main sticker for the inside of the door -->
       <section class="sticker mx-auto flex w-[90mm] flex-col items-center gap-[3mm] rounded-[4mm] border-[0.6mm] border-black bg-white p-[5mm] text-black">
         <div class="text-center text-[4.2mm] leading-tight font-semibold">{{ tx(data.data?.meta.title) }}</div>
         <div class="size-[60mm]"><QrCode :value="mainUrl" :margin="0" /></div>
@@ -66,7 +65,6 @@ function rating(id: string) {
         </div>
       </section>
 
-      <!-- label strips at true scale -->
       <section v-if="showLabels" class="space-y-[6mm]">
         <div v-for="(row, ri) in data.layout" :key="row.id" class="strip-wrap">
           <div class="no-print mb-1 text-xs text-muted-foreground">{{ t('labels.row', { n: ri + 1 }) }}</div>
@@ -87,7 +85,6 @@ function rating(id: string) {
         </div>
       </section>
 
-      <!-- per-device QR stickers -->
       <section v-if="perDeviceQr" class="grid grid-cols-[repeat(auto-fill,minmax(28mm,1fr))] gap-[3mm]">
         <div v-for="d in data.data?.devices.filter((x) => x.type !== 'bus' && x.type !== 'terminal')" :key="d.id" class="flex flex-col items-center gap-[1mm] rounded-[2mm] border-[0.3mm] border-black bg-white p-[2mm] text-black">
           <div class="size-[22mm]"><QrCode :value="deviceUrl(d.id)" :margin="0" /></div>

@@ -1,7 +1,7 @@
 import type { PowerGraph } from './graph'
 import { aggregateLoad, deviceLoad, pointsLoad } from './load'
-import type { Device, PanelData } from './schema'
-import { RCD_TYPES, SMART_TYPES } from './schema'
+import type { Device, PanelData } from './model'
+import { RCD_TYPES, SMART_TYPES } from './model'
 
 export type CheckLevel = 'error' | 'warn' | 'info'
 

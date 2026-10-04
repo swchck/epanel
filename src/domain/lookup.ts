@@ -1,9 +1,9 @@
-import Fuse from 'fuse.js'
+import type Fuse from 'fuse.js'
 import type { PowerGraph } from './graph'
 import type { PlacedItem, RowLayout } from './layout'
 import { locate } from './layout'
-import type { Device, PanelData, PlanPoint, Room } from './schema'
-import { ISOLATING_TYPES, LOCALES, tr } from './schema'
+import type { Device, PanelData, PlanPoint, Room } from './model'
+import { ISOLATING_TYPES, LOCALES, tr } from './model'
 
 export type SearchHit =
   | { kind: 'device'; id: string; device: Device }
@@ -21,7 +21,7 @@ function allTranslations(t: Parameters<typeof tr>[0]): string {
   return LOCALES.map((l) => t[l] ?? '').join(' ')
 }
 
-export function buildSearch(data: PanelData) {
+export function buildSearch(data: PanelData, FuseCtor: typeof Fuse) {
   const roomName = new Map(data.rooms.map((r) => [r.id, allTranslations(r.name)]))
   const entries: Entry[] = [
     ...data.devices.map((d) => ({
@@ -36,7 +36,7 @@ export function buildSearch(data: PanelData) {
       text: [allTranslations(p.label), p.kind, p.profile, roomName.get(p.room ?? '')].filter(Boolean).join(' '),
     })),
   ]
-  const fuse = new Fuse(entries, { keys: ['text'], threshold: 0.38, ignoreLocation: true })
+  const fuse = new FuseCtor(entries, { keys: ['text'], threshold: 0.38, ignoreLocation: true })
   return (q: string, limit = 20): SearchHit[] => {
     const query = q.trim()
     if (!query) return []

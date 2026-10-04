@@ -1,4 +1,4 @@
-import type { Point2 } from './schema'
+import type { Point2 } from './model'
 
 function polygonArea(poly: Point2[]): number {
   let a = 0

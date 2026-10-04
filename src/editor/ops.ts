@@ -1,4 +1,4 @@
-import type { Device, DeviceType, PanelData, RowItem } from '@/domain/schema'
+import type { Device, DeviceType, PanelData, RowItem } from '@/domain/model'
 
 const ID_PREFIX: Record<DeviceType, string> = {
   mcb: 'QF',
@@ -135,6 +135,11 @@ export function removeRoom(d: PanelData, id: string) {
   d.rooms = d.rooms.filter((r) => r.id !== id)
   for (const p of d.points) if (p.room === id) p.room = undefined
   for (const p of d.photos) if (p.room === id) p.room = undefined
+}
+
+export function removePoint(d: PanelData, id: string) {
+  d.points = d.points.filter((p) => p.id !== id)
+  for (const dev of d.devices) for (const ch of dev.smart?.channels ?? []) ch.points = ch.points.filter((x) => x !== id)
 }
 
 export function uniqueId(existing: Iterable<string>, prefix: string): string {

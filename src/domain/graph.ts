@@ -1,5 +1,5 @@
-import type { Device, PanelData, PlanPoint } from './schema'
-import { RCD_TYPES } from './schema'
+import type { Device, PanelData, PlanPoint } from './model'
+import { RCD_TYPES } from './model'
 
 export interface PowerGraph {
   byId: Map<string, Device>

@@ -3,6 +3,7 @@ name: Pages
 on:
   push:
     branches: [main]
+  pull_request:
   workflow_dispatch:
 
 permissions:
@@ -10,9 +11,10 @@ permissions:
   pages: write
   id-token: write
 
+# a deploy that has already started is left to finish, cancelling it can leave Pages half-updated
 concurrency:
-  group: pages
-  cancel-in-progress: true
+  group: pages-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   build:
@@ -39,10 +41,12 @@ jobs:
           if [[ "$repo" == *.github.io ]]; then export BASE_PATH=/; else export BASE_PATH="/$repo/"; fi
           npx vite build
       - uses: actions/upload-pages-artifact@v3
+        if: github.event_name != 'pull_request'
         with:
           path: dist
 
   deploy:
+    if: github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
     environment:

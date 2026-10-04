@@ -1,4 +1,4 @@
-import type { MaintenanceLog, MaintenanceTask } from './schema'
+import type { MaintenanceLog, MaintenanceTask } from './model'
 
 export interface TaskStatus {
   task: MaintenanceTask

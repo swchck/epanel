@@ -3,9 +3,10 @@ import { computed, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vu
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { RotateCcw } from '@lucide/vue'
-import { routeHeight, type PanelData, type PlanPoint, type Route } from '@/domain/schema'
+import { routeHeight, type PanelData, type PlanPoint, type Route } from '@/domain/model'
 import { CABLE_COLORS, POINT_COLORS } from '@/components/common/kinds'
 import { TYPE_ACCENT } from '@/components/panel/geometry'
+import { isDark } from '@/composables/useTheme'
 import { useText } from '@/composables/useText'
 import { useData } from '@/stores/data'
 
@@ -55,7 +56,6 @@ function pointHeight(p: PlanPoint) {
 let renderer: THREE.WebGLRenderer | undefined
 let camera: THREE.PerspectiveCamera | undefined
 let controls: OrbitControls | undefined
-let frame = 0
 let resize: ResizeObserver | undefined
 const scene = new THREE.Scene()
 const world = shallowRef(new THREE.Group())
@@ -63,18 +63,42 @@ scene.add(world.value)
 const pointMeshes = new Map<string, THREE.Mesh>()
 const routeMeshes = new Map<string, THREE.Mesh>()
 
+const pointGeometry = new THREE.SphereGeometry(7, 20, 14)
+
 function disposeGroup(g: THREE.Object3D) {
   g.traverse((o) => {
     const m = o as THREE.Mesh
-    m.geometry?.dispose()
-    const mat = m.material as THREE.Material | THREE.Material[] | undefined
-    if (Array.isArray(mat)) mat.forEach((x) => x.dispose())
-    else mat?.dispose()
+    if (m.geometry !== pointGeometry) m.geometry?.dispose()
+    const mats = ([] as THREE.Material[]).concat((m.material as THREE.Material | THREE.Material[] | undefined) ?? [])
+    for (const mat of mats) {
+      ;(mat as THREE.SpriteMaterial).map?.dispose()
+      mat.dispose()
+    }
   })
 }
 
-function isDark() {
-  return document.documentElement.classList.contains('dark')
+// one frame per change instead of a 60 fps loop: an idle 3D tab should cost nothing
+let frame = 0
+let lastTime = 0
+let pulse = 0
+function invalidate() {
+  if (!frame) frame = requestAnimationFrame(render)
+}
+
+function render(time: number) {
+  frame = 0
+  if (!renderer || !camera || !controls) return
+  pulse += lastTime ? (time - lastTime) / 1000 : 0
+  lastTime = time
+  let animating = controls.update()
+  for (const mesh of pointMeshes.values()) {
+    if (!mesh.userData.lit) continue
+    ;(mesh.material as THREE.MeshStandardMaterial).emissiveIntensity = 0.5 + Math.sin(pulse * 4) * 0.35
+    animating = true
+  }
+  renderer.render(scene, camera)
+  if (animating) invalidate()
+  else lastTime = 0
 }
 
 function build() {
@@ -83,10 +107,12 @@ function build() {
   pointMeshes.clear()
   routeMeshes.clear()
   const g = new THREE.Group()
-  const dark = isDark()
+  const dark = isDark.value
   const wallColor = dark ? 0xcfd6e4 : 0x3b4252
   const floorColor = dark ? 0x2c323d : 0xf4f1ea
   const wetColor = dark ? 0x1d3448 : 0xdcecf7
+  const wallMaterial = new THREE.MeshStandardMaterial({ color: wallColor, transparent: true, opacity: 0.12, depthWrite: false })
+  const edgeMaterial = new THREE.LineBasicMaterial({ color: wallColor, transparent: true, opacity: 0.45 })
 
   for (const room of d.value.rooms) {
     if (room.polygon.length < 3) continue
@@ -105,17 +131,11 @@ function build() {
     room.polygon.forEach((a, i) => {
       const b = room.polygon[(i + 1) % room.polygon.length]!
       const len = Math.hypot(b[0] - a[0], b[1] - a[1])
-      const wall = new THREE.Mesh(
-        new THREE.BoxGeometry(len, h, 6),
-        new THREE.MeshStandardMaterial({ color: wallColor, transparent: true, opacity: 0.12, depthWrite: false }),
-      )
+      const wall = new THREE.Mesh(new THREE.BoxGeometry(len, h, 6), wallMaterial)
       wall.position.set((a[0] + b[0]) / 2, h / 2, (a[1] + b[1]) / 2)
       wall.rotation.y = -Math.atan2(b[1] - a[1], b[0] - a[0])
       g.add(wall)
-      const edges = new THREE.LineSegments(
-        new THREE.EdgesGeometry(wall.geometry),
-        new THREE.LineBasicMaterial({ color: wallColor, transparent: true, opacity: 0.45 }),
-      )
+      const edges = new THREE.LineSegments(new THREE.EdgesGeometry(wall.geometry), edgeMaterial)
       edges.position.copy(wall.position)
       edges.rotation.copy(wall.rotation)
       g.add(edges)
@@ -124,9 +144,10 @@ function build() {
 
   for (const p of d.value.points) {
     const mesh = new THREE.Mesh(
-      new THREE.SphereGeometry(7, 20, 14),
+      pointGeometry,
       new THREE.MeshStandardMaterial({ color: POINT_COLORS[p.kind], emissive: POINT_COLORS[p.kind], emissiveIntensity: 0.25, transparent: true }),
     )
+    mesh.userData.kind = p.kind
     mesh.position.set(p.x, pointHeight(p), p.y)
     mesh.userData.pointId = p.id
     pointMeshes.set(p.id, mesh)
@@ -146,6 +167,7 @@ function build() {
         new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 0.2, transparent: true, opacity: r.kind === 'conduit' ? 0.55 : 1 }),
       )
       mesh.userData.routeId = r.id
+      mesh.userData.conduit = r.kind === 'conduit'
       routeMeshes.set(r.id, mesh)
       g.add(mesh)
     }
@@ -164,11 +186,15 @@ function routeColor(device?: string) {
 function routePath(r: Route): THREE.Vector3[] {
   const elev = routeHeight(r, d.value.plan.wallHeight)
   const out = r.points.map(([x, y]) => new THREE.Vector3(x, elev, y))
-  const near = (x: number, y: number) =>
-    d.value.points
-      .map((p) => ({ p, dist: Math.hypot(p.x - x, p.y - y) }))
-      .filter((c) => c.dist <= DROP_SNAP)
-      .sort((a, b) => a.dist - b.dist)[0]?.p
+  const near = (x: number, y: number) => {
+    let best: PlanPoint | undefined
+    let bestDist = DROP_SNAP
+    for (const p of d.value.points) {
+      const dist = Math.hypot(p.x - x, p.y - y)
+      if (dist <= bestDist) [best, bestDist] = [p, dist]
+    }
+    return best
+  }
   const [sx, sy] = r.points[0]!
   const [ex, ey] = r.points.at(-1)!
   const start = near(sx, sy)
@@ -183,10 +209,10 @@ function applyState() {
   const anyLit = (props.highlightPoints?.size ?? 0) > 0
   for (const [id, mesh] of pointMeshes) {
     const mat = mesh.material as THREE.MeshStandardMaterial
-    const p = d.value.points.find((x) => x.id === id)!
     const lit = props.highlightPoints?.has(id) || props.focusPoint === id
     const dead = props.deadPoints?.has(id)
-    mat.color.set(dead ? '#6b7280' : POINT_COLORS[p.kind])
+    mat.color.set(dead ? '#6b7280' : POINT_COLORS[mesh.userData.kind as PlanPoint['kind']])
+    mat.emissiveIntensity = 0.25
     mat.opacity = anyLit && !lit ? 0.2 : 1
     mesh.scale.setScalar(lit ? 1.7 : 1)
     mesh.userData.lit = lit
@@ -195,9 +221,10 @@ function applyState() {
     const mat = mesh.material as THREE.MeshStandardMaterial
     const sel = props.selectedRoute === id
     mat.emissiveIntensity = sel ? 0.9 : 0.2
-    const base = d.value.routes.find((r) => r.id === id)?.kind === 'conduit' ? 0.55 : 1
+    const base = mesh.userData.conduit ? 0.55 : 1
     mat.opacity = props.selectedRoute && !sel ? base * 0.25 : base
   }
+  invalidate()
 }
 
 function center() {
@@ -217,12 +244,13 @@ function resetView() {
   camera.position.copy(c).addScaledVector(dir, dist)
   controls.target.copy(c)
   controls.update()
+  invalidate()
 }
 
 function label(text: string, dark: boolean): THREE.Sprite {
   const canvas = document.createElement('canvas')
   const ctx = canvas.getContext('2d')!
-  const font = '600 44px "IBM Plex Sans", system-ui, sans-serif'
+  const font = '600 44px "IBM Plex Sans Variable", system-ui, sans-serif'
   ctx.font = font
   canvas.width = Math.ceil(ctx.measureText(text).width) + 32
   canvas.height = 64
@@ -239,12 +267,13 @@ function label(text: string, dark: boolean): THREE.Sprite {
 }
 
 const raycaster = new THREE.Raycaster()
+const ndc = new THREE.Vector2()
 let downAt: { x: number; y: number } | null = null
 
 function pick(e: PointerEvent): THREE.Intersection | undefined {
   if (!renderer || !camera) return undefined
   const rect = renderer.domElement.getBoundingClientRect()
-  const ndc = new THREE.Vector2(((e.clientX - rect.left) / rect.width) * 2 - 1, -((e.clientY - rect.top) / rect.height) * 2 + 1)
+  ndc.set(((e.clientX - rect.left) / rect.width) * 2 - 1, -((e.clientY - rect.top) / rect.height) * 2 + 1)
   raycaster.setFromCamera(ndc, camera)
   return raycaster.intersectObjects([...pointMeshes.values(), ...routeMeshes.values()], false)[0]
 }
@@ -261,7 +290,18 @@ function onUp(e: PointerEvent) {
   else emit('canvas')
 }
 
+// hover picking at most once per frame; touch has no hover and its moves are orbit drags
+let moveEvent: PointerEvent | null = null
 function onMove(e: PointerEvent) {
+  if (e.pointerType === 'touch' || e.buttons) return
+  if (!moveEvent) requestAnimationFrame(hover)
+  moveEvent = e
+}
+
+function hover() {
+  const e = moveEvent
+  moveEvent = null
+  if (!e || !host.value) return
   const hit = pick(e)
   const rect = host.value!.getBoundingClientRect()
   const pid = hit?.object.userData.pointId as string | undefined
@@ -286,7 +326,6 @@ onMounted(() => {
   sun.position.set(400, 1200, 600)
   scene.add(sun)
   build()
-  resetView()
 
   const fit = () => {
     const w = el.clientWidth
@@ -296,23 +335,14 @@ onMounted(() => {
     renderer!.domElement.style.height = '100%'
     camera!.aspect = w / Math.max(1, h)
     camera!.updateProjectionMatrix()
+    invalidate()
   }
   resize = new ResizeObserver(fit)
   resize.observe(el)
+  // the portrait correction in resetView needs the real aspect ratio
   fit()
-
-  const clock = new THREE.Clock()
-  const loop = () => {
-    frame = requestAnimationFrame(loop)
-    const tm = clock.getElapsedTime()
-    for (const mesh of pointMeshes.values()) {
-      if (!mesh.userData.lit) continue
-      ;(mesh.material as THREE.MeshStandardMaterial).emissiveIntensity = 0.5 + Math.sin(tm * 4) * 0.35
-    }
-    controls!.update()
-    renderer!.render(scene, camera!)
-  }
-  loop()
+  resetView()
+  controls.addEventListener('change', invalidate)
 
   renderer.domElement.addEventListener('pointerdown', onDown)
   renderer.domElement.addEventListener('pointerup', onUp)
@@ -321,14 +351,21 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   cancelAnimationFrame(frame)
+  frame = 0
   resize?.disconnect()
   controls?.dispose()
   disposeGroup(scene)
+  pointGeometry.dispose()
+  renderer?.domElement.removeEventListener('pointerdown', onDown)
+  renderer?.domElement.removeEventListener('pointerup', onUp)
+  renderer?.domElement.removeEventListener('pointermove', onMove)
+  // dispose() alone leaves the context to GC; browsers cap live WebGL contexts at ~16
+  renderer?.forceContextLoss()
   renderer?.dispose()
   renderer?.domElement.remove()
 })
 
-watch(() => [d.value.rooms, d.value.points, d.value.routes, d.value.plan.wallHeight, props.showRoutes], build, { deep: true })
+watch(() => [d.value.rooms, d.value.points, d.value.routes, d.value.plan.wallHeight, props.showRoutes, isDark.value], build, { deep: true })
 watch(() => [props.highlightPoints, props.deadPoints, props.focusPoint, props.selectedRoute], applyState)
 </script>
 

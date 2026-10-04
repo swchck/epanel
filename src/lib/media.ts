@@ -48,16 +48,19 @@ async function renderPdfFirstPage(blob: Blob, maxSide = 2000): Promise<{ url: st
   const worker = await import('pdfjs-dist/build/pdf.worker.min.mjs?url')
   pdfjs.GlobalWorkerOptions.workerSrc = worker.default
   const doc = await pdfjs.getDocument({ data: new Uint8Array(await blob.arrayBuffer()) }).promise
-  const page = await doc.getPage(1)
-  const base = page.getViewport({ scale: 1 })
-  const scale = maxSide / Math.max(base.width, base.height)
-  const viewport = page.getViewport({ scale })
-  const canvas = document.createElement('canvas')
-  canvas.width = Math.round(viewport.width)
-  canvas.height = Math.round(viewport.height)
-  await page.render({ canvas, viewport }).promise
-  await doc.loadingTask.destroy()
-  return { url: canvasToDataUrl(canvas, 0.85), width: canvas.width, height: canvas.height }
+  try {
+    const page = await doc.getPage(1)
+    const base = page.getViewport({ scale: 1 })
+    const scale = maxSide / Math.max(base.width, base.height)
+    const viewport = page.getViewport({ scale })
+    const canvas = document.createElement('canvas')
+    canvas.width = Math.round(viewport.width)
+    canvas.height = Math.round(viewport.height)
+    await page.render({ canvas, viewport }).promise
+    return { url: canvasToDataUrl(canvas, 0.85), width: canvas.width, height: canvas.height }
+  } finally {
+    await doc.loadingTask.destroy()
+  }
 }
 
 export async function planImageFrom(blob: Blob): Promise<{ url: string; width: number; height: number }> {
@@ -66,5 +69,5 @@ export async function planImageFrom(blob: Blob): Promise<{ url: string; width: n
 }
 
 export function newId(prefix: string): string {
-  return `${prefix}-${Math.random().toString(36).slice(2, 8)}`
+  return `${prefix}-${crypto.randomUUID().slice(0, 13)}`
 }
