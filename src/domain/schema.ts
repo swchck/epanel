@@ -207,6 +207,8 @@ export const PanelData = z.object({
     updated: z.string().optional(),
     enclosure: z.string().optional(),
     location: LocalizedText.optional(),
+    // where the web app is published, e.g. https://user.github.io/panel/app/ — QR codes point here
+    publicUrl: z.string().optional(),
     contacts: z.array(Contact).default([]),
   }),
   supply: z.object({

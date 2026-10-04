@@ -15,7 +15,7 @@ const MIME: Record<string, string> = {
 }
 
 const source = process.argv[2] ?? 'data/demo.yaml'
-const target = process.argv[3] ?? 'public/panel.enc.json'
+const target = process.argv[3] ?? 'public/app/panel.enc.json'
 const password = process.env.PANEL_PASSWORD
 if (!password) {
   console.error('PANEL_PASSWORD is not set')

@@ -1,4 +1,10 @@
+import { createPinia } from 'pinia'
 import { createApp } from 'vue'
-import './style.css'
 import App from './App.vue'
-createApp(App).mount('#app')
+import { i18n } from './i18n'
+import { router } from './router'
+import { registerPwa } from './composables/usePwa'
+import './style.css'
+
+createApp(App).use(createPinia()).use(router).use(i18n).mount('#app')
+registerPwa()

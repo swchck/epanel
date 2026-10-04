@@ -5,7 +5,7 @@ import { decryptJson, isEnvelope } from '../src/domain/crypto'
 import { buildGraph } from '../src/domain/graph'
 import { referenceIssues } from '../src/domain/schema'
 
-const file = process.argv[2] ?? 'public/panel.enc.json'
+const file = process.argv[2] ?? 'public/app/panel.enc.json'
 let raw: unknown = JSON.parse(readFileSync(file, 'utf8'))
 if (isEnvelope(raw)) {
   const password = process.env.PANEL_PASSWORD
