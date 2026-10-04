@@ -214,6 +214,11 @@
   },
   "panel": {
     "title": "Električna tabla",
+    "view": {
+      "label": "Prikaz table",
+      "visual": "Tabla",
+      "list": "Lista"
+    },
     "stat": {
       "groups": "strujnih kola",
       "rcds": "FID sklopki i FID osigurača",
@@ -740,11 +745,6 @@
       "mod": "mod.",
       "blank": "prazno",
       "device": "uređaj",
-      "view": {
-        "label": "Prikaz table",
-        "visual": "Tabla",
-        "list": "Lista"
-      },
       "narrower": "Uže",
       "wider": "Šire",
       "addRow": "Dodaj red",

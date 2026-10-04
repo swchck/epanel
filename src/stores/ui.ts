@@ -11,6 +11,7 @@ export const useUi = defineStore('ui', () => {
   const searchOpen = ref(false)
   // a per-device convenience: losing it to a private window only means the sidebar opens wide
   const sidebarCollapsed = useLocalStorage('sidebar-collapsed', false)
+  const panelView = useLocalStorage<'visual' | 'list'>('panel-view', 'visual')
 
   const filterTypes = ref<DeviceType[]>([])
   const filterRoom = ref<string | null>(null)
@@ -117,6 +118,7 @@ export const useUi = defineStore('ui', () => {
     planLayers,
     highlighted,
     filtersActive,
+    panelView,
     matchesFilter,
     select,
     selectPoint,

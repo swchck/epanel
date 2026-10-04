@@ -10,6 +10,8 @@ import { Switch } from '@/components/ui/switch'
 import ContactList from '@/components/common/ContactList.vue'
 import DeviceDetails from '@/components/panel/DeviceDetails.vue'
 import PanelEnclosure from '@/components/panel/PanelEnclosure.vue'
+import PanelList from '@/components/panel/PanelList.vue'
+import PanelViewToggle from '@/components/panel/PanelViewToggle.vue'
 import { TYPE_ACCENT } from '@/components/panel/geometry'
 import { pointPowered } from '@/domain/graph'
 import type { DeviceType } from '@/domain/model'
@@ -139,7 +141,8 @@ watch(
           {{ t('panel.simulate') }}
           <Switch v-model="ui.simulate" />
         </label>
-        <Button variant="outline" size="icon" class="hidden size-9 rounded-xl md:inline-flex" :aria-label="t('panel.zoom')" @click="zoomed = !zoomed">
+        <PanelViewToggle />
+        <Button v-if="ui.panelView === 'visual'" variant="outline" size="icon" class="hidden size-9 rounded-xl md:inline-flex" :aria-label="t('panel.zoom')" @click="zoomed = !zoomed">
           <component :is="zoomed ? ZoomOut : ZoomIn" />
         </Button>
       </div>
@@ -182,12 +185,13 @@ watch(
 
     <div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_26rem]">
       <div class="min-w-0">
-        <div class="overflow-x-auto rounded-2xl">
+        <div v-if="ui.panelView === 'visual'" class="overflow-x-auto rounded-2xl">
           <div :class="zoomed ? 'w-[1100px]' : 'mx-auto max-w-[900px]'">
             <PanelEnclosure @select="onSelect" />
           </div>
         </div>
-        <div class="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-xs text-muted-foreground">
+        <PanelList v-else @select="onSelect" />
+        <div v-if="ui.panelView === 'visual'" class="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-xs text-muted-foreground">
           <span class="flex items-center gap-1.5"><span class="inline-block h-2 w-3 rounded-sm bg-[#d93a2b]" /> {{ t('panel.legend.on') }}</span>
           <span class="flex items-center gap-1.5"><span class="inline-block h-2 w-3 rounded-sm bg-[#2f9e44]" /> {{ t('panel.legend.off') }}</span>
           <span class="flex items-center gap-1.5"><span class="inline-block size-2 rounded-full bg-live" /> {{ t('panel.legend.live') }}</span>

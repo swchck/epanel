@@ -214,6 +214,11 @@
   },
   "panel": {
     "title": "Electrical panel",
+    "view": {
+      "label": "Panel view",
+      "visual": "Panel",
+      "list": "List"
+    },
     "stat": {
       "groups": "circuits",
       "rcds": "RCDs & RCBOs",
@@ -740,11 +745,6 @@
       "mod": "mod.",
       "blank": "blank",
       "device": "device",
-      "view": {
-        "label": "Panel view",
-        "visual": "Panel",
-        "list": "List"
-      },
       "narrower": "Narrower",
       "wider": "Wider",
       "addRow": "Add row",

@@ -214,6 +214,11 @@
   },
   "panel": {
     "title": "Cuadro eléctrico",
+    "view": {
+      "label": "Vista del cuadro",
+      "visual": "Cuadro",
+      "list": "Lista"
+    },
     "stat": {
       "groups": "circuitos",
       "rcds": "diferenciales y RCBO",
@@ -740,11 +745,6 @@
       "mod": "mód.",
       "blank": "hueco",
       "device": "dispositivo",
-      "view": {
-        "label": "Vista del cuadro",
-        "visual": "Cuadro",
-        "list": "Lista"
-      },
       "narrower": "Más estrecho",
       "wider": "Más ancho",
       "addRow": "Añadir fila",

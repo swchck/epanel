@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { useLocalStorage } from '@vueuse/core'
-import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, LayoutGrid, List, Minus, Plus, SquareDashed, Trash2, X } from '@lucide/vue'
+import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, Minus, Plus, SquareDashed, Trash2, X } from '@lucide/vue'
 import { Button } from '@/components/ui/button'
 import DeviceChip from '@/components/common/DeviceChip.vue'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import PanelEnclosure from '@/components/panel/PanelEnclosure.vue'
+import PanelViewToggle from '@/components/panel/PanelViewToggle.vue'
 import { TYPE_ACCENT } from '@/components/panel/geometry'
 import { DEVICE_TYPES, type DeviceType } from '@/domain/model'
 import { addDevice, addRow, feederAt, findItem, insertBlank, moveItem, moveToRow, placeAt, removeDevice, removeRow } from '@/editor/ops'
@@ -22,11 +22,6 @@ const { t, tx } = useText()
 const selected = computed(() => d.value.devices.find((x) => x.id === ui.selectedDevice))
 const loc = computed(() => (selected.value ? findItem(d.value, selected.value.id) : undefined))
 const unplaced = computed(() => d.value.devices.filter((x) => !findItem(d.value, x.id)))
-const view = useLocalStorage<'visual' | 'list'>('editor-panel-view', 'visual')
-const VIEWS = [
-  { id: 'visual', icon: LayoutGrid },
-  { id: 'list', icon: List },
-] as const
 
 // the slot the user clicked "+" on; the aside then asks what goes there
 const slot = ref<{ row: number; index: number } | null>(null)
@@ -85,28 +80,16 @@ function used(i: number) {
 <template>
   <div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_28rem]">
     <div class="min-w-0 space-y-4">
-      <div class="flex w-max items-center gap-1 rounded-xl border bg-card p-1" role="radiogroup" :aria-label="t('editor.panel.view.label')">
-        <button
-          v-for="v in VIEWS"
-          :key="v.id"
-          role="radio"
-          :aria-checked="view === v.id"
-          class="inline-flex h-7 items-center gap-1.5 rounded-lg px-2.5 text-sm transition"
-          :class="view === v.id ? 'bg-accent text-foreground ring-1 ring-foreground/15' : 'text-muted-foreground hover:bg-accent/60 hover:text-foreground'"
-          @click="view = v.id"
-        >
-          <component :is="v.icon" class="size-4" /> {{ t(`editor.panel.view.${v.id}`) }}
-        </button>
-      </div>
+      <PanelViewToggle />
 
-      <div v-if="view === 'visual'" class="overflow-x-auto rounded-2xl">
+      <div v-if="ui.panelView === 'visual'" class="overflow-x-auto rounded-2xl">
         <div class="mx-auto max-w-[900px]">
           <PanelEnclosure addable :active-slot="slot" @select="(id) => ui.select(ui.selectedDevice === id ? null : id)" @add="openSlot" />
         </div>
       </div>
 
       <div class="space-y-2">
-        <template v-if="view === 'list'">
+        <template v-if="ui.panelView === 'list'">
         <div v-for="(row, ri) in d.rows" :key="row.id" class="rounded-xl border bg-card p-3">
           <div class="mb-2 flex flex-wrap items-center gap-3">
             <span class="text-sm font-medium">{{ t('labels.row', { n: ri + 1 }) }}</span>
