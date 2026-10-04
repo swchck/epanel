@@ -874,88 +874,88 @@
       "source": "Source code"
     },
     "hero": {
-      "badge": "A QR code inside the panel",
-      "title": "An electrical panel that explains itself",
-      "subtitle": "Stick a QR code on the panel door. Anyone who scans it sees which breaker cuts what, where the cables run in the walls and what to do when something trips. The site works offline and the data is encrypted.",
+      "badge": "A QR code on the panel door",
+      "title": "Scan the panel door to see what each breaker controls",
+      "subtitle": "A sticker on the door of your electrical panel opens a site with the panel layout and a floor plan of the apartment. It tells you which breaker to switch off before replacing a socket and where the cables run under the plaster. If something trips, a step-by-step guide is right there. The data is encrypted, and after the first visit the site works offline.",
       "tap": "Flip some breakers",
       "live": "Points without power on the plan: {n}"
     },
     "how": {
       "title": "How it works",
       "describe": {
-        "title": "The electrician describes the panel",
-        "body": "In the editor: rows, breakers, RCDs, the floor plan, sockets, cable routes and photos of the walls before plastering. In the browser or in the desktop app."
+        "title": "The electrician fills in the panel",
+        "body": "Rows of breakers, RCDs, the floor plan with sockets, cable routes and photos of the walls before plastering. The editor runs in the browser, and there is a desktop app too."
       },
       "encrypt": {
-        "title": "The data is encrypted with a password",
-        "body": "The result is a single .panel file. Send it to the owner or publish it to GitHub Pages straight from the editor."
+        "title": "It all ends up in one file",
+        "body": "The .panel file is encrypted with a password. Send it to the owner, or publish it to GitHub Pages straight from the editor."
       },
       "stick": {
-        "title": "A QR code on the panel door",
-        "body": "The password is built into the QR, so nobody has to type it. After the first visit the phone keeps a copy and the site works offline."
+        "title": "The QR code goes on the door",
+        "body": "The password is already inside the code, so nobody types it. On the first visit the phone keeps a copy, and after that the site opens without internet."
       }
     },
     "features": {
-      "title": "Everything about your panel on your phone",
-      "subtitle": "From \"which breaker do I switch off to replace a socket\" to checking cable sizes.",
+      "title": "What the site shows",
+      "subtitle": "Answers to everyday questions like \"what do I switch off to replace this socket\", plus the checks an electrician would normally run.",
       "panel": {
-        "title": "A realistic panel",
-        "body": "Every breaker looks like the real one: rating, curve, residual current. Tap it to see what it supplies and how loaded it is."
+        "title": "A panel that looks real",
+        "body": "Breakers are drawn to scale with their rating and curve, and RCDs show their residual current. Tap any of them to see what it supplies and how loaded it is."
       },
       "find": {
         "title": "What to switch off?",
-        "body": "Pick a socket or the water heater and get the answer: \"row 2, fifth from the left\", highlighted on the panel."
+        "body": "Pick a socket or the water heater. You get an answer like \"row 2, fifth from the left\", and the breaker lights up on the panel."
       },
       "emergency": {
-        "title": "Something tripped",
-        "body": "A step-by-step guide for the whole household: what may have happened, what to do and when to call an electrician."
+        "title": "When something trips",
+        "body": "A step-by-step guide anyone in the household can follow. It helps work out what happened and when it is time to call an electrician."
       },
       "plan": {
-        "title": "Plan and no-drill zones",
-        "body": "Sockets and lights on the floor plan, cable routes with zones where you must not drill, and photos of the walls before renovation."
+        "title": "Where not to drill",
+        "body": "The floor plan marks sockets, lights and cable routes with a strip where drilling is off limits. You can attach photos of the walls taken before the renovation."
       },
       "checks": {
-        "title": "Engineering checks",
-        "body": "Cable size vs breaker, selectivity, RCDs in wet zones, RCD type for inverter appliances, load per circuit."
+        "title": "Wiring checks",
+        "body": "The app compares cable sizes with breaker ratings, adds up the load on each circuit and checks selectivity. It also makes sure wet rooms are behind an RCD and inverter appliances get the right RCD type."
       },
       "schema": {
         "title": "Single-line diagram",
-        "body": "Built automatically, with flowing current and outage simulation."
+        "body": "Drawn automatically from the panel data. Current flows through it as an animation, and you can switch breakers off to see what goes dark."
       },
       "smart": {
         "title": "Smart home and KNX",
-        "body": "Actuators, group addresses and room panels. See what controls what, and that a smart relay is no substitute for a breaker."
+        "body": "Actuators, group addresses and wall panels in each room, so you can see which channel switches what. The app never treats a smart relay as isolation and points to the breaker in front of it."
       },
       "labels": {
-        "title": "Labels and QR",
-        "body": "True-to-scale breaker labels and a QR code for every device."
+        "title": "Labels and QR codes",
+        "body": "Breaker labels print at true scale. Every device gets its own QR code."
       },
       "offline": {
-        "title": "Works without power",
-        "body": "When the main breaker trips, the router loses power too. A site you have opened once loads from the phone's storage."
+        "title": "Works during a power cut",
+        "body": "When the main breaker trips, the router goes down with it. A site you have opened once still loads from the phone's storage."
       }
     },
     "privacy": {
       "title": "Only people with the password can see your floor plan",
-      "p1": "Data is encrypted with AES-256-GCM right in the browser, with the key derived from the password via PBKDF2.",
-      "p2": "The host only stores an encrypted file. There is no server and no database.",
-      "p3": "The password in the QR travels after the # sign, so the browser never sends it to the server.",
-      "p4": "Photos and documents are encrypted together with everything else.",
-      "scan": "This QR opens the demo apartment"
+      "p1": "The browser encrypts the data with AES-256-GCM. The key is derived from the password with PBKDF2.",
+      "p2": "The host only stores the encrypted file. The site has no server or database of its own.",
+      "p3": "The password sits in the link after the # sign. Browsers never send that part of the address to the server.",
+      "p4": "Photos and documents are stored in the same encrypted file.",
+      "scan": "This QR code opens the demo apartment"
     },
     "diy": {
       "title": "Make your own",
-      "subtitle": "All you need is a free GitHub account. Your electrician can fill in the panel in the browser or in the desktop app.",
+      "subtitle": "You need a free GitHub account. Your electrician can fill in the panel in the browser or in the desktop app.",
       "steps": [
-        "Fork the repository and enable GitHub Pages (Settings → Pages → GitHub Actions).",
-        "Open the app, choose \"Create a new panel\" and set a password. Or open the .panel file from your electrician.",
-        "Fill in the panel and the plan. Set the site address on the General tab; QR codes need it.",
-        "Press \"Publish\" with a GitHub token, or replace public/app/panel.enc.json by hand.",
-        "Print the labels in \"Labels & QR\" and stick the QR on the panel door.",
-        "Press TEST on the RCDs once a month. The app reminds you if you miss it."
+        "Fork the repository and turn on GitHub Pages: Settings → Pages → GitHub Actions.",
+        "Open the app, choose \"Create a new panel\" and pick a password. If your electrician sent you a .panel file, open that instead.",
+        "Fill in the panel and the plan. On the General tab, enter the site address: the QR codes will point there.",
+        "Press \"Publish\", which needs a GitHub token. You can also replace public/app/panel.enc.json by hand.",
+        "Print the labels in \"Labels & QR\" and stick the QR code on the panel door.",
+        "Press TEST on the RCDs once a month. If you forget, the app reminds you."
       ]
     },
-    "footer": "Not a substitute for a wiring design or an inspection by an electrician."
+    "footer": "The site does not replace a wiring design or an inspection by an electrician."
   },
   "network": {
     "title": "Networks & conduits",

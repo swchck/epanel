@@ -864,98 +864,98 @@
       "features": "Funciones",
       "how": "Cómo funciona",
       "privacy": "Privacidad",
-      "diy": "Hazte el tuyo"
+      "diy": "Hazlo tú"
     },
     "cta": {
       "demo": "Abrir la demo",
-      "smart": "Demo de KNX",
+      "smart": "Demo con KNX",
       "download": "Descargar el editor",
-      "open": "Abrir la app",
+      "open": "Abrir la aplicación",
       "source": "Código fuente"
     },
     "hero": {
-      "badge": "Un código QR dentro del cuadro",
-      "title": "Un cuadro eléctrico que se explica solo",
-      "subtitle": "Pega un código QR en la puerta del cuadro. Quien lo escanee verá qué automático corta qué, por dónde van los cables en las paredes y qué hacer cuando salta algo. La web funciona sin conexión y los datos van cifrados.",
-      "tap": "Prueba a bajar algún automático",
+      "badge": "Un QR en la puerta del cuadro",
+      "title": "Escanea la puerta del cuadro y mira qué corta cada interruptor",
+      "subtitle": "Una pegatina en la puerta del cuadro eléctrico abre una web con el esquema del cuadro y el plano del piso. Ahí ves qué interruptor bajar antes de cambiar un enchufe y por dónde van los cables bajo el yeso. Si algo salta, tienes una guía paso a paso. Los datos van cifrados y, después de la primera visita, la web funciona sin internet.",
+      "tap": "Baja algunos interruptores",
       "live": "Puntos sin corriente en el plano: {n}"
     },
     "how": {
       "title": "Cómo funciona",
       "describe": {
-        "title": "El electricista describe el cuadro",
-        "body": "En el editor: filas, magnetotérmicos, diferenciales, el plano, los enchufes, el recorrido de los cables y fotos de las paredes antes de enlucir. En el navegador o en la app de escritorio."
+        "title": "El electricista rellena el cuadro",
+        "body": "Introduce las filas de interruptores, los diferenciales, el plano con los enchufes, el recorrido de los cables y fotos de las paredes antes de enlucir. El editor funciona en el navegador y también hay una aplicación de escritorio."
       },
       "encrypt": {
-        "title": "Los datos se cifran con una contraseña",
-        "body": "El resultado es un único archivo .panel. Envíaselo al propietario o publícalo en GitHub Pages directamente desde el editor."
+        "title": "Todo cabe en un archivo",
+        "body": "El archivo .panel va cifrado con una contraseña. Se puede enviar al propietario o publicar en GitHub Pages directamente desde el editor."
       },
       "stick": {
-        "title": "Un código QR en la puerta del cuadro",
-        "body": "La contraseña va incluida en el QR, así que nadie tiene que escribirla. Tras la primera visita, el móvil guarda una copia y la web funciona sin conexión."
+        "title": "El QR va en la puerta",
+        "body": "La contraseña ya está dentro del código, así que nadie tiene que escribirla. En la primera visita el móvil guarda una copia y luego la web abre sin internet."
       }
     },
     "features": {
-      "title": "Todo sobre tu cuadro en el móvil",
-      "subtitle": "Desde «qué automático bajo para cambiar un enchufe» hasta comprobar la sección de los cables.",
+      "title": "Qué muestra la web",
+      "subtitle": "Respuestas a preguntas del día a día como «qué bajo para cambiar este enchufe» y las comprobaciones que normalmente haría un electricista.",
       "panel": {
-        "title": "Un cuadro realista",
-        "body": "Cada automático se ve como el de verdad: calibre, curva, sensibilidad. Tócalo para ver qué alimenta y cuánta carga tiene."
+        "title": "Un cuadro como el de verdad",
+        "body": "Los interruptores están dibujados a escala, con su calibre y su curva, y los diferenciales muestran su sensibilidad. Toca cualquiera para ver qué alimenta y cuánta carga tiene."
       },
       "find": {
-        "title": "¿Qué desconecto?",
-        "body": "Elige un enchufe o el termo y obtén la respuesta: «fila 2, el quinto desde la izquierda», resaltado en el cuadro."
+        "title": "¿Qué bajo?",
+        "body": "Elige un enchufe o el termo. La respuesta será del tipo «fila 2, quinto por la izquierda» y el interruptor se ilumina en el cuadro."
       },
       "emergency": {
-        "title": "Ha saltado algo",
-        "body": "Una guía paso a paso para toda la casa: qué puede haber pasado, qué hacer y cuándo llamar a un electricista."
+        "title": "Cuando algo salta",
+        "body": "Una guía paso a paso que cualquiera en casa puede seguir. Ayuda a entender qué ha pasado y cuándo toca llamar al electricista."
       },
       "plan": {
-        "title": "Plano y zonas sin taladrar",
-        "body": "Enchufes y luces en el plano, recorridos de cables con las zonas donde no se debe taladrar y fotos de las paredes antes de la reforma."
+        "title": "Dónde no taladrar",
+        "body": "El plano marca enchufes, luces y el recorrido de los cables con una franja donde no se debe taladrar. Puedes añadir fotos de las paredes tomadas antes de la obra."
       },
       "checks": {
-        "title": "Revisión técnica",
-        "body": "Sección del cable frente al automático, selectividad, diferenciales en zonas húmedas, tipo de diferencial para aparatos inverter, carga por circuito."
+        "title": "Revisión de la instalación",
+        "body": "La aplicación compara la sección del cable con el calibre del interruptor, suma la carga de cada circuito y revisa la selectividad. También comprueba que las zonas húmedas tengan diferencial y que los equipos con inverter lleven el tipo adecuado."
       },
       "schema": {
         "title": "Esquema unifilar",
-        "body": "Se genera automáticamente, con el flujo de corriente animado y simulación de cortes."
+        "body": "Se dibuja solo a partir de los datos del cuadro. La corriente circula animada y puedes bajar interruptores para ver qué se apaga."
       },
       "smart": {
         "title": "Domótica y KNX",
-        "body": "Actuadores, direcciones de grupo y paneles en las estancias. Se ve qué controla qué, y que un relé domótico no sustituye a un automático."
+        "body": "Actuadores, direcciones de grupo y paneles de pared en cada habitación, para ver qué canal enciende qué. La aplicación nunca toma un relé domótico como corte y señala el interruptor que tiene delante."
       },
       "labels": {
         "title": "Etiquetas y QR",
-        "body": "Etiquetas a escala real para los automáticos y un código QR para cada dispositivo."
+        "body": "Las etiquetas para los interruptores se imprimen a tamaño real. Cada equipo tiene su propio QR."
       },
       "offline": {
         "title": "Funciona sin luz",
-        "body": "Cuando salta el interruptor general, el router también se queda sin corriente. Una web que hayas abierto una vez se carga desde la memoria del móvil."
+        "body": "Cuando salta el general, el router también se queda sin corriente. Una web que hayas abierto alguna vez se carga desde la memoria del móvil."
       }
     },
     "privacy": {
-      "title": "Solo quien tiene la contraseña puede ver tu plano",
-      "p1": "Los datos se cifran con AES-256-GCM directamente en el navegador, con una clave derivada de la contraseña mediante PBKDF2.",
-      "p2": "El alojamiento solo guarda un archivo cifrado. No hay servidor ni base de datos.",
-      "p3": "La contraseña del QR va después del signo #, así que el navegador nunca la envía al servidor.",
-      "p4": "Las fotos y los documentos se cifran junto con todo lo demás.",
+      "title": "Solo quien tiene la contraseña ve el plano de tu casa",
+      "p1": "El navegador cifra los datos con AES-256-GCM. La clave se obtiene de la contraseña con PBKDF2.",
+      "p2": "En el hosting solo hay un archivo cifrado. La web no tiene servidor ni base de datos propios.",
+      "p3": "La contraseña va en el enlace, después del signo #. Esa parte de la dirección el navegador no la envía al servidor.",
+      "p4": "Las fotos y los documentos se guardan en el mismo archivo cifrado.",
       "scan": "Este QR abre el piso de demostración"
     },
     "diy": {
-      "title": "Hazte el tuyo",
-      "subtitle": "Solo necesitas una cuenta gratuita de GitHub. Tu electricista puede rellenar el cuadro en el navegador o en la app de escritorio.",
+      "title": "Hazlo tú",
+      "subtitle": "Necesitas una cuenta gratuita de GitHub. Tu electricista puede rellenar el cuadro en el navegador o en la aplicación de escritorio.",
       "steps": [
-        "Haz un fork del repositorio y activa GitHub Pages (Settings → Pages → GitHub Actions).",
-        "Abre la app, elige «Crear un cuadro nuevo» y pon una contraseña. O abre el archivo .panel de tu electricista.",
-        "Rellena el cuadro y el plano. Indica la dirección web en la pestaña General; los códigos QR la necesitan.",
-        "Pulsa «Publicar» con un token de GitHub o reemplaza public/app/panel.enc.json a mano.",
-        "Imprime las etiquetas en «Etiquetas y QR» y pega el QR en la puerta del cuadro.",
-        "Pulsa TEST en los diferenciales una vez al mes. La app te avisa si se te pasa."
+        "Haz un fork del repositorio y activa GitHub Pages: Settings → Pages → GitHub Actions.",
+        "Abre la aplicación, pulsa «Crear un cuadro nuevo» y elige una contraseña. Si tu electricista te envió un archivo .panel, ábrelo.",
+        "Rellena el cuadro y el plano. En la pestaña «General», escribe la dirección de la web: ahí apuntarán los QR.",
+        "Pulsa «Publicar», que necesita un token de GitHub. También puedes sustituir public/app/panel.enc.json a mano.",
+        "En «Etiquetas y QR», imprime las etiquetas y pega el QR en la puerta del cuadro.",
+        "Pulsa TEST en los diferenciales una vez al mes. Si se te olvida, la aplicación te lo recuerda."
       ]
     },
-    "footer": "No sustituye a un proyecto de instalación eléctrica ni a la revisión de un electricista."
+    "footer": "La web no sustituye un proyecto de instalación ni la revisión de un electricista."
   },
   "network": {
     "title": "Redes y tubos",

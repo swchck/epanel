@@ -869,93 +869,93 @@
     "cta": {
       "demo": "Otvori demo",
       "smart": "KNX demo",
-      "download": "Preuzmi uređivač",
+      "download": "Preuzmi editor",
       "open": "Otvori aplikaciju",
       "source": "Izvorni kod"
     },
     "hero": {
-      "badge": "QR kod u razvodnoj tabli",
-      "title": "Električna tabla koja sama sebe objašnjava",
-      "subtitle": "Zalepite QR kod na vrata table. Ko god ga skenira, vidi koji osigurač šta isključuje, gde kablovi idu kroz zidove i šta da radi kada nešto izbaci. Sajt radi bez interneta, a podaci su šifrovani.",
-      "tap": "Probajte poluge",
+      "badge": "QR kod na vratima table",
+      "title": "Skenirajte vrata table i vidite šta isključuje svaki osigurač",
+      "subtitle": "Nalepnica na vratima električne table otvara sajt sa šemom table i planom stana. Na njemu piše koji osigurač treba isključiti pre zamene utičnice i gde ispod maltera idu kablovi. Ako nešto izbaci, tu je i uputstvo korak po korak. Podaci su šifrovani, a posle prvog otvaranja sajt radi i bez interneta.",
+      "tap": "Prebacite nekoliko osigurača",
       "live": "Tačaka bez struje na planu: {n}"
     },
     "how": {
       "title": "Kako radi",
       "describe": {
-        "title": "Električar opisuje tablu",
-        "body": "U uređivaču: redovi, osigurači, FID sklopke, plan stana, utičnice, trase kablova i fotografije zidova pre malterisanja. U pregledaču ili u desktop aplikaciji."
+        "title": "Električar popunjava tablu",
+        "body": "Unosi redove osigurača, FID sklopke, plan stana sa utičnicama, trase kablova i fotografije zidova pre malterisanja. Editor radi u pregledaču, a postoji i program za računar."
       },
       "encrypt": {
-        "title": "Podaci se šifruju lozinkom",
-        "body": "Rezultat je jedan .panel fajl. Pošaljite ga vlasniku ili ga objavite na GitHub Pages direktno iz uređivača."
+        "title": "Sve staje u jedan fajl",
+        "body": "Fajl .panel je šifrovan lozinkom. Može da se pošalje vlasniku ili odmah objavi na GitHub Pages iz editora."
       },
       "stick": {
-        "title": "QR kod na vratima table",
-        "body": "Lozinka je ugrađena u QR, pa niko ne mora da je kuca. Posle prvog otvaranja telefon čuva kopiju i sajt radi bez interneta."
+        "title": "QR kod ide na vrata",
+        "body": "Lozinka je već upisana u kod, pa niko ne mora da je kuca. Pri prvom otvaranju telefon sačuva kopiju i posle toga sajt radi bez interneta."
       }
     },
     "features": {
-      "title": "Sve o vašoj tabli na telefonu",
-      "subtitle": "Od „koji osigurač da isključim da bih zamenio utičnicu“ do provere preseka kablova.",
+      "title": "Šta sajt prikazuje",
+      "subtitle": "Odgovore na svakodnevna pitanja kao što je „šta da isključim da bih zamenio utičnicu“ i provere koje inače radi električar.",
       "panel": {
         "title": "Tabla kao prava",
-        "body": "Svaki osigurač izgleda kao pravi: nazivna struja, karakteristika, diferencijalna struja. Dodirnite ga da vidite šta napaja i koliko je opterećen."
+        "body": "Osigurači su nacrtani u razmeri, sa nazivnom strujom i karakteristikom, a FID sklopke pokazuju struju curenja. Dodirnite bilo koji i videćete šta napaja i koliko je opterećen."
       },
       "find": {
         "title": "Šta isključiti?",
-        "body": "Izaberite utičnicu ili bojler i dobijte odgovor: „red 2, peti sleva“, označen na tabli."
+        "body": "Izaberite utičnicu ili bojler. Dobićete odgovor tipa „red 2, peti sleva“, a osigurač će zasvetleti na tabli."
       },
       "emergency": {
-        "title": "Nešto je izbacilo",
-        "body": "Uputstvo korak po korak za sve ukućane: šta se moglo desiti, šta uraditi i kada pozvati električara."
+        "title": "Kad nešto izbaci",
+        "body": "Uputstvo korak po korak koje svako u kući može da prati. Pomaže da se shvati šta se desilo i kada je vreme da se zove električar."
       },
       "plan": {
-        "title": "Plan i zone bez bušenja",
-        "body": "Utičnice i svetla na planu stana, trase kablova sa zonama gde ne smete da bušite i fotografije zidova pre renoviranja."
+        "title": "Gde ne bušiti",
+        "body": "Na planu su utičnice, rasveta i trase kablova sa trakom u kojoj se ne buši. Uz zidove mogu da stoje fotografije snimljene pre renoviranja."
       },
       "checks": {
-        "title": "Tehničke provere",
-        "body": "Presek kabla i osigurač, selektivnost, FID zaštita u vlažnim prostorijama, tip FID sklopke za inverterske uređaje, opterećenje po strujnom kolu."
+        "title": "Provera instalacije",
+        "body": "Aplikacija poredi presek kabla sa osiguračem, sabira opterećenje po strujnim krugovima i proverava selektivnost. Gleda i da li su vlažne prostorije iza FID sklopke i da li inverterski uređaji imaju odgovarajući tip FID-a."
       },
       "schema": {
         "title": "Jednopolna šema",
-        "body": "Pravi se automatski, sa prikazom toka struje i simulacijom isključenja."
+        "body": "Crta se sama iz podataka o tabli. Struja kroz nju teče animirano, a osigurače možete isključivati i gledati šta se gasi."
       },
       "smart": {
         "title": "Pametna kuća i KNX",
-        "body": "Aktuatori, grupne adrese i paneli u prostorijama. Vidi se šta čime upravlja i da relej pametne kuće ne zamenjuje osigurač."
+        "body": "Aktuatori, grupne adrese i zidni paneli po sobama, pa se vidi koji kanal šta uključuje. Aplikacija relej pametne kuće nikad ne smatra isključenjem i pokazuje osigurač ispred njega."
       },
       "labels": {
-        "title": "Nalepnice i QR",
-        "body": "Oznake za osigurače u stvarnoj veličini i QR kod za svaki uređaj."
+        "title": "Nalepnice i QR kodovi",
+        "body": "Oznake za osigurače štampaju se u prirodnoj veličini. Svaki uređaj dobija svoj QR kod."
       },
       "offline": {
-        "title": "Radi i bez struje",
-        "body": "Kada izbaci glavni osigurač, i ruter ostaje bez struje. Sajt koji ste jednom otvorili učitava se iz memorije telefona."
+        "title": "Radi i kad nestane struje",
+        "body": "Kad izbaci glavni osigurač, i ruter ostaje bez napajanja. Sajt koji ste bar jednom otvorili učitaće se iz memorije telefona."
       }
     },
     "privacy": {
-      "title": "Plan vašeg stana vide samo oni koji imaju lozinku",
-      "p1": "Podaci se šifruju algoritmom AES-256-GCM direktno u pregledaču, a ključ se izvodi iz lozinke pomoću PBKDF2.",
-      "p2": "Hosting čuva samo šifrovani fajl. Nema servera ni baze podataka.",
-      "p3": "Lozinka u QR kodu ide posle znaka #, pa je pregledač nikada ne šalje serveru.",
-      "p4": "Fotografije i dokumenti su šifrovani zajedno sa svim ostalim.",
-      "scan": "Ovaj QR otvara demo stan"
+      "title": "Plan stana vide samo oni koji imaju lozinku",
+      "p1": "Pregledač šifruje podatke algoritmom AES-256-GCM. Ključ se dobija iz lozinke preko PBKDF2.",
+      "p2": "Na hostingu je samo šifrovani fajl. Sajt nema svoj server ni bazu podataka.",
+      "p3": "Lozinka stoji u linku iza znaka #. Taj deo adrese pregledač ne šalje serveru.",
+      "p4": "Fotografije i dokumenti čuvaju se u istom šifrovanom fajlu.",
+      "scan": "Ovaj QR kod otvara demo stan"
     },
     "diy": {
       "title": "Napravite svoju",
-      "subtitle": "Potreban vam je samo besplatan GitHub nalog. Električar može da popuni tablu u pregledaču ili u desktop aplikaciji.",
+      "subtitle": "Potreban je besplatan nalog na GitHub-u. Tablu može da popuni vaš električar, u pregledaču ili u programu za računar.",
       "steps": [
-        "Napravite fork repozitorijuma i uključite GitHub Pages (Settings → Pages → GitHub Actions).",
-        "Otvorite aplikaciju, izaberite „Napravi novu tablu“ i postavite lozinku. Ili otvorite .panel fajl od električara.",
-        "Popunite tablu i plan. Unesite adresu sajta na kartici Opšte; potrebna je za QR kodove.",
-        "Pritisnite „Objavi“ uz GitHub token ili ručno zamenite public/app/panel.enc.json.",
-        "Odštampajte nalepnice u odeljku „Nalepnice i QR“ i zalepite QR na vrata table.",
-        "Jednom mesečno pritisnite TEST na FID sklopkama. Aplikacija će vas podsetiti ako preskočite."
+        "Napravite fork repozitorijuma i uključite GitHub Pages: Settings → Pages → GitHub Actions.",
+        "Otvorite aplikaciju, izaberite „Napravi novu tablu“ i smislite lozinku. Ako vam je električar poslao fajl .panel, otvorite njega.",
+        "Popunite tablu i plan. Na kartici „Opšte“ upišite adresu sajta: na nju će voditi QR kodovi.",
+        "Pritisnite „Objavi“, za to je potreban GitHub token. Fajl public/app/panel.enc.json možete zameniti i ručno.",
+        "U odeljku „Nalepnice i QR“ odštampajte nalepnice i zalepite QR kod na vrata table.",
+        "Jednom mesečno pritisnite TEST na FID sklopkama. Ako zaboravite, aplikacija će vas podsetiti."
       ]
     },
-    "footer": "Ne zamenjuje projekat elektroinstalacije ni pregled električara."
+    "footer": "Sajt ne zamenjuje projekat električne instalacije ni pregled električara."
   },
   "network": {
     "title": "Mreže i cevi",
