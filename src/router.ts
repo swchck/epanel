@@ -40,3 +40,17 @@ export const router = createRouter({
     { path: '/:pathMatch(.*)*', redirect: '/' },
   ],
 })
+
+// a deploy replaces hashed chunks under an open tab; reload into the new build once instead of showing a blank view
+router.onError((err, to) => {
+  if (!/dynamically imported module|Importing a module script failed/i.test(String(err?.message))) return
+  const key = `chunk-reload:${to.fullPath}`
+  try {
+    if (sessionStorage.getItem(key)) return
+    sessionStorage.setItem(key, '1')
+  } catch {
+    return
+  }
+  location.hash = to.fullPath
+  location.reload()
+})

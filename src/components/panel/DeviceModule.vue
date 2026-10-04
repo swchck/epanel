@@ -238,8 +238,8 @@ const busColor = computed(() => {
   transition: opacity 0.25s ease, filter 0.25s ease;
 }
 .device.is-dimmed {
-  opacity: 0.28;
-  filter: grayscale(0.8);
+  /* faded, not transparent: with opacity the DIN rail behind showed through the module body */
+  filter: grayscale(0.85) contrast(0.4) brightness(1.3);
 }
 .lever {
   transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);

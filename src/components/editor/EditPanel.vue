@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import DeviceChip from '@/components/common/DeviceChip.vue'
 import PanelEnclosure from '@/components/panel/PanelEnclosure.vue'
 import { TYPE_ACCENT } from '@/components/panel/geometry'
-import { DEVICE_TYPES, type DeviceType } from '@/domain/model'
+import { DEVICE_TYPES, defaultWidth, type DeviceType } from '@/domain/model'
 import { addDevice, addRow, findItem, insertBlank, moveItem, moveToRow, removeDevice, removeRow } from '@/editor/ops'
 import { useDraft } from '@/composables/useDraft'
 import { useText } from '@/composables/useText'
@@ -19,13 +19,28 @@ const { t, tx } = useText()
 
 const selected = computed(() => d.value.devices.find((x) => x.id === ui.selectedDevice))
 const loc = computed(() => (selected.value ? findItem(d.value, selected.value.id) : undefined))
-const targetRow = computed(() => loc.value?.row ?? Math.max(0, d.value.rows.length - 1))
+const free = (i: number) => (d.value.rows[i]?.modules ?? 0) - used(i)
+// with nothing selected, new devices go to the first row with a free slot; past the last row, a new one is added
+const targetRow = computed(() => {
+  if (loc.value) return loc.value.row
+  const i = d.value.rows.findIndex((_, ri) => free(ri) >= 1)
+  return i >= 0 ? i : d.value.rows.length
+})
 const unplaced = computed(() => d.value.devices.filter((x) => !findItem(d.value, x.id)))
 
 function add(type: DeviceType) {
-  if (!d.value.rows.length) addRow(d.value)
-  const at = loc.value ? loc.value.index + 1 : undefined
-  const dev = addDevice(d.value, type, targetRow.value, at)
+  const dev = addDevice(d.value, type, -1)
+  if (loc.value) {
+    d.value.rows[loc.value.row]!.items.splice(loc.value.index + 1, 0, dev.id)
+  } else {
+    const width = defaultWidth(dev)
+    let row = [targetRow.value, ...d.value.rows.keys()].find((i) => free(i) >= width)
+    if (row === undefined) {
+      addRow(d.value)
+      row = d.value.rows.length - 1
+    }
+    d.value.rows[row]!.items.push(dev.id)
+  }
   // new devices hang off the selected RCD (or the selected device's own feeder) — the common way panels are filled in
   const sel = selected.value
   if (sel) dev.upstream = sel.type === 'rcd' ? sel.id : sel.upstream
@@ -57,7 +72,7 @@ function used(i: number) {
       </div>
 
       <div class="overflow-x-auto rounded-2xl">
-        <div class="mx-auto min-w-[560px] max-w-[900px]">
+        <div class="mx-auto max-w-[900px]">
           <PanelEnclosure @select="(id) => ui.select(ui.selectedDevice === id ? null : id)" />
         </div>
       </div>

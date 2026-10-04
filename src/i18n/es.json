@@ -749,17 +749,19 @@
     "plan": {
       "mode": {
         "select": "Seleccionar",
-        "room": "Estancia",
+        "rect": "Estancia",
+        "room": "Contorno",
         "point": "Punto",
         "route": "Cable",
         "photo": "Foto"
       },
       "hint": {
         "select": "Toca un punto, una estancia o una foto para editarlo. Arrastra los tiradores para moverlo. Rueda o pellizco para hacer zoom.",
-        "room": "Coloca las esquinas de la estancia una a una. Toca la primera esquina o «Listo» para cerrarla.",
-        "point": "Elige un tipo y un automático y luego toca el plano para colocar puntos.",
-        "route": "Traza el recorrido del cable punto a punto y toca «Listo». A su alrededor aparecerá una zona sin taladrar. Los tramos se dibujan en ángulo recto, como se colocan los cables de verdad. Para un tramo inclinado, mantén Alt.",
-        "photo": "Toca el lugar donde se hizo la foto y elige la imagen."
+        "room": "Para una estancia irregular: coloca las esquinas una a una; las paredes van en ángulo recto (Alt para cualquier ángulo). Escribe la longitud de una pared y pulsa Enter. Toca la primera esquina o «Listo» para cerrarla.",
+        "point": "Elige un tipo y un automático y toca el plano. Cerca de una pared, el punto se coloca en ella.",
+        "route": "Traza el recorrido del cable punto a punto y toca «Listo». A su alrededor aparecerá una zona sin taladrar. Los tramos se dibujan en ángulo recto, como se colocan los cables de verdad. Para un tramo inclinado, mantén Alt. Escribe una longitud y pulsa Enter para trazar un tramo exacto.",
+        "photo": "Toca el lugar donde se hizo la foto y elige la imagen.",
+        "rect": "Toca una esquina de la estancia y luego la opuesta. O toca la primera esquina y escribe las medidas, p. ej. «3.5x4», y pulsa Enter."
       },
       "noDevice": "Sin automático",
       "finish": "Listo",
@@ -811,7 +813,9 @@
       "to": "Hasta",
       "mount": "Por dónde va",
       "pullString": "Tiene guía pasacables",
-      "wallHeight": "Altura del techo"
+      "wallHeight": "Altura del techo",
+      "roomWidth": "Ancho",
+      "roomDepth": "Fondo"
     },
     "media": {
       "photosHint": "Fotografía las paredes antes de enlucir: años después, estas fotos son la forma más fácil de saber por dónde van los cables.",
@@ -873,7 +877,9 @@
       "passwordChanged": "Contraseña cambiada",
       "passwordChangedHint": "Guarda o publica los datos y vuelve a imprimir el código QR.",
       "passwordHint": "La nueva contraseña se aplicará al guardar o publicar la próxima vez. Los QR antiguos dejarán de funcionar."
-    }
+    },
+    "undo": "Deshacer (⌘Z)",
+    "redo": "Rehacer (⇧⌘Z)"
   },
   "landing": {
     "nav": {

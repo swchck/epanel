@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
-import { Camera, Check, ImagePlus, Magnet, MousePointer2, Pentagon, Plug, Spline, Trash2, X } from '@lucide/vue'
+import { Camera, Check, ImagePlus, Magnet, MousePointer2, Pentagon, Plug, Spline, Square, Trash2, X } from '@lucide/vue'
 import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -13,6 +13,7 @@ import { ASSET_PREFIX } from '@/domain/model'
 import { pointInPolygon, snap as snapTo } from '@/domain/geometry'
 import { APPLIANCE_PROFILES, CABLE_TYPES, POINT_KINDS, ROUTE_KINDS, routeMount, type Point2, type PointKind, type RouteKind } from '@/domain/model'
 import { removePoint, removeRoom, uniqueId } from '@/editor/ops'
+import { orthogonal, parseTypedLength, placeOnWall, snapToGeometry } from '@/editor/snap'
 import { compressImage, newId, planImageFrom } from '@/lib/media'
 import { useDraft } from '@/composables/useDraft'
 import { useText } from '@/composables/useText'
@@ -21,7 +22,7 @@ import FormRow from './FormRow.vue'
 import LocalizedInput from './LocalizedInput.vue'
 import NumberInput from './NumberInput.vue'
 
-type Mode = 'select' | 'room' | 'point' | 'route' | 'photo'
+type Mode = 'select' | 'rect' | 'room' | 'point' | 'route' | 'photo'
 type Sel = { kind: 'point' | 'room' | 'route' | 'photo'; id: string } | null
 
 const { d, assets, data } = useDraft()
@@ -39,6 +40,7 @@ const plan = ref<InstanceType<typeof FloorPlan> | null>(null)
 
 const MODES: { id: Mode; icon: typeof Plug }[] = [
   { id: 'select', icon: MousePointer2 },
+  { id: 'rect', icon: Square },
   { id: 'room', icon: Pentagon },
   { id: 'point', icon: Plug },
   { id: 'route', icon: Spline },
@@ -49,18 +51,98 @@ function sn(v: number) {
   return snapOn.value ? snapTo(v, d.value.plan.grid / 5) : Math.round(v)
 }
 
-// cables run parallel to the walls, so a new route vertex lines up with the previous one; Alt frees the angle
+// walls and cables both run at right angles, so a new vertex lines up with the previous one; Alt frees the angle
 const freeAngle = ref(false)
+// a fixed share of the visible plan, so snapping feels the same at any zoom
+const snapTolerance = computed(() => d.value.plan.width / 60 / Math.max(1, plan.value?.pz.scale.value ?? 1))
+// sockets and switches sit on walls; a click this close to one lands on it
+const WALL_REACH = 40
+
 function place(x: number, y: number): Point2 {
-  const p: Point2 = [sn(x), sn(y)]
+  const anchors = mode.value === 'route' ? d.value.points.map((p): Point2 => [p.x, p.y]) : []
+  let p: Point2 = snapOn.value ? (snapToGeometry([x, y], d.value.rooms, snapTolerance.value, anchors) ?? [sn(x), sn(y)]) : [Math.round(x), Math.round(y)]
   const prev = pending.value.at(-1)
-  if (mode.value !== 'route' || !prev || freeAngle.value) return p
-  return Math.abs(p[0] - prev[0]) >= Math.abs(p[1] - prev[1]) ? [p[0], prev[1]] : [prev[0], p[1]]
+  if ((mode.value === 'route' || mode.value === 'room') && prev && !freeAngle.value) p = orthogonal(prev, p)
+  if (mode.value === 'point' && snapOn.value) p = placeOnWall(p, d.value.rooms, WALL_REACH)
+  return p
+}
+
+const typed = ref('')
+
+// fresh tuples: `a` is a proxy from `pending`, and a proxy left inside the draft breaks structuredClone on autosave
+function rectFrom(a: Point2, b: Point2): Point2[] {
+  return [[a[0], a[1]], [b[0], a[1]], [b[0], b[1]], [a[0], b[1]]]
+}
+
+function addRoom(polygon: Point2[]) {
+  const id = uniqueId(
+    d.value.rooms.map((r) => r.id),
+    'room-',
+  )
+  d.value.rooms.push({ id, name: t('editor.plan.roomN', { n: d.value.rooms.length + 1 }), wet: false, polygon })
+  sel.value = { kind: 'room', id }
+  pending.value = []
+  mode.value = 'select'
+}
+
+// a typed length goes in the direction the cursor points, so "3.5 Enter" draws a 3.5 m wall
+function applyTyped() {
+  const len = parseTypedLength(typed.value)
+  const start = pending.value.at(-1)
+  typed.value = ''
+  if (!len || !start) return
+  const c = cursor.value ?? [start[0] + 1, start[1]]
+  if (mode.value === 'rect') {
+    const sx = c[0] >= start[0] ? 1 : -1
+    const sy = c[1] >= start[1] ? 1 : -1
+    return addRoom(rectFrom(start, [start[0] + sx * len.a, start[1] + sy * (len.b ?? len.a)]))
+  }
+  let dx = c[0] - start[0]
+  let dy = c[1] - start[1]
+  if (!freeAngle.value) [dx, dy] = Math.abs(dx) >= Math.abs(dy) ? [Math.sign(dx) || 1, 0] : [0, Math.sign(dy)]
+  const n = Math.hypot(dx, dy) || 1
+  pending.value.push([Math.round(start[0] + (dx / n) * len.a), Math.round(start[1] + (dy / n) * len.a)])
 }
 
 const point = computed(() => (sel.value?.kind === 'point' ? d.value.points.find((p) => p.id === sel.value!.id) : undefined))
 const room = computed(() => (sel.value?.kind === 'room' ? d.value.rooms.find((p) => p.id === sel.value!.id) : undefined))
 const route = computed(() => (sel.value?.kind === 'route' ? d.value.routes.find((p) => p.id === sel.value!.id) : undefined))
+// width/depth fields only make sense for an axis-aligned rectangle; other shapes are edited by dragging corners
+const roomBox = computed(() => {
+  const p = room.value?.polygon
+  if (p?.length !== 4) return null
+  const xs = new Set(p.map((v) => v[0]))
+  const ys = new Set(p.map((v) => v[1]))
+  if (xs.size !== 2 || ys.size !== 2) return null
+  const [x0, x1] = [Math.min(...xs), Math.max(...xs)]
+  const [y0, y1] = [Math.min(...ys), Math.max(...ys)]
+  return { x0, y0, w: x1 - x0, h: y1 - y0 }
+})
+
+function resizeRoom(axis: 0 | 1, size: number | undefined) {
+  const box = roomBox.value
+  if (!box || !room.value || !size) return
+  const origin = axis === 0 ? box.x0 : box.y0
+  for (const v of room.value.polygon) if (v[axis] !== origin) v[axis] = origin + size
+}
+
+const preview = computed(() => {
+  const c = cursor.value
+  if (!pending.value.length) return []
+  if (mode.value === 'rect') return c ? [...rectFrom(pending.value[0]!, c), pending.value[0]!] : pending.value
+  return [...pending.value, ...(c ? [c] : [])]
+})
+
+const previewLabel = computed(() => {
+  if (typed.value) return `${typed.value}▏${t('units.m')}`
+  const c = cursor.value
+  const last = pending.value.at(-1)
+  if (!c || !last) return ''
+  const m = (v: number) => (v / 100).toFixed(2)
+  if (mode.value === 'rect') return `${m(Math.abs(c[0] - last[0]))} × ${m(Math.abs(c[1] - last[1]))} ${t('units.m')}`
+  return `${m(Math.hypot(c[0] - last[0], c[1] - last[1]))} ${t('units.m')}`
+})
+
 const photo = computed(() => (sel.value?.kind === 'photo' ? d.value.photos.find((p) => p.id === sel.value!.id) : undefined))
 const feeders = computed(() => d.value.devices.filter((x) => ['mcb', 'rcbo', 'din-socket', 'switch', 'contactor', 'actuator'].includes(x.type)))
 
@@ -70,6 +152,7 @@ function roomAt(x: number, y: number) {
 
 function setMode(m: Mode) {
   pending.value = []
+  typed.value = ''
   mode.value = m
   if (m !== 'select') sel.value = null
 }
@@ -78,6 +161,10 @@ async function onCanvas(x: number, y: number) {
   const [px, py] = place(x, y)
   if (mode.value === 'select') {
     sel.value = null
+  } else if (mode.value === 'rect') {
+    const first = pending.value[0]
+    if (!first) pending.value.push([px, py])
+    else if (px !== first[0] && py !== first[1]) addRoom(rectFrom(first, [px, py]))
   } else if (mode.value === 'room' || mode.value === 'route') {
     const first = pending.value[0]
     // clicking the first vertex again closes the polygon
@@ -113,12 +200,7 @@ async function onCanvas(x: number, y: number) {
 
 function finish() {
   if (mode.value === 'room' && pending.value.length >= 3) {
-    const id = uniqueId(
-      d.value.rooms.map((r) => r.id),
-      'room-',
-    )
-    d.value.rooms.push({ id, name: t('editor.plan.roomN', { n: d.value.rooms.length + 1 }), wet: false, polygon: pending.value })
-    sel.value = { kind: 'room', id }
+    return addRoom(pending.value)
   } else if (mode.value === 'route' && pending.value.length >= 2) {
     const id = uniqueId(
       d.value.routes.map((r) => r.id),
@@ -150,6 +232,18 @@ function onKey(e: KeyboardEvent) {
   onAlt(e)
   const target = e.target as HTMLElement | null
   if (target?.closest('input,textarea,[contenteditable]')) return
+  if (pending.value.length && /^[\d.,x* ]$/i.test(e.key) && !e.metaKey && !e.ctrlKey) {
+    typed.value += e.key
+    e.preventDefault()
+    return
+  }
+  if (typed.value && (e.key === 'Backspace' || e.key === 'Escape' || e.key === 'Enter')) {
+    if (e.key === 'Backspace') typed.value = typed.value.slice(0, -1)
+    else if (e.key === 'Escape') typed.value = ''
+    else applyTyped()
+    e.preventDefault()
+    return
+  }
   if (e.key === 'Escape') {
     pending.value = []
     if (mode.value !== 'select') mode.value = 'select'
@@ -190,7 +284,9 @@ function onDrag(e: PointerEvent) {
   const pz = plan.value?.pz
   if (!dragTarget || !pz) return
   const [x, y] = pz.toPlan(e.clientX, e.clientY)
-  dragTarget.set(sn(x), sn(y))
+  // dragged corners stay on the grid only: snapping to geometry would grab the corner's own wall
+  const p: Point2 = point.value && snapOn.value ? placeOnWall([sn(x), sn(y)], d.value.rooms, WALL_REACH) : [sn(x), sn(y)]
+  dragTarget.set(p[0], p[1])
 }
 function endDrag() {
   window.removeEventListener('pointermove', onDrag)
@@ -284,7 +380,7 @@ const hint = computed(() => t(`editor.plan.hint.${mode.value}`))
       </div>
       <p class="text-xs text-muted-foreground">{{ hint }}</p>
 
-      <div class="relative aspect-[3/2] overflow-hidden rounded-2xl border bg-card">
+      <div class="relative h-[min(72vh,900px)] min-h-[420px] overflow-hidden rounded-2xl border bg-card">
         <FloorPlan
           ref="plan"
           all-layers
@@ -301,14 +397,14 @@ const hint = computed(() => t(`editor.plan.hint.${mode.value}`))
         >
           <g v-if="pending.length" pointer-events="none">
             <polyline
-              :points="[...pending, ...(cursor ? [cursor] : [])].map((p) => p.join(',')).join(' ')"
+              :points="preview.map((p) => p.join(',')).join(' ')"
               fill="none"
               stroke="var(--primary)"
               stroke-width="4"
               stroke-dasharray="10 6"
             />
             <circle v-for="(p, i) in pending" :key="i" :cx="p[0]" :cy="p[1]" :r="handleR" fill="var(--primary)" />
-            <text v-if="cursor && pending.length" :x="cursor[0] + 14" :y="cursor[1] - 14" class="seg-len">{{ (Math.hypot(cursor[0] - pending.at(-1)![0], cursor[1] - pending.at(-1)![1]) / 100).toFixed(2) }} {{ t('units.m') }}</text>
+            <text v-if="cursor && previewLabel" :x="cursor[0] + 14" :y="cursor[1] - 14" class="seg-len">{{ previewLabel }}</text>
           </g>
           <template v-if="mode === 'select'">
             <circle
@@ -442,6 +538,10 @@ const hint = computed(() => t(`editor.plan.hint.${mode.value}`))
           <Button variant="destructive" size="icon-sm" :aria-label="t('common.delete')" @click="removeSelected"><Trash2 /></Button>
         </div>
         <FormRow :label="t('editor.plan.roomName')"><LocalizedInput v-model="room.name" /></FormRow>
+        <div v-if="roomBox" class="grid grid-cols-2 gap-2">
+          <FormRow :label="t('editor.plan.roomWidth')"><NumberInput :model-value="roomBox.w" :suffix="t('units.cm')" @update:model-value="(v) => resizeRoom(0, v)" /></FormRow>
+          <FormRow :label="t('editor.plan.roomDepth')"><NumberInput :model-value="roomBox.h" :suffix="t('units.cm')" @update:model-value="(v) => resizeRoom(1, v)" /></FormRow>
+        </div>
         <label class="flex items-center gap-2 text-sm"><Switch v-model="room.wet" /> {{ t('editor.plan.wet') }}</label>
         <FormRow :label="t('editor.plan.ceiling')" :hint="t('editor.plan.ceilingHint', { cm: d.plan.wallHeight })"><NumberInput v-model="room.ceilingCm" optional :suffix="t('units.cm')" :placeholder="String(d.plan.wallHeight)" /></FormRow>
         <p class="text-xs text-muted-foreground">{{ t('editor.plan.roomHint') }}</p>

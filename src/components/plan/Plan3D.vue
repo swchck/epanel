@@ -21,7 +21,7 @@ const props = defineProps<{
 const emit = defineEmits<{ point: [id: string]; route: [id: string]; canvas: [] }>()
 
 const store = useData()
-const { tx, t } = useText()
+const { tx, t, locale } = useText()
 const d = computed(() => store.data as PanelData)
 const host = ref<HTMLDivElement | null>(null)
 const tip = ref<{ x: number; y: number; text: string } | null>(null)
@@ -332,7 +332,7 @@ onBeforeUnmount(() => {
   renderer?.domElement.remove()
 })
 
-watch(() => [d.value.rooms, d.value.points, d.value.routes, d.value.plan.wallHeight, props.showRoutes, isDark.value], build, { deep: true })
+watch(() => [d.value.rooms, d.value.points, d.value.routes, d.value.plan.wallHeight, props.showRoutes, isDark.value, locale.value], build, { deep: true })
 watch(() => [props.highlightPoints, props.deadPoints, props.focusPoint, props.selectedRoute], applyState)
 </script>
 

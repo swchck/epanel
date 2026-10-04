@@ -749,17 +749,19 @@
     "plan": {
       "mode": {
         "select": "Select",
-        "room": "Room",
+        "rect": "Room",
+        "room": "Outline",
         "point": "Point",
         "route": "Cable",
         "photo": "Photo"
       },
       "hint": {
         "select": "Tap a point, room or photo to edit it. Drag the handles to move. Wheel or pinch to zoom.",
-        "room": "Place the room corners one by one. Tap the first corner or \"Done\" to close it.",
-        "point": "Pick a type and a breaker, then tap the plan to place points.",
-        "route": "Trace the cable route point by point and tap \"Done\". A no-drill zone appears around it. Sections snap to right angles, the way cables are actually laid. Hold Alt for a slanted section.",
-        "photo": "Tap where the photo was taken and pick the image."
+        "room": "For an irregular room: place the corners one by one; walls snap to right angles (hold Alt for any angle). Type a wall length and press Enter to draw it exactly. Tap the first corner or \"Done\" to close.",
+        "point": "Pick a type and a breaker, then tap the plan. Near a wall, the point lands on the wall.",
+        "route": "Trace the cable route point by point and tap \"Done\". A no-drill zone appears around it. Sections snap to right angles, the way cables are actually laid. Hold Alt for a slanted section. Type a length and press Enter to draw a section exactly.",
+        "photo": "Tap where the photo was taken and pick the image.",
+        "rect": "Tap one corner of the room, then the opposite one. Or tap the first corner and type the size, e.g. \"3.5x4\", then Enter."
       },
       "noDevice": "No breaker",
       "finish": "Done",
@@ -811,7 +813,9 @@
       "to": "To",
       "mount": "Runs",
       "pullString": "Has a draw wire",
-      "wallHeight": "Ceiling height"
+      "wallHeight": "Ceiling height",
+      "roomWidth": "Width",
+      "roomDepth": "Depth"
     },
     "media": {
       "photosHint": "Photograph the walls before plastering: years later these photos are the easiest way to see where the cables run.",
@@ -873,7 +877,9 @@
       "passwordChanged": "Password changed",
       "passwordChangedHint": "Save or publish the data, then reprint the QR code.",
       "passwordHint": "The new password applies on the next save or publish. Old QR codes will stop working."
-    }
+    },
+    "undo": "Undo (⌘Z)",
+    "redo": "Redo (⇧⌘Z)"
   },
   "landing": {
     "nav": {

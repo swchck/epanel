@@ -749,17 +749,19 @@
     "plan": {
       "mode": {
         "select": "Izbor",
-        "room": "Prostorija",
+        "rect": "Prostorija",
+        "room": "Kontura",
         "point": "Tačka",
         "route": "Kabl",
         "photo": "Foto"
       },
       "hint": {
         "select": "Dodirnite tačku, prostoriju ili fotografiju da je izmenite. Prevucite ručice da pomerite. Točkić ili dva prsta za uvećanje.",
-        "room": "Postavljajte uglove prostorije jedan po jedan. Dodirnite prvi ugao ili „Gotovo“ da je zatvorite.",
-        "point": "Izaberite tip i osigurač, pa dodirujte plan da postavite tačke.",
-        "route": "Iscrtajte trasu kabla tačku po tačku i dodirnite „Gotovo“. Oko nje se pojavljuje zona bez bušenja. Delovi se crtaju pod pravim uglom, kako se kablovi zaista polažu. Za kos deo držite Alt.",
-        "photo": "Dodirnite mesto gde je fotografija snimljena i izaberite sliku."
+        "room": "Za prostoriju nepravilnog oblika: postavljajte uglove jedan po jedan, zidovi idu pod pravim uglom (Alt za bilo koji ugao). Otkucajte dužinu zida i pritisnite Enter. Dodirnite prvi ugao ili „Gotovo“ da zatvorite.",
+        "point": "Izaberite tip i osigurač, pa dodirujte plan. Pored zida tačka sama staje na zid.",
+        "route": "Iscrtajte trasu kabla tačku po tačku i dodirnite „Gotovo“. Oko nje se pojavljuje zona bez bušenja. Delovi se crtaju pod pravim uglom, kako se kablovi zaista polažu. Za kos deo držite Alt. Dužinu dela možete otkucati i pritisnuti Enter.",
+        "photo": "Dodirnite mesto gde je fotografija snimljena i izaberite sliku.",
+        "rect": "Dodirnite jedan ugao prostorije, pa suprotni. Ili dodirnite prvi ugao i otkucajte dimenzije, npr. „3.5x4“, pa Enter."
       },
       "noDevice": "Bez osigurača",
       "finish": "Gotovo",
@@ -811,7 +813,9 @@
       "to": "Dokle",
       "mount": "Gde ide",
       "pullString": "Ima provlakač",
-      "wallHeight": "Visina plafona"
+      "wallHeight": "Visina plafona",
+      "roomWidth": "Širina",
+      "roomDepth": "Dubina"
     },
     "media": {
       "photosHint": "Fotografišite zidove pre malterisanja: posle nekoliko godina po tim slikama najlakše ćete videti gde idu kablovi.",
@@ -873,7 +877,9 @@
       "passwordChanged": "Lozinka je promenjena",
       "passwordChangedHint": "Sačuvajte ili objavite podatke, a zatim ponovo odštampajte QR kod.",
       "passwordHint": "Nova lozinka važi od sledećeg čuvanja ili objavljivanja. Stari QR kodovi prestaće da rade."
-    }
+    },
+    "undo": "Poništi (⌘Z)",
+    "redo": "Ponovi (⇧⌘Z)"
   },
   "landing": {
     "nav": {

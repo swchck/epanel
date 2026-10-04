@@ -16,7 +16,8 @@ const ui = useUi()
 const { locale } = useI18n()
 
 const rows = computed(() => (props.onlyRow === undefined ? data.layout : data.layout.filter((_, i) => i === props.onlyRow)))
-const maxModules = computed(() => Math.max(12, ...rows.value.map((r) => r.modules)))
+// an overfull row widens the box so the extra modules show up flagged instead of spilling past the frame
+const maxModules = computed(() => Math.max(12, ...rows.value.map((r) => Math.max(r.modules, Math.ceil(r.used)))))
 const LABEL_H = 22
 const rowPitch = HEIGHT + ROW_GAP
 const frame = 26

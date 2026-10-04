@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { onMounted, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import 'vue-sonner/style.css'
 import { Toaster } from '@/components/ui/sonner'
@@ -12,11 +12,17 @@ import { useTheme } from '@/composables/useTheme'
 import { useData } from '@/stores/data'
 import { isDesktop, onOpenFile } from '@/platform'
 import { i18n } from '@/i18n'
+import { tr } from '@/domain/model'
 
 useTheme()
 const data = useData()
 const router = useRouter()
 const route = useRoute()
+
+watchEffect(() => {
+  const title = tr(data.data?.meta.title, i18n.global.locale.value)
+  document.title = title || i18n.global.t('app.name')
+})
 
 onMounted(async () => {
   await router.isReady()
