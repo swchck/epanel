@@ -1,0 +1,471 @@
+# Demo apartment. Seed only: `PANEL_PASSWORD=... npm run seed` encrypts it into public/panel.enc.json.
+# Real data should live only in the encrypted file and be edited in the app (#/edit).
+format: panel-bundle
+version: 1
+assetsDir: assets
+data:
+  meta:
+    title:
+      ru: Квартира — щит ЩК-1
+      en: Apartment — panel DB-1
+      sr: Stan — razvodna tabla RT-1
+      es: Apartamento — cuadro CG-1
+    updated: "2026-10-01"
+    enclosure: "Встраиваемый щит 4×18 модулей"
+    location:
+      ru: Прихожая, справа от входной двери, за зеркалом
+      en: Hallway, right of the entrance door, behind the mirror
+      sr: Hodnik, desno od ulaznih vrata, iza ogledala
+      es: Recibidor, a la derecha de la puerta, detrás del espejo
+    contacts:
+      - role: electrician
+        name: Иван (электромонтаж)
+        phone: "+7 900 000-00-00"
+        note:
+          ru: Делал проводку и собирал щит, гарантия до 10.2028
+          en: Did the wiring and assembled the panel, warranty until 10.2028
+      - role: management
+        name: Диспетчерская УК
+        phone: "+7 900 000-00-01"
+      - role: emergency
+        name: Единая служба спасения
+        phone: "112"
+  supply:
+    phases: 1
+    voltage: 230
+    maxPowerKw: 10
+    input: QF0
+
+  rows:
+    - id: r1
+      modules: 18
+      items: [QF0, PM1, KV1, FV1, QF14, XS1, { blank: 4 }]
+    - id: r2
+      modules: 18
+      items: [QD1, QF1, QF2, QF3, QF4, QFD1, QD2, QF5, QF6, QF7, QF8, { blank: 4 }]
+    - id: r3
+      modules: 18
+      items: [QD3, QF9, QF10, QF11, QF12, QFD2, QFD3, QFD4, { blank: 2 }]
+    - id: r4
+      modules: 18
+      items: [XN, { blank: 2 }, XPE, { blank: 8 }]
+
+  devices:
+    - id: QF0
+      type: mcb
+      label: { ru: Вводной автомат, en: Main breaker, sr: Glavni prekidač, es: Interruptor general }
+      rating: 40
+      curve: C
+      poles: 2
+      brand: ABB
+      model: S202 C40
+      circuit: { cable: ВВГнг(А)-LS 3×10, crossSection: 10, lengthM: 18 }
+      tags: [ввод]
+      notes:
+        - author: Иван
+          date: "2026-09-12"
+          text: Опломбирован УК вместе со счётчиком. Не выключать без необходимости.
+    - id: PM1
+      type: meter
+      label: { ru: Счётчик электроэнергии, en: Energy meter, sr: Brojilo električne energije, es: Contador de energía }
+      poles: 2
+      brand: Энергомера
+      model: CE208 S7
+      upstream: QF0
+      tags: [ввод]
+    - id: KV1
+      type: voltage-relay
+      label: { ru: Реле напряжения, en: Voltage relay, sr: Naponski relej, es: Relé de tensión }
+      rating: 63
+      poles: 2
+      brand: Новатек
+      model: УЗМ-51М
+      upstream: PM1
+      tags: [ввод, защита]
+      notes:
+        - author: Иван
+          date: "2026-09-12"
+          text: Уставки 170–260 В, задержка включения 30 с. Если всё погасло и через минуту включилось — это оно сработало, авария в сети.
+    - id: FV1
+      type: spd
+      label: { ru: УЗИП (защита от перенапряжений), en: Surge protector, sr: Prenaponska zaštita, es: Protector contra sobretensiones }
+      poles: 2
+      brand: ABB
+      model: OVR T2 1N 40-275
+      upstream: QF0
+      tags: [защита]
+    - id: QF14
+      type: mcb
+      label: { ru: Сервисная розетка, en: Service socket, sr: Servisna utičnica, es: Toma de servicio }
+      rating: 16
+      curve: C
+      upstream: KV1
+      circuit: { cable: ПуГВ 2.5, crossSection: 2.5, lengthM: 0.3 }
+    - id: XS1
+      type: din-socket
+      label: { ru: Розетка на DIN-рейке, en: DIN rail socket, sr: Utičnica na DIN šini, es: Enchufe carril DIN }
+      rating: 16
+      upstream: QF14
+
+    - id: QD1
+      type: rcd
+      label: { ru: УЗО кухни, en: Kitchen RCD, sr: FID kuhinje, es: Diferencial cocina }
+      rating: 40
+      leakage: 30
+      rcdClass: A
+      poles: 2
+      brand: ABB
+      model: F202 A-40/0.03
+      upstream: KV1
+      tags: [кухня]
+    - id: QF1
+      type: mcb
+      label: { ru: Кухня — розетки над столешницей, en: Kitchen — worktop sockets, sr: Kuhinja — utičnice iznad radne ploče, es: Cocina — enchufes de encimera }
+      rating: 16
+      curve: C
+      upstream: QD1
+      circuit: { cable: ВВГнг(А)-LS 3×2.5, crossSection: 2.5, lengthM: 14 }
+      tags: [кухня, розетки]
+      notes:
+        - author: Иван
+          date: "2026-09-10"
+          text: Чайник и кофемашину одновременно — нормально, а вот ещё и тостер — уже на грани.
+    - id: QF2
+      type: mcb
+      label: { ru: Духовой шкаф, en: Oven, sr: Rerna, es: Horno }
+      rating: 16
+      curve: C
+      upstream: QD1
+      circuit: { cable: ВВГнг(А)-LS 3×2.5, crossSection: 2.5, lengthM: 12 }
+      tags: [кухня, техника]
+    - id: QF3
+      type: mcb
+      label: { ru: Посудомоечная машина, en: Dishwasher, sr: Mašina za sudove, es: Lavavajillas }
+      rating: 16
+      curve: C
+      upstream: QD1
+      circuit: { cable: ВВГнг(А)-LS 3×2.5, crossSection: 2.5, lengthM: 13 }
+      tags: [кухня, техника]
+    - id: QF4
+      type: mcb
+      label: { ru: Холодильник, en: Fridge, sr: Frižider, es: Frigorífico }
+      rating: 16
+      curve: C
+      upstream: QD1
+      circuit: { cable: ВВГнг(А)-LS 3×2.5, crossSection: 2.5, lengthM: 12 }
+      tags: [кухня, техника]
+    - id: QFD1
+      type: rcbo
+      label: { ru: Варочная панель, en: Cooktop, sr: Ploča za kuvanje, es: Placa de cocina }
+      rating: 32
+      curve: C
+      leakage: 30
+      rcdClass: A
+      poles: 2
+      brand: ABB
+      model: DS202C C32 A30
+      upstream: KV1
+      circuit: { cable: ВВГнг(А)-LS 3×6, crossSection: 6, lengthM: 12 }
+      tags: [кухня, техника]
+
+    - id: QD2
+      type: rcd
+      label: { ru: УЗО розеток комнат, en: Rooms sockets RCD, sr: FID utičnica soba, es: Diferencial enchufes habitaciones }
+      rating: 40
+      leakage: 30
+      rcdClass: A
+      poles: 2
+      brand: ABB
+      model: F202 A-40/0.03
+      upstream: KV1
+      tags: [розетки]
+    - id: QF5
+      type: mcb
+      label: { ru: Гостиная — розетки, en: Living room — sockets, sr: Dnevna soba — utičnice, es: Salón — enchufes }
+      rating: 16
+      curve: C
+      upstream: QD2
+      circuit: { cable: ВВГнг(А)-LS 3×2.5, crossSection: 2.5, lengthM: 22 }
+      tags: [гостиная, розетки]
+    - id: QF6
+      type: mcb
+      label: { ru: Спальня — розетки, en: Bedroom — sockets, sr: Spavaća soba — utičnice, es: Dormitorio — enchufes }
+      rating: 16
+      curve: C
+      upstream: QD2
+      circuit: { cable: ВВГнг(А)-LS 3×2.5, crossSection: 2.5, lengthM: 19 }
+      tags: [спальня, розетки]
+    - id: QF7
+      type: mcb
+      label: { ru: Прихожая и гардероб — розетки, en: Hallway & wardrobe — sockets, sr: Hodnik i garderober — utičnice, es: Recibidor y vestidor — enchufes }
+      rating: 16
+      curve: C
+      upstream: QD2
+      circuit: { cable: ВВГнг(А)-LS 3×2.5, crossSection: 2.5, lengthM: 9 }
+      tags: [прихожая, розетки]
+    - id: QF8
+      type: mcb
+      label: { ru: Лоджия — розетки, en: Loggia — sockets, sr: Lođa — utičnice, es: Galería — enchufes }
+      rating: 20
+      curve: C
+      upstream: QD2
+      circuit: { cable: ВВГнг(А)-LS 3×2.5, crossSection: 2.5, lengthM: 21 }
+      tags: [лоджия, розетки]
+      notes:
+        - author: Владелец
+          date: "2026-09-20"
+          text: Поставили 20 А под обогреватель, проверки ругаются — подумать о замене на 16 А.
+
+    - id: QD3
+      type: rcd
+      label: { ru: УЗО освещения и кондиционеров, en: Lighting & AC RCD, sr: FID rasvete i klima, es: Diferencial iluminación y A/A }
+      rating: 40
+      leakage: 30
+      rcdClass: AC
+      poles: 2
+      brand: IEK
+      model: ВД1-63 2P 40А 30мА
+      upstream: KV1
+      tags: [свет]
+    - id: QF9
+      type: mcb
+      label: { ru: Свет — комнаты и лоджия, en: Lighting — rooms & loggia, sr: Rasveta — sobe i lođa, es: Luz — habitaciones y galería }
+      rating: 10
+      curve: B
+      upstream: QD3
+      circuit: { cable: ВВГнг(А)-LS 3×1.5, crossSection: 1.5, lengthM: 34 }
+      tags: [свет]
+    - id: QF10
+      type: mcb
+      label: { ru: "Свет — кухня, прихожая, санузлы", en: "Lighting — kitchen, hallway, bathrooms", sr: "Rasveta — kuhinja, hodnik, kupatila", es: "Luz — cocina, recibidor, baños" }
+      rating: 10
+      curve: B
+      upstream: QD3
+      circuit: { cable: ВВГнг(А)-LS 3×1.5, crossSection: 1.5, lengthM: 28 }
+      tags: [свет]
+    - id: QF11
+      type: mcb
+      label: { ru: Кондиционер — гостиная, en: AC — living room, sr: Klima — dnevna soba, es: A/A — salón }
+      rating: 16
+      curve: C
+      upstream: QD3
+      circuit: { cable: ВВГнг(А)-LS 3×2.5, crossSection: 2.5, lengthM: 17 }
+      tags: [гостиная, кондиционер]
+    - id: QF12
+      type: mcb
+      label: { ru: Кондиционер — спальня, en: AC — bedroom, sr: Klima — spavaća soba, es: A/A — dormitorio }
+      rating: 10
+      curve: C
+      upstream: QD3
+      circuit: { cable: ВВГнг(А)-LS 3×1.5, crossSection: 1.5, lengthM: 15 }
+      tags: [спальня, кондиционер]
+
+    - id: QFD2
+      type: rcbo
+      label: { ru: Ванная — стиральная машина и розетка, en: Bathroom — washer & socket, sr: Kupatilo — veš mašina i utičnica, es: Baño — lavadora y enchufe }
+      rating: 16
+      curve: C
+      leakage: 10
+      rcdClass: A
+      poles: 2
+      brand: ABB
+      model: DS202C C16 A10
+      upstream: KV1
+      circuit: { cable: ВВГнг(А)-LS 3×2.5, crossSection: 2.5, lengthM: 6 }
+      tags: [ванная, техника]
+    - id: QFD3
+      type: rcbo
+      label: { ru: Водонагреватель, en: Water heater, sr: Bojler, es: Termo eléctrico }
+      rating: 16
+      curve: C
+      leakage: 10
+      rcdClass: A
+      poles: 2
+      brand: ABB
+      model: DS202C C16 A10
+      upstream: KV1
+      circuit: { cable: ВВГнг(А)-LS 3×2.5, crossSection: 2.5, lengthM: 7 }
+      tags: [ванная, техника]
+    - id: QFD4
+      type: rcbo
+      label: { ru: Тёплый пол — ванная, en: Floor heating — bathroom, sr: Podno grejanje — kupatilo, es: Suelo radiante — baño }
+      rating: 10
+      curve: C
+      leakage: 30
+      rcdClass: A
+      poles: 2
+      brand: ABB
+      model: DS202C C10 A30
+      upstream: KV1
+      circuit: { cable: ВВГнг(А)-LS 3×1.5, crossSection: 1.5, lengthM: 7 }
+      tags: [ванная, отопление]
+
+    - id: XN
+      type: bus
+      label: { ru: Шина N (ноль), en: Neutral bus, sr: Nulta šina N, es: Barra de neutro }
+      poles: 1
+      tags: [шины]
+    - id: XPE
+      type: bus
+      label: { ru: Шина PE (заземление), en: Earth bus PE, sr: Šina uzemljenja PE, es: Barra de tierra PE }
+      poles: 1
+      tags: [шины]
+
+  rooms:
+    - id: living
+      name: { ru: Гостиная, en: Living room, sr: Dnevna soba, es: Salón }
+      polygon: [[50, 50], [500, 50], [500, 450], [50, 450]]
+    - id: bedroom
+      name: { ru: Спальня, en: Bedroom, sr: Spavaća soba, es: Dormitorio }
+      polygon: [[500, 50], [900, 50], [900, 450], [500, 450]]
+    - id: kitchen
+      name: { ru: Кухня, en: Kitchen, sr: Kuhinja, es: Cocina }
+      polygon: [[900, 50], [1150, 50], [1150, 450], [900, 450]]
+    - id: loggia
+      name: { ru: Лоджия, en: Loggia, sr: Lođa, es: Galería }
+      polygon: [[900, 450], [1150, 450], [1150, 750], [900, 750]]
+    - id: hallway
+      name: { ru: Прихожая, en: Hallway, sr: Hodnik, es: Recibidor }
+      polygon: [[300, 450], [900, 450], [900, 580], [500, 580], [500, 750], [300, 750]]
+    - id: bathroom
+      name: { ru: Ванная, en: Bathroom, sr: Kupatilo, es: Baño }
+      wet: true
+      polygon: [[50, 450], [300, 450], [300, 750], [50, 750]]
+    - id: toilet
+      name: { ru: Туалет, en: Toilet, sr: Toalet, es: Aseo }
+      wet: true
+      polygon: [[500, 580], [680, 580], [680, 750], [500, 750]]
+    - id: wardrobe
+      name: { ru: Гардероб, en: Wardrobe, sr: Garderober, es: Vestidor }
+      polygon: [[680, 580], [900, 580], [900, 750], [680, 750]]
+
+  plan:
+    width: 1200
+    height: 800
+    grid: 50
+
+  points:
+    # kitchen
+    - { id: k-s1, kind: socket, room: kitchen, x: 1140, y: 120, device: QF1, label: { ru: Розетка над столешницей 1 (чайник), en: Worktop socket 1 (kettle) }, powerW: 2000, heightMm: 1100 }
+    - { id: k-s2, kind: socket, room: kitchen, x: 1140, y: 220, device: QF1, label: { ru: Розетка над столешницей 2 (кофемашина), en: Worktop socket 2 (coffee) }, powerW: 1500, heightMm: 1100 }
+    - { id: k-s3, kind: socket, room: kitchen, x: 1140, y: 320, device: QF1, label: { ru: Розетка над столешницей 3, en: Worktop socket 3 }, powerW: 1200, heightMm: 1100 }
+    - { id: k-hood, kind: socket, room: kitchen, x: 1100, y: 60, device: QF1, label: { ru: Вытяжка, en: Hood }, powerW: 200, heightMm: 2100 }
+    - { id: k-oven, kind: appliance, profile: oven, room: kitchen, x: 1080, y: 380, device: QF2, label: { ru: Духовой шкаф, en: Oven }, powerW: 3500, heightMm: 300 }
+    - { id: k-dw, kind: appliance, profile: dishwasher, room: kitchen, x: 1080, y: 440, device: QF3, label: { ru: Посудомойка, en: Dishwasher }, powerW: 2000, heightMm: 300 }
+    - { id: k-fridge, kind: appliance, profile: fridge, room: kitchen, x: 920, y: 80, device: QF4, label: { ru: Холодильник, en: Fridge }, powerW: 300, heightMm: 300 }
+    - { id: k-hob, kind: appliance, profile: cooktop, room: kitchen, x: 1110, y: 270, device: QFD1, label: { ru: Индукционная варочная панель, en: Induction cooktop }, powerW: 7200, heightMm: 600 }
+    - { id: k-light, kind: light, room: kitchen, x: 1025, y: 250, device: QF10, label: { ru: Свет кухни, en: Kitchen light }, powerW: 60 }
+    - { id: k-sw, kind: switch, room: kitchen, x: 910, y: 420, device: QF10, label: { ru: Выключатель кухни, en: Kitchen switch }, heightMm: 900 }
+    - { id: k-sw2, kind: socket, room: kitchen, x: 910, y: 300, device: QF1, label: { ru: Розетка у стола, en: Table socket }, powerW: 0, heightMm: 300 }
+
+    # living room
+    - { id: l-tv, kind: socket, room: living, x: 60, y: 250, device: QF5, label: { ru: ТВ-зона (блок 4 розетки), en: TV area (4 sockets) }, powerW: 500, heightMm: 900 }
+    - { id: l-s1, kind: socket, room: living, x: 280, y: 440, device: QF5, label: { ru: Розетка у двери, en: Socket by the door }, powerW: 0, heightMm: 300 }
+    - { id: l-s2, kind: socket, room: living, x: 490, y: 200, device: QF5, label: { ru: Розетки у дивана, en: Sofa sockets }, powerW: 300, heightMm: 300 }
+    - { id: l-s3, kind: socket, room: living, x: 250, y: 60, device: QF5, label: { ru: Розетка у окна, en: Window socket }, powerW: 0, heightMm: 300 }
+    - { id: l-ac, kind: ac, profile: inverter-ac, room: living, x: 150, y: 60, device: QF11, label: { ru: Кондиционер, en: Air conditioner }, powerW: 1200, heightMm: 2400 }
+    - { id: l-light, kind: light, room: living, x: 275, y: 250, device: QF9, label: { ru: Люстра, en: Chandelier }, powerW: 100 }
+    - { id: l-light2, kind: light, room: living, x: 80, y: 80, device: QF9, label: { ru: Трековые светильники, en: Track lights }, powerW: 60, count: 4 }
+    - { id: l-sw, kind: switch, room: living, x: 320, y: 440, device: QF9, label: { ru: Выключатель гостиной, en: Living room switch }, heightMm: 900 }
+
+    # bedroom
+    - { id: b-s1, kind: socket, room: bedroom, x: 890, y: 180, device: QF6, label: { ru: Прикроватная розетка слева, en: Bedside socket left }, powerW: 100, heightMm: 700 }
+    - { id: b-s2, kind: socket, room: bedroom, x: 890, y: 330, device: QF6, label: { ru: Прикроватная розетка справа, en: Bedside socket right }, powerW: 100, heightMm: 700 }
+    - { id: b-s3, kind: socket, room: bedroom, x: 510, y: 150, device: QF6, label: { ru: Рабочий стол, en: Desk }, powerW: 400, heightMm: 900 }
+    - { id: b-s4, kind: socket, room: bedroom, x: 700, y: 60, device: QF6, label: { ru: Розетка у окна, en: Window socket }, powerW: 0, heightMm: 300 }
+    - { id: b-ac, kind: ac, profile: inverter-ac, room: bedroom, x: 600, y: 60, device: QF12, label: { ru: Кондиционер, en: Air conditioner }, powerW: 900, heightMm: 2400 }
+    - { id: b-light, kind: light, room: bedroom, x: 700, y: 250, device: QF9, label: { ru: Потолочный свет, en: Ceiling light }, powerW: 80 }
+    - { id: b-sw, kind: switch, room: bedroom, x: 540, y: 440, device: QF9, label: { ru: Выключатель спальни, en: Bedroom switch }, heightMm: 900 }
+
+    # hallway & wardrobe
+    - { id: h-s1, kind: socket, room: hallway, x: 600, y: 460, device: QF7, label: { ru: Розетка для пылесоса, en: Vacuum socket }, powerW: 1500, heightMm: 300 }
+    - { id: h-s2, kind: socket, room: hallway, x: 310, y: 700, device: QF7, label: { ru: Розетка у входа (сушилка для обуви), en: Entrance socket (shoe dryer) }, powerW: 100, heightMm: 300 }
+    - { id: h-light, kind: light, room: hallway, x: 600, y: 515, device: QF10, label: { ru: Споты прихожей, en: Hallway spots }, powerW: 7, count: 6 }
+    - { id: h-sw, kind: switch, room: hallway, x: 330, y: 620, device: QF10, label: { ru: Блок выключателей у входа, en: Entrance switch block }, heightMm: 900 }
+    - { id: h-panel, kind: junction, room: hallway, x: 320, y: 740, label: { ru: Щит ЩК-1, en: Panel DB-1 }, heightMm: 1600 }
+    - { id: w-s1, kind: socket, room: wardrobe, x: 890, y: 700, device: QF7, label: { ru: Розетка гардероба (утюг), en: Wardrobe socket (iron) }, powerW: 2200, heightMm: 900 }
+    - { id: w-net, kind: network, room: wardrobe, x: 750, y: 740, device: QF7, label: { ru: Слаботочный шкаф (роутер), en: Low-voltage cabinet (router) }, powerW: 30, heightMm: 1800 }
+    - { id: w-light, kind: light, room: wardrobe, x: 790, y: 665, device: QF10, label: { ru: Свет гардероба, en: Wardrobe light }, powerW: 20 }
+
+    # loggia
+    - { id: g-s1, kind: socket, room: loggia, x: 1140, y: 600, device: QF8, label: { ru: Розетка под обогреватель, en: Heater socket }, powerW: 2000, heightMm: 300 }
+    - { id: g-s2, kind: socket, room: loggia, x: 1000, y: 740, device: QF8, label: { ru: Розетка у окна, en: Window socket }, powerW: 0, heightMm: 900 }
+    - { id: g-light, kind: light, room: loggia, x: 1025, y: 600, device: QF9, label: { ru: Свет лоджии, en: Loggia light }, powerW: 20 }
+
+    # bathroom & toilet
+    - { id: bt-wm, kind: appliance, profile: washer, room: bathroom, x: 60, y: 700, device: QFD2, label: { ru: Стиральная машина, en: Washing machine }, powerW: 2200, heightMm: 1000 }
+    - { id: bt-s1, kind: socket, room: bathroom, x: 290, y: 520, device: QFD2, label: { ru: Розетка у зеркала (фен), en: Mirror socket (hair dryer) }, powerW: 1800, heightMm: 1100 }
+    - { id: bt-boiler, kind: appliance, profile: boiler, room: bathroom, x: 60, y: 480, device: QFD3, label: { ru: Водонагреватель 80 л, en: Water heater 80 L }, powerW: 2000, heightMm: 1700 }
+    - { id: bt-heat, kind: heating, profile: floor-heating, room: bathroom, x: 175, y: 640, device: QFD4, label: { ru: Тёплый пол (терморегулятор у двери), en: Floor heating (thermostat by the door) }, powerW: 800 }
+    - { id: bt-light, kind: light, room: bathroom, x: 175, y: 560, device: QF10, label: { ru: Свет ванной, en: Bathroom light }, powerW: 40 }
+    - { id: bt-fan, kind: appliance, room: bathroom, x: 120, y: 460, device: QF10, label: { ru: Вытяжной вентилятор, en: Extractor fan }, powerW: 25, heightMm: 2400 }
+    - { id: t-light, kind: light, room: toilet, x: 590, y: 665, device: QF10, label: { ru: Свет туалета, en: Toilet light }, powerW: 20 }
+
+  routes:
+    - id: rt-kitchen
+      device: QF1
+      points: [[320, 740], [320, 470], [900, 470], [1130, 470], [1130, 120]]
+      note: { ru: "В стяжке пола до кухни, далее вертикально в стене на высоте 1100 мм", en: "In the floor screed to the kitchen, then vertical in the wall at 1100 mm" }
+    - id: rt-cooktop
+      device: QFD1
+      points: [[330, 740], [330, 480], [1100, 480], [1100, 270]]
+      note: { ru: Кабель 3×6 в гофре в стяжке, en: 3×6 cable in conduit in the screed }
+      safeWidth: 20
+    - id: rt-living
+      device: QF5
+      points: [[310, 740], [310, 440], [60, 440], [60, 250]]
+      note: { ru: Горизонтальная штроба на высоте 300 мм, en: Horizontal chase at 300 mm height }
+    - id: rt-living-ceiling
+      device: QF9
+      points: [[320, 740], [320, 460], [275, 400], [275, 250]]
+      note: { ru: "По потолку в гофре, под натяжным потолком", en: "Along the ceiling in conduit, above the stretch ceiling" }
+    - id: rt-bedroom
+      device: QF6
+      points: [[320, 740], [520, 460], [880, 460], [880, 330]]
+      note: { ru: Штроба на высоте 300 мм вдоль стены, en: Chase at 300 mm along the wall }
+    - id: rt-bath
+      device: QFD2
+      points: [[300, 740], [80, 740], [60, 700]]
+      note: { ru: Опуск по стене от потолка, en: Drop down the wall from the ceiling }
+    - id: rt-boiler
+      device: QFD3
+      points: [[300, 730], [290, 480], [60, 480]]
+      note: { ru: По стене на высоте 1700 мм, en: Along the wall at 1700 mm }
+    - id: rt-loggia
+      device: QF8
+      points: [[320, 740], [880, 570], [1140, 570], [1140, 600]]
+      note: { ru: "В стяжке, проход через стену в гильзе", en: "In the screed, through-wall in a sleeve" }
+    - id: rt-ac-living
+      device: QF11
+      points: [[310, 740], [300, 430], [150, 70]]
+      note: { ru: "Под потолком на высоте 2400 мм, рядом трасса фреона", en: Under the ceiling at 2400 mm next to the refrigerant line }
+
+  photos:
+    - { id: ph-kitchen, src: "asset:wall-kitchen", room: kitchen, x: 1120, y: 200, caption: { ru: "Кухня, стена со столешницей до плитки", en: Kitchen worktop wall before tiling }, date: "2026-08-14" }
+    - { id: ph-bath, src: "asset:wall-bath", room: bathroom, x: 150, y: 500, caption: { ru: "Ванная, выводы под бойлер и стиралку", en: "Bathroom, boiler and washer outlets" }, date: "2026-08-15" }
+    - { id: ph-living, src: "asset:wall-living", room: living, x: 90, y: 250, caption: { ru: "ТВ-зона, закладные под кабель-канал", en: "TV area, embedded conduits" }, date: "2026-08-16" }
+
+  maintenance:
+    tasks:
+      - id: rcd-test
+        title: { ru: Нажать кнопку «Тест» на УЗО и дифавтоматах, en: Press the TEST button on all RCDs and RCBOs, sr: Pritisnuti TEST na svim FID sklopkama, es: Pulsar TEST en todos los diferenciales }
+        intervalDays: 30
+        devices: [QD1, QD2, QD3, QFD1, QFD2, QFD3, QFD4]
+        howTo: { ru: "Нажмите «Т». Устройство должно отключиться. Включите обратно. Если не отключилось — неисправно, звоните электрику.", en: "Press T. The device must trip. Switch it back on. If it does not trip it is faulty — call an electrician." }
+      - id: spd-check
+        title: { ru: Проверить индикатор УЗИП, en: Check the surge protector indicator, sr: Proveriti indikator prenaponske zaštite, es: Revisar el indicador del protector }
+        intervalDays: 180
+        devices: [FV1]
+        howTo: { ru: "Окошко должно быть зелёным. Красное — картридж отработал, его нужно заменить.", en: The window must be green. Red means the cartridge is spent and must be replaced. }
+      - id: tighten
+        title: { ru: Протяжка клемм и осмотр щита, en: Re-torque terminals and inspect the panel, sr: Pritezanje klema i pregled table, es: Reapriete de bornes e inspección }
+        intervalDays: 365
+        howTo: { ru: "Только электрик и только при снятом напряжении. Первая протяжка — через месяц после сборки.", en: "Electrician only, with the power off. First re-torque one month after assembly." }
+    log:
+      - { task: rcd-test, date: "2026-08-20", author: Иван, note: Все УЗО сработали }
+      - { task: spd-check, date: "2026-09-12", author: Иван }
+      - { task: tighten, date: "2026-09-12", author: Иван, note: Первичная протяжка после сборки }
+
+  documents:
+    - { id: doc-scheme, title: { ru: Однолинейная схема от электрика, en: Single-line diagram from the electrician }, kind: scheme, href: "asset:scheme", date: "2026-09-12" }
+    - { id: doc-act, title: { ru: Акт скрытых работ, en: Concealed works certificate }, kind: act, href: "asset:act", date: "2026-08-16" }
