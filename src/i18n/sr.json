@@ -52,7 +52,9 @@
     },
     "network": "Mreže i cevi",
     "leave": "Na početak",
-    "leaveUnsaved": "Nesačuvane izmene će biti izgubljene. Ako su vam potrebne, prvo sačuvajte fajl u uređivaču. Vratiti se na početak?"
+    "leaveUnsaved": "Nesačuvane izmene će biti izgubljene. Ako su vam potrebne, prvo sačuvajte fajl u uređivaču. Vratiti se na početak?",
+    "collapse": "Skupi meni",
+    "expand": "Proširi meni"
   },
   "banner": {
     "demo": "Ovo je demo stan. Podaci su izmišljeni i izmene se nigde ne čuvaju.",

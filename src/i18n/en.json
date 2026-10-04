@@ -52,7 +52,9 @@
     },
     "network": "Networks & conduits",
     "leave": "Back to start",
-    "leaveUnsaved": "Unsaved changes will be lost. Save the file in the editor first if you need them. Go back to the start screen?"
+    "leaveUnsaved": "Unsaved changes will be lost. Save the file in the editor first if you need them. Go back to the start screen?",
+    "collapse": "Collapse sidebar",
+    "expand": "Expand sidebar"
   },
   "banner": {
     "demo": "This is a demo apartment. The data is made up and nothing you change is saved anywhere.",

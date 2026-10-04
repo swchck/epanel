@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useMagicKeys, whenever } from '@vueuse/core'
-import { Ellipsis, FlaskConical, House, LogOut, PencilLine, Search } from '@lucide/vue'
+import { Ellipsis, FlaskConical, House, LogOut, PanelLeftClose, PanelLeftOpen, PencilLine, Search } from '@lucide/vue'
 import { Button } from '@/components/ui/button'
 import { Kbd } from '@/components/ui/kbd'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { useText } from '@/composables/useText'
 import { confirmAction, isDesktop } from '@/platform'
 import { NAV, type NavName } from '@/router'
@@ -40,6 +41,9 @@ async function leave() {
 }
 const { t, tx } = useText()
 const moreOpen = ref(false)
+const collapsed = computed(() => ui.sidebarCollapsed)
+// on <html> so the window drag strip in App.vue lines up with the sidebar too
+watchEffect(() => document.documentElement.style.setProperty('--sidebar-w', collapsed.value ? '5rem' : '15.5rem'))
 
 const GROUPS: { key: string; items: NavName[] }[] = [
   { key: 'main', items: ['panel', 'plan', 'find', 'emergency'] },
@@ -60,7 +64,12 @@ const current = computed<NavName>(() => {
 })
 
 // full-height views (the plan) take exactly what is left under the banners instead of the whole viewport
+// selecting a device swaps / for /d/:id; both are the same page, so it must not remount and fade
+const pageKey = computed(() => (route.name === 'panel' || route.name === 'device' ? 'panel' : route.name === 'edit' ? 'edit' : route.path))
 const fill = computed(() => route.meta.fill === true)
+// on wide screens the page scrolls inside <main>, not the window, so the router's own scroll reset misses it
+const scroller = ref<HTMLElement | null>(null)
+watch(pageKey, () => scroller.value?.scrollTo({ top: 0 }))
 const overlayTitlebar = document.documentElement.dataset.titlebar === 'overlay'
 const draftBanner = computed(() => data.hasDraft && current.value !== 'edit')
 const banner = computed(() => data.source === 'demo' || draftBanner.value)
@@ -76,13 +85,17 @@ const badge = computed<Partial<Record<NavName, { n: number; tone: string }>>>(()
   }
 })
 
-const { Meta_K, Ctrl_K, Slash } = useMagicKeys({
+const { Meta_K, Ctrl_K, Slash, Meta_Backslash, Ctrl_Backslash } = useMagicKeys({
   passive: false,
   onEventFired(e) {
     if ((e.metaKey || e.ctrlKey) && e.key === 'k' && e.type === 'keydown') e.preventDefault()
   },
 })
 whenever(() => Meta_K?.value || Ctrl_K?.value, () => (ui.searchOpen = true))
+whenever(
+  () => Meta_Backslash?.value || Ctrl_Backslash?.value,
+  () => (ui.sidebarCollapsed = !ui.sidebarCollapsed),
+)
 whenever(
   () => Slash?.value,
   () => {
@@ -93,56 +106,90 @@ whenever(
 </script>
 
 <template>
-  <div class="min-h-dvh bg-background lg:grid lg:grid-cols-[15.5rem_1fr]">
+  <div class="min-h-dvh bg-background lg:grid lg:h-dvh lg:grid-cols-[var(--sidebar-w)_1fr] lg:overflow-hidden">
     <aside class="no-print sticky top-0 hidden h-dvh flex-col border-r border-sidebar-border bg-sidebar lg:flex">
-      <RouterLink to="/" class="flex items-center gap-3 px-5 pt-[calc(var(--titlebar)+1rem)] pb-3">
+      <RouterLink to="/" class="flex items-center gap-3 pt-[calc(var(--titlebar)+1rem)] pb-3" :class="collapsed ? 'justify-center px-2' : 'px-5'">
         <BrandMark class="size-9 shrink-0" />
-        <div class="min-w-0">
+        <div v-if="!collapsed" class="min-w-0">
           <div class="truncate text-sm font-semibold leading-tight">{{ tx(data.data?.meta.title) || t('app.name') }}</div>
           <div class="truncate text-xs text-muted-foreground">{{ t('app.tagline') }}</div>
         </div>
       </RouterLink>
-      <button
-        class="mx-4 mb-2 flex items-center gap-2 rounded-lg border bg-background px-3 py-1.5 text-left text-sm text-muted-foreground transition hover:border-primary/50"
-        @click="ui.searchOpen = true"
-      >
-        <Search class="size-4" />
-        <span class="flex-1">{{ t('search.placeholderShort') }}</span>
-        <Kbd>⌘K</Kbd>
-      </button>
-      <nav class="flex-1 overflow-y-auto px-3 pb-2">
-        <div v-for="g in GROUPS" :key="g.key" class="mb-2.5">
-          <div class="px-2 pt-1 pb-1 text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">{{ t(`nav.group.${g.key}`) }}</div>
-          <RouterLink
-            v-for="n in g.items.filter(visible)"
-            :key="n"
-            :to="pathOf(n)"
-            class="group flex items-center gap-3 rounded-lg px-2.5 py-1.5 text-sm transition"
-            :class="current === n ? 'bg-sidebar-accent font-medium text-foreground' : 'text-muted-foreground hover:bg-sidebar-accent/60 hover:text-foreground'"
+      <Tooltip :disabled="!collapsed">
+        <TooltipTrigger as-child>
+          <button
+            class="mb-2 flex items-center gap-2 rounded-lg border bg-background text-left text-sm text-muted-foreground transition hover:border-primary/50"
+            :class="collapsed ? 'mx-auto size-9 justify-center' : 'mx-4 px-3 py-1.5'"
+            :aria-label="t('search.open')"
+            @click="ui.searchOpen = true"
           >
-            <component :is="NAV_ICONS[n]" class="size-4.5 shrink-0" :class="current === n ? 'text-primary' : n === 'emergency' ? 'text-danger' : ''" />
-            <span class="flex-1">{{ t(`nav.${n}`) }}</span>
-            <span v-if="badge[n]" class="rounded-full px-1.5 text-[11px] font-semibold tabular" :class="badge[n]!.tone">{{ badge[n]!.n }}</span>
-          </RouterLink>
+            <Search class="size-4" />
+            <template v-if="!collapsed">
+              <span class="flex-1">{{ t('search.placeholderShort') }}</span>
+              <Kbd>⌘K</Kbd>
+            </template>
+          </button>
+        </TooltipTrigger>
+        <TooltipContent side="right">{{ t('search.placeholderShort') }}</TooltipContent>
+      </Tooltip>
+      <nav class="flex-1 overflow-y-auto pb-2" :class="collapsed ? 'px-2' : 'px-3'">
+        <div v-for="(g, gi) in GROUPS" :key="g.key" class="mb-2.5">
+          <div v-if="!collapsed" class="px-2 pt-1 pb-1 text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">{{ t(`nav.group.${g.key}`) }}</div>
+          <div v-else-if="gi > 0" class="mx-2 mb-2 border-t border-sidebar-border" />
+          <Tooltip v-for="n in g.items.filter(visible)" :key="n" :disabled="!collapsed">
+            <TooltipTrigger as-child>
+              <RouterLink
+                :to="pathOf(n)"
+                class="group relative flex items-center gap-3 rounded-lg py-1.5 text-sm transition"
+                :class="[
+                  collapsed ? 'justify-center px-0' : 'px-2.5',
+                  current === n ? 'bg-sidebar-accent font-medium text-foreground' : 'text-muted-foreground hover:bg-sidebar-accent/60 hover:text-foreground',
+                ]"
+                :aria-label="collapsed ? t(`nav.${n}`) : undefined"
+              >
+                <component :is="NAV_ICONS[n]" class="size-4.5 shrink-0" :class="current === n ? 'text-primary' : n === 'emergency' ? 'text-danger' : ''" />
+                <template v-if="!collapsed">
+                  <span class="flex-1">{{ t(`nav.${n}`) }}</span>
+                  <span v-if="badge[n]" class="rounded-full px-1.5 text-[11px] font-semibold tabular" :class="badge[n]!.tone">{{ badge[n]!.n }}</span>
+                </template>
+                <span v-else-if="badge[n]" class="absolute top-1 right-2 size-2 rounded-full" :class="badge[n]!.tone" />
+              </RouterLink>
+            </TooltipTrigger>
+            <TooltipContent side="right">{{ t(`nav.${n}`) }}<template v-if="badge[n]"> · {{ badge[n]!.n }}</template></TooltipContent>
+          </Tooltip>
         </div>
       </nav>
-      <div class="flex items-center gap-1 border-t border-sidebar-border px-3 py-2.5">
+      <div class="flex gap-1 border-t border-sidebar-border px-3 py-2.5" :class="collapsed ? 'flex-col items-center px-2' : 'items-center'">
         <OfflineBadge />
-        <button
-          v-if="canLeave"
-          class="flex min-w-0 flex-1 items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-muted-foreground transition hover:bg-sidebar-accent/60 hover:text-foreground"
-          @click="leave"
-        >
-          <House class="size-4 shrink-0" />
-          <span class="truncate">{{ t('nav.leave') }}</span>
-        </button>
-        <div v-else class="flex-1" />
+        <Tooltip v-if="canLeave" :disabled="!collapsed">
+          <TooltipTrigger as-child>
+            <button
+              class="flex min-w-0 items-center gap-2 rounded-lg py-1.5 text-sm text-muted-foreground transition hover:bg-sidebar-accent/60 hover:text-foreground"
+              :class="collapsed ? 'size-9 justify-center' : 'flex-1 px-2'"
+              :aria-label="t('nav.leave')"
+              @click="leave"
+            >
+              <House class="size-4 shrink-0" />
+              <span v-if="!collapsed" class="truncate">{{ t('nav.leave') }}</span>
+            </button>
+          </TooltipTrigger>
+          <TooltipContent side="right">{{ t('nav.leave') }}</TooltipContent>
+        </Tooltip>
+        <div v-else-if="!collapsed" class="flex-1" />
         <LangSwitch />
         <ThemeToggle />
+        <Tooltip>
+          <TooltipTrigger as-child>
+            <Button variant="ghost" size="icon-sm" :aria-label="t(collapsed ? 'nav.expand' : 'nav.collapse')" @click="ui.sidebarCollapsed = !collapsed">
+              <component :is="collapsed ? PanelLeftOpen : PanelLeftClose" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="right">{{ t(collapsed ? 'nav.expand' : 'nav.collapse') }} <Kbd>⌘\</Kbd></TooltipContent>
+        </Tooltip>
       </div>
     </aside>
 
-    <div class="relative flex min-w-0 flex-col overflow-x-clip" :class="{ 'lg:h-dvh lg:overflow-hidden': fill }">
+    <div class="relative flex min-w-0 flex-col overflow-x-clip lg:h-dvh lg:overflow-hidden">
       <!-- the window has no title bar: the banners are the drag handle when shown, otherwise this strip over the page's top padding -->
       <div v-if="overlayTitlebar && !banner" data-tauri-drag-region class="absolute inset-x-0 top-0 z-20 h-(--titlebar)" />
       <header class="no-print sticky top-0 z-30 flex items-center gap-2 border-b bg-background/85 px-4 pt-[calc(var(--titlebar)+0.625rem)] pb-2.5 backdrop-blur-md lg:hidden">
@@ -168,10 +215,10 @@ whenever(
         <RouterLink to="/edit/publish" class="font-medium underline-offset-2 hover:underline">{{ t('banner.draftAction') }}</RouterLink>
       </div>
 
-      <main class="flex-1 pb-24" :class="fill ? 'lg:min-h-0 lg:overflow-y-auto lg:pb-0' : 'lg:pb-10'">
+      <main ref="scroller" class="flex-1 pb-24 lg:min-h-0 lg:overflow-y-auto lg:overscroll-none" :class="fill ? 'lg:pb-0' : 'lg:pb-10'">
         <RouterView v-slot="{ Component }">
           <Transition name="page" mode="out-in">
-            <component :is="Component" :key="route.name === 'device' ? 'panel' : route.path" />
+            <component :is="Component" :key="pageKey" />
           </Transition>
         </RouterView>
       </main>

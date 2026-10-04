@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
+import { useLocalStorage } from '@vueuse/core'
 import type { DeviceType, PointKind } from '@/domain/model'
 import { useData } from './data'
 
@@ -8,6 +9,8 @@ export const useUi = defineStore('ui', () => {
   const selectedPoint = ref<string | null>(null)
   const hoverDevice = ref<string | null>(null)
   const searchOpen = ref(false)
+  // a per-device convenience: losing it to a private window only means the sidebar opens wide
+  const sidebarCollapsed = useLocalStorage('sidebar-collapsed', false)
 
   const filterTypes = ref<DeviceType[]>([])
   const filterRoom = ref<string | null>(null)
@@ -118,6 +121,7 @@ export const useUi = defineStore('ui', () => {
     select,
     selectPoint,
     toggleOff,
+    sidebarCollapsed,
     resetSimulation,
     clearFilters,
   }

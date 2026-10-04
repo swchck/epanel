@@ -153,6 +153,8 @@
   }
   html {
     -webkit-tap-highlight-color: transparent;
+    /* no rubber-band: in the desktop window it dragged the whole UI off the window background */
+    overscroll-behavior: none;
   }
   body {
     @apply bg-background text-foreground antialiased;
