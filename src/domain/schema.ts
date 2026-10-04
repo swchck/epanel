@@ -26,7 +26,6 @@ export const DEVICE_TYPES = [
 ] as const
 export type DeviceType = (typeof DEVICE_TYPES)[number]
 
-export const PROTECTIVE_TYPES: readonly DeviceType[] = ['mcb', 'rcd', 'rcbo', 'switch', 'voltage-relay']
 export const RCD_TYPES: readonly DeviceType[] = ['rcd', 'rcbo']
 // devices that physically break the circuit and are safe to rely on before touching wires;
 // bus actuators and contactors are software-driven relays and never count as isolation

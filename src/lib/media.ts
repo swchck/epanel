@@ -43,7 +43,7 @@ export async function compressImage(blob: Blob, maxSide = 1600, quality = 0.82):
   }
 }
 
-export async function renderPdfFirstPage(blob: Blob, maxSide = 2000): Promise<{ url: string; width: number; height: number }> {
+async function renderPdfFirstPage(blob: Blob, maxSide = 2000): Promise<{ url: string; width: number; height: number }> {
   const pdfjs = await import('pdfjs-dist')
   const worker = await import('pdfjs-dist/build/pdf.worker.min.mjs?url')
   pdfjs.GlobalWorkerOptions.workerSrc = worker.default

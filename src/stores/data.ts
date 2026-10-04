@@ -16,7 +16,7 @@ export type Source = 'published' | 'demo' | 'file' | 'new'
 
 const KEY_STORAGE = 'panel.key'
 const DRAFT_KEY = 'panel.draft'
-export const DEMO_PASSWORD = 'demo'
+const DEMO_PASSWORD = 'demo'
 
 function readStoredKey(): string | null {
   try {
@@ -39,7 +39,7 @@ function clone<T>(v: T): T {
   return structuredClone(toRaw(v))
 }
 
-export function emptyData(title = ''): PanelInput {
+function emptyData(title = ''): PanelInput {
   return {
     meta: { title, contacts: [] },
     supply: { phases: 1, voltage: 230, maxPowerKw: 10 },

@@ -7,7 +7,7 @@ export interface EncryptedEnvelope {
 }
 
 // OWASP 2023 guidance for PBKDF2-HMAC-SHA256
-export const PBKDF2_ITERATIONS = 310_000
+const PBKDF2_ITERATIONS = 310_000
 
 const enc = new TextEncoder()
 const dec = new TextDecoder()

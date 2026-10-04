@@ -22,7 +22,7 @@ export function resolveAsset(src: string | undefined, assets: Record<string, str
   return src
 }
 
-export function usedAssetIds(data: PanelData): Set<string> {
+function usedAssetIds(data: PanelData): Set<string> {
   const ids = new Set<string>()
   const add = (s?: string) => {
     if (s?.startsWith(ASSET_PREFIX)) ids.add(s.slice(ASSET_PREFIX.length))

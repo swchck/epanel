@@ -1,6 +1,6 @@
 import type { Device, DeviceType, PanelData, RowItem } from '@/domain/schema'
 
-export const ID_PREFIX: Record<DeviceType, string> = {
+const ID_PREFIX: Record<DeviceType, string> = {
   mcb: 'QF',
   rcd: 'QD',
   rcbo: 'QFD',
@@ -19,7 +19,7 @@ export const ID_PREFIX: Record<DeviceType, string> = {
   other: 'A',
 }
 
-export const DEVICE_DEFAULTS: Record<DeviceType, Partial<Device>> = {
+const DEVICE_DEFAULTS: Record<DeviceType, Partial<Device>> = {
   mcb: { rating: 16, curve: 'C', poles: 1 },
   rcd: { rating: 40, leakage: 30, rcdClass: 'A', poles: 2 },
   rcbo: { rating: 16, curve: 'C', leakage: 30, rcdClass: 'A', poles: 2 },

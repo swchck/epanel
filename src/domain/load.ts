@@ -30,7 +30,7 @@ const PROFILE_FACTOR: Record<ApplianceProfile, number> = {
   ev: 1,
 }
 
-export function demandFactor(p: PlanPoint): number {
+function demandFactor(p: PlanPoint): number {
   if (p.profile) return PROFILE_FACTOR[p.profile]
   return KIND_FACTOR[p.kind]
 }

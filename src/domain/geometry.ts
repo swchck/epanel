@@ -1,6 +1,6 @@
 import type { Point2 } from './schema'
 
-export function polygonArea(poly: Point2[]): number {
+function polygonArea(poly: Point2[]): number {
   let a = 0
   for (let i = 0; i < poly.length; i++) {
     const [x1, y1] = poly[i]!
