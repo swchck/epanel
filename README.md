@@ -1,102 +1,121 @@
-# Щиток
+# Electrical panel map
 
-Интерактивная карта квартирного электрощитка. QR-код на дверце щитка открывает сайт: какой автомат что отключает, где в стенах проходят кабели, что делать, если что-то выбило. Сайт работает без интернета, данные зашифрованы паролем.
+An interactive map of a home electrical panel. A QR code on the panel door opens a site that shows which breaker cuts what, where the cables run inside the walls, and what to do when something trips. The site works offline and the data is encrypted with a password.
 
-Три части:
+**Live demo:** [swchck.github.io/epanel](https://swchck.github.io/epanel/) (password `demo`).
 
-| Часть | Где | Зачем |
+It has three parts:
+
+| Part | Where | What for |
 |---|---|---|
-| Промо-сайт | `/` на GitHub Pages | Что это и как сделать себе, живое демо |
-| Приложение | `/app/` на GitHub Pages | То, что открывается по QR. PWA, работает офлайн |
-| Десктоп-редактор | Tauri, сборки в GitHub Releases | Мастер заполняет щит у себя и отдаёт файл `.panel` |
+| Landing page | `/` on GitHub Pages | What it is, how to get your own, a live demo |
+| Web app | `/app/` on GitHub Pages | What the QR code opens. A PWA that works offline |
+| Desktop app | Tauri, builds in GitHub Releases | Where the panel is filled in and published |
 
-## Что умеет
+The interface is available in Russian, English, Serbian (Latin) and Spanish, with light and dark themes.
 
-- Щиток. Модули на DIN-рейках в натуральных пропорциях: автоматы, УЗО, дифавтоматы, реле напряжения с дисплеем, счётчик, УЗИП, шины N/PE, шинные модули KNX. Фильтры по типу, комнате, тегу, замечаниям. Симуляция: выключаете устройство и видите, что обесточится.
-- План квартиры, 2D и 3D. Розетки, свет, техника, информационные розетки на реальной высоте. Размеры стен, высота потолков, трассы кабелей с зонами «не сверлить», фото стен до штукатурки.
-- Что отключить? Выбираете розетку, получаете ответ «ряд 2, пятый слева». Реле умного дома и контакторы не считаются отключением: приложение покажет защитный автомат перед ними.
-- Выбило автомат. Пошаговый разбор: часть квартиры, УЗО, вся квартира, скачки напряжения, запах гари. Контакты с кнопкой вызова.
-- Проверки. Сечение и номинал, нагрузка по группам с коэффициентами одновременности, селективность, каскады УЗО, влажные зоны, тип УЗО для инверторной техники, мощность ввода, перекос фаз, адреса и блок питания шины KNX.
-- Однолинейная схема строится автоматически.
-- Умный дом. KNX, DALI, Modbus: физические адреса, каналы актуаторов, групповые адреса, панели в комнатах.
-- Сети и гофры. Ethernet, HDMI, антенна, пустые гофры с протяжкой: откуда и куда идёт каждый кабель.
-- Обслуживание. Регламент (тест УЗО, протяжка клемм), журнал, просроченные задачи.
-- Наклейки и QR. Маркировка под автоматы в масштабе 17,5 мм на модуль, QR на дверцу и на каждое устройство.
-- Редактор. Всё перечисленное правится в интерфейсе: щиток, план (подложка из PNG, JPG, SVG или PDF), фото, документы. Черновик сохраняется на устройстве, результат уходит в файл или сразу на сайт.
-- Языки: русский, английский, сербский (латиница), испанский. Светлая и тёмная тема.
+## Features
 
-## Безопасность данных
+- **Panel.** DIN-rail modules in true proportions: breakers, RCDs, RCBOs, arc fault devices, fuses, voltage relays with a display, meters, surge protectors, time switches, impulse relays, dimmers, 12/24 V power supplies, transfer switches, UPSs, N/PE busbars and smart-home bus modules. Filter by type, room, tag or issue. Simulation: switch a device off and see what loses power. Panel view or a compact list.
+- **Floor plan, 2D and 3D.** Sockets, lights, appliances, data outlets and junction boxes (visible or concealed) at their real height. Doors and windows, wall lengths, ceiling heights, cable runs with no-drill zones, photos of the walls before plastering.
+- **What to switch off?** Pick a socket and get an answer like "row 2, fifth from the left". Smart-home relays and contactors do not count as isolation: the app points to the protective breaker upstream.
+- **Something tripped.** A step-by-step guide: part of the flat, an RCD, the whole flat, voltage swings, a burning smell. Meters and breakers outside the flat (for example in the floor box on the landing) come with directions to find them. Contacts with a call button.
+- **Checks.** Cable size against breaker rating, circuit load with diversity factors, selectivity, cascaded RCDs, wet rooms, RCD type for inverter appliances, supply capacity, phase balance, bus addresses and bus power.
+- **Single-line diagram,** built automatically.
+- **Smart home.** KNX, DALI, Modbus, Zigbee, Z-Wave, Matter / Thread, Wiren Board: physical addresses, actuator channels, group addresses, room panels.
+- **Networks and conduits.** Ethernet, HDMI, coax, empty conduits with a pull string: where every cable goes.
+- **Maintenance.** A schedule (RCD test, terminal re-torque, meter readings) with a log under each task. The editor suggests a task as soon as a matching device is added.
+- **Labels and QR codes.** Breaker labels at 17.5 mm per module, a QR code for the door and one for every device.
+- **Editor.** Everything above is edited in the interface: panel, plan (background from PNG, JPG, SVG or PDF), photos, documents. Notes and instructions support basic Markdown. The draft is kept on the device; the result goes to a file or straight to the site.
 
-- Всё хранится в одном зашифрованном файле `public/app/panel.enc.json`: AES-256-GCM, ключ из пароля через PBKDF2-SHA256 (310 000 итераций). Фото и документы лежат внутри него же.
-- На хостинге нет сервера и базы данных, расшифровка происходит в браузере.
-- Пароль в QR-коде передаётся во фрагменте адреса (`#/?k=…`). Браузер не отправляет фрагмент на сервер, а приложение сразу убирает пароль из адресной строки.
-- Открытый YAML/JSON нужен только для начального заполнения и разработки. Не коммитьте его с реальными данными.
+## Data security
 
-## Как сделать себе
+- Everything lives in one encrypted file, `public/app/panel.enc.json`: AES-256-GCM with a key derived from the password via PBKDF2-SHA256 (310,000 iterations). Photos and documents are inside the same file.
+- The host has no server or database; decryption happens in the browser.
+- The QR code carries the password in the URL fragment (`#/?k=…`). Browsers never send the fragment to the server, and the app removes the password from the address bar right away.
+- Plain YAML/JSON is only for seeding and development. Do not commit it with real data.
 
-1. Форкните репозиторий. В **Settings → Pages** выберите источник **GitHub Actions**.
-2. Откройте `https://<user>.github.io/<repo>/app/`. Сначала там демо с паролем `demo`.
-3. Откройте **Редактор**, заполните щиток и план или импортируйте файл `.panel` от мастера. Во вкладке «Общее» укажите адрес сайта (`https://<user>.github.io/<repo>/app/`), он нужен для QR.
-4. Во вкладке «Сохранить и опубликовать» смените пароль и опубликуйте. Есть два способа:
-   - кнопкой **Опубликовать**: нужен fine-grained токен GitHub с правом *Contents: Read and write* только на этот репозиторий;
-   - вручную: скачайте `panel.enc.json` и замените `public/app/panel.enc.json` в репозитории.
-5. В разделе **Наклейки и QR** распечатайте наклейку для дверцы и маркировку автоматов (масштаб 100%).
+## Get your own
 
-Чтобы CI проверял содержимое данных, добавьте секрет `PANEL_PASSWORD` в настройках репозитория. Без него проверяется только формат файла.
+### The easy way: the desktop app
 
-## Десктоп-редактор
+You only need a free GitHub account. No forking, no tokens.
 
-Это то же приложение в оболочке Tauri. Оно открывает и сохраняет файлы `.panel` через системные диалоги, а двойной клик по `.panel` открывает файл в редакторе. Сценарий такой: мастер описывает щит у себя и присылает файл, владелец импортирует его в веб-версии («Сохранить и опубликовать» → «Импортировать файл») и публикует.
+1. Download the desktop app from [Releases](https://github.com/swchck/epanel/releases/latest) and open it.
+2. Choose **Create a new panel**, or open the `.panel` file your electrician sent you.
+3. Fill in the panel and the plan. The app asks for a password the first time you save.
+4. In **Save & publish**, press **Sign in with GitHub**, confirm the code on github.com, then **Create a new site** and **Publish**. The site address is filled in for the QR codes automatically.
+5. In **Labels & QR**, print the door sticker and the breaker labels (at 100% scale).
 
-### Вход через GitHub
+### For electricians
 
-В десктопной версии публикация идёт через кнопку «Войти через GitHub»: программа показывает код, его подтверждают на github.com, и дальше можно выбрать репозиторий или создать новый сайт. Новый сайт создаётся из этого репозитория как из шаблона, GitHub Pages включается сам. В веб-версии остаётся вставка токена.
+Describe the panel in the desktop app on your side and give the client the `.panel` file. The client opens it in the app and publishes the site from their own GitHub account; yours is not involved.
 
-Чтобы кнопка появилась в сборке:
+### By hand
 
-1. Зарегистрируйте OAuth App: **Settings → Developer settings → OAuth Apps → New OAuth App**. Homepage и Callback URL можно указать адрес сайта, они не используются. Включите **Enable Device Flow** и оставьте включённым **Expire user access tokens**: токен живёт 8 часов, программа сама обновляет его без секрета приложения.
-2. Скопируйте **Client ID**. Это не секрет, он попадает в сборку как есть.
-3. Для релизов добавьте его в переменные репозитория (**Settings → Secrets and variables → Actions → Variables**) под именем `OAUTH_CLIENT_ID`. Для локальной сборки положите в `.env.local` строку `VITE_GITHUB_CLIENT_ID=<client id>` и `REPO_URL=https://github.com/<user>/<repo>`.
-4. Отметьте репозиторий как шаблон: **Settings → General → Template repository**. Иначе создать новый сайт не получится.
+1. Fork the repository. In **Settings → Pages**, set the source to **GitHub Actions**.
+2. Open `https://<user>.github.io/<repo>/app/`. At first it shows the demo with the password `demo`.
+3. Open the **Editor**, fill in the panel and the plan, or import a `.panel` file. On the **General** tab, enter the site address (`https://<user>.github.io/<repo>/app/`): the QR codes point there.
+4. In **Save & publish**, publish in one of two ways:
+   - with the **Publish** button, using a fine-grained GitHub token with *Contents: Read and write* on this repository only;
+   - by hand: download `panel.enc.json` and replace `public/app/panel.enc.json` in the repository.
 
-Программа просит право `repo`: без него GitHub не даёт включить Pages на новом репозитории.
+To have CI check the data itself, add a `PANEL_PASSWORD` secret to the repository. Without it only the file format is checked.
 
-Сборки появляются в Releases после пуша тега `v*`. Они не подписаны: на macOS при первом запуске откройте программу через правый клик → «Открыть».
+## Desktop app
 
-## Разработка
+The same app in a Tauri shell. It opens and saves `.panel` files through the system dialogs, and double-clicking a `.panel` file opens it in the editor.
+
+### Sign in with GitHub
+
+The desktop app publishes through **Sign in with GitHub** (OAuth device flow): it shows a code, the user confirms it on github.com, then picks a repository or creates a new site. A new site is generated from this repository as a template, and GitHub Pages is turned on automatically. The web app keeps the pasted-token option.
+
+To enable the button in your own builds:
+
+1. Register an OAuth App: **Settings → Developer settings → OAuth Apps → New OAuth App**. The homepage and callback URLs can both be the site address; they are not used. Turn on **Enable Device Flow** and keep **Expire user access tokens** on: tokens last 8 hours, and the app refreshes them without a client secret.
+2. Copy the **Client ID**. It is not a secret and is built into the app as is.
+3. For releases, add it as a repository variable (**Settings → Secrets and variables → Actions → Variables**) named `OAUTH_CLIENT_ID`. For local builds, put `VITE_GITHUB_CLIENT_ID=<client id>` and `REPO_URL=https://github.com/<user>/<repo>` in `.env.local`.
+4. Mark the repository as a template: **Settings → General → Template repository**. Without it, creating a new site fails.
+
+The app asks for the `repo` scope: GitHub does not allow turning on Pages for a new repository without it.
+
+Builds appear in Releases after pushing a `v*` tag. They are unsigned: on macOS, open the app the first time with right-click → Open.
+
+## Development
 
 ```bash
 npm install
-npm run dev            # http://localhost:5180/ (промо) и /app/
-npm run desktop        # Tauri в режиме разработки
+npm run dev            # http://localhost:5180/ (landing) and /app/
+npm run desktop        # Tauri in development mode
 npm test               # vitest
 npm run lint
 npm run typecheck
-npm run i18n:check     # все ключи переведены на 4 языка
-npm run build          # промо + приложение в dist/
-npm run desktop:build  # десктоп-сборка
-npm run seed:demo      # пересобрать демо-файлы из data/*.yaml
-npm run icons          # иконки PWA из public/icon.svg
+npm run i18n:check     # every key translated into all 4 languages
+npm run build          # landing + app into dist/
+npm run desktop:build  # desktop build
+npm run seed:demo      # rebuild the demo files from data/*.yaml
+npm run icons          # PWA icons from public/icon.svg
 ```
 
-Структура:
+Layout:
 
 ```
-src/domain/      чистая логика без Vue: схема данных (zod), граф питания, нагрузки, проверки, шифрование
-src/editor/      операции редактора над данными
-src/components/  щиток (SVG), план (SVG и three.js), редактор, общие компоненты, shadcn-vue
-src/views/       экраны приложения
-src/landing/     промо-сайт
-src/platform/    файлы: браузер или Tauri
-src-tauri/       оболочка десктоп-приложения
-data/            демо-квартиры (YAML) и картинки к ним
-scripts/         seed, validate, генератор демо с KNX, проверка переводов
+src/domain/      pure logic without Vue: data schema (zod), power graph, loads, checks, encryption
+src/editor/      editor operations on the data
+src/components/  panel (SVG), plan (SVG and three.js), editor, shared components, shadcn-vue
+src/views/       app screens
+src/landing/     landing page
+src/lib/         GitHub publishing and sign-in, Markdown, media helpers
+src/platform/    files and links: browser or Tauri
+src-tauri/       desktop shell
+data/            demo apartments (YAML) and their images
+scripts/         seed, validate, KNX demo generator, translation check
 ```
 
-Стек: Vue 3, TypeScript, Vite, Tailwind CSS 4, shadcn-vue, Pinia, vue-i18n, zod, three.js, vite-plugin-pwa, Tauri 2.
+Stack: Vue 3, TypeScript, Vite, Tailwind CSS 4, shadcn-vue, Pinia, vue-i18n, zod, three.js, vite-plugin-pwa, Tauri 2.
 
-## Ограничения
+## Limitations
 
-Проверки упрощённые: медь, скрытая прокладка, напряжение из настроек. Они не заменяют проект и осмотр электриком.
+The checks are simplified: copper conductors, concealed wiring, the voltage from the settings. They do not replace a wiring design or an inspection by an electrician.
 
-Живых данных пока нет. У устройства есть поле `entity` под будущую интеграцию с Home Assistant или умным счётчиком.
+There is no live data yet. Devices have an `entity` field reserved for a future integration with Home Assistant or a smart meter.

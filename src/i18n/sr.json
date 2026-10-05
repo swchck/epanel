@@ -1170,17 +1170,29 @@
     },
     "diy": {
       "title": "Napravite svoju",
-      "subtitle": "Potreban je besplatan nalog na GitHub-u. Tablu može da popuni vaš električar, u pregledaču ili u programu za računar.",
+      "subtitle": "Sve se radi u programu za računar. Potreban je samo besplatan GitHub nalog: bez forka i bez tokena.",
       "steps": [
-        "Napravite fork repozitorijuma i uključite GitHub Pages: Settings → Pages → GitHub Actions.",
-        "Otvorite aplikaciju, izaberite „Napravi novu tablu“ i smislite lozinku. Ako vam je električar poslao fajl .panel, otvorite njega.",
-        "Popunite tablu i plan. Na kartici „Opšte“ upišite adresu sajta: na nju će voditi QR kodovi.",
-        "Pritisnite „Objavi“, za to je potreban GitHub token. Fajl public/app/panel.enc.json možete zameniti i ručno.",
-        "U odeljku „Nalepnice i QR“ odštampajte nalepnice i zalepite QR kod na vrata table.",
-        "Jednom mesečno pritisnite TEST na FID sklopkama. Ako zaboravite, aplikacija će vas podsetiti."
-      ]
+        "Preuzmite program za računar i otvorite ga.",
+        "Izaberite „Napravi novu tablu”. Ako vam je električar poslao .panel fajl, otvorite njega.",
+        "Popunite tablu i plan. Program traži lozinku pri prvom čuvanju.",
+        "U „Sačuvaj i objavi” kliknite „Prijava preko GitHub-a”, zatim „Napravi novi sajt” i „Objavi”.",
+        "U „Nalepnice i QR” odštampajte nalepnice i zalepite QR kod na vrata table.",
+        "Jednom mesečno pritisnite TEST na FID sklopkama. Ako zaboravite, aplikacija podseća."
+      ],
+      "electrician": {
+        "title": "Ako ste električar",
+        "text": "Opišite tablu u programu kod sebe i dajte klijentu .panel fajl. Klijent ga otvori u programu i sam objavi sajt preko svog GitHub naloga. Vaš nalog nije potreban."
+      },
+      "manual": {
+        "title": "Ručno, za programere",
+        "text": "Možete forkovati repozitorijum, uključiti GitHub Pages i objavljivati sa GitHub tokenom ili samo zameniti public/app/panel.enc.json. Detalji su u README-u."
+      }
     },
-    "footer": "Sajt ne zamenjuje projekat električne instalacije ni pregled električara."
+    "footer": "Sajt ne zamenjuje projekat električne instalacije ni pregled električara.",
+    "meta": {
+      "title": "Mapa razvodne table iza QR koda",
+      "description": "QR kod na vratima table otvara mapu osigurača i plan stana sa trasama kablova. Radi bez interneta, podaci su šifrovani."
+    }
   },
   "network": {
     "title": "Mreže i cevi",

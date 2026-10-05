@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watchEffect } from 'vue'
 import {
   ArrowRight,
   BookOpen,
   ClipboardCheck,
+  Code,
+  FileUp,
   Download,
   FileLock2,
   Map as MapIcon,
@@ -35,6 +37,11 @@ useTheme()
 const data = useData()
 const ui = useUi()
 const { t, tx, tm, rt } = useText()
+// index.html ships the Russian title for crawlers; the tab follows the language the visitor picked
+watchEffect(() => {
+  document.title = t('landing.meta.title')
+  document.querySelector('meta[name="description"]')?.setAttribute('content', t('landing.meta.description'))
+})
 const repo = __REPO_URL__
 const ready = computed(() => data.status === 'ready')
 
@@ -212,9 +219,20 @@ const hint = ref(true)
           </li>
         </ol>
         <div class="mt-8 flex flex-wrap gap-3">
-          <a href="app/" class="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3 font-medium text-primary-foreground">{{ t('landing.cta.open') }} <ArrowRight class="size-4" /></a>
-          <a v-if="repo" :href="repo" class="inline-flex items-center gap-2 rounded-xl border bg-card px-5 py-3 font-medium"><BookOpen class="size-4" /> {{ t('landing.cta.source') }}</a>
-          <a v-if="repo" :href="`${repo}/releases/latest`" class="inline-flex items-center gap-2 rounded-xl border bg-card px-5 py-3 font-medium"><Download class="size-4" /> {{ t('landing.cta.download') }}</a>
+          <a v-if="repo" :href="`${repo}/releases/latest`" class="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3 font-medium text-primary-foreground"><Download class="size-4" /> {{ t('landing.cta.download') }}</a>
+          <a href="app/" class="inline-flex items-center gap-2 rounded-xl border bg-card px-5 py-3 font-medium">{{ t('landing.cta.open') }} <ArrowRight class="size-4" /></a>
+        </div>
+
+        <div class="mt-10 grid gap-3 md:grid-cols-2">
+          <div class="rounded-2xl border bg-card p-5">
+            <h3 class="flex items-center gap-2 font-semibold"><FileUp class="size-5 text-primary" /> {{ t('landing.diy.electrician.title') }}</h3>
+            <p class="mt-2 text-sm text-muted-foreground">{{ t('landing.diy.electrician.text') }}</p>
+          </div>
+          <div class="rounded-2xl border bg-card p-5">
+            <h3 class="flex items-center gap-2 font-semibold"><Code class="size-5 text-muted-foreground" /> {{ t('landing.diy.manual.title') }}</h3>
+            <p class="mt-2 text-sm text-muted-foreground">{{ t('landing.diy.manual.text') }}</p>
+            <a v-if="repo" :href="repo" class="mt-3 inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline"><BookOpen class="size-4" /> {{ t('landing.cta.source') }}</a>
+          </div>
         </div>
       </section>
     </main>

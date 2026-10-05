@@ -1170,17 +1170,29 @@
     },
     "diy": {
       "title": "Hazlo tú",
-      "subtitle": "Necesitas una cuenta gratuita de GitHub. Tu electricista puede rellenar el cuadro en el navegador o en la aplicación de escritorio.",
+      "subtitle": "Todo se hace en la app de escritorio. Solo necesitas una cuenta gratuita de GitHub: sin forks ni tokens.",
       "steps": [
-        "Haz un fork del repositorio y activa GitHub Pages: Settings → Pages → GitHub Actions.",
-        "Abre la aplicación, pulsa «Crear un cuadro nuevo» y elige una contraseña. Si tu electricista te envió un archivo .panel, ábrelo.",
-        "Rellena el cuadro y el plano. En la pestaña «General», escribe la dirección de la web: ahí apuntarán los QR.",
-        "Pulsa «Publicar», que necesita un token de GitHub. También puedes sustituir public/app/panel.enc.json a mano.",
-        "En «Etiquetas y QR», imprime las etiquetas y pega el QR en la puerta del cuadro.",
-        "Pulsa TEST en los diferenciales una vez al mes. Si se te olvida, la aplicación te lo recuerda."
-      ]
+        "Descarga la app de escritorio y ábrela.",
+        "Elige «Crear un cuadro nuevo». Si tu electricista te mandó un archivo .panel, abre ese.",
+        "Rellena el cuadro y el plano. La app te pide una contraseña la primera vez que guardas.",
+        "En «Guardar y publicar», pulsa «Entrar con GitHub», luego «Crear un sitio nuevo» y «Publicar».",
+        "Imprime las etiquetas en «Etiquetas y QR» y pega el código QR en la puerta del cuadro.",
+        "Pulsa TEST en los diferenciales una vez al mes. Si se te olvida, la app te lo recuerda."
+      ],
+      "electrician": {
+        "title": "Si eres electricista",
+        "text": "Describe el cuadro en la app en tu equipo y entrega al cliente el archivo .panel. Lo abre en la app y publica el sitio desde su propia cuenta de GitHub. La tuya no hace falta."
+      },
+      "manual": {
+        "title": "A mano, para desarrolladores",
+        "text": "Puedes hacer un fork del repositorio, activar GitHub Pages y publicar con un token de GitHub, o simplemente sustituir public/app/panel.enc.json. Más detalles en el README."
+      }
     },
-    "footer": "La web no sustituye un proyecto de instalación ni la revisión de un electricista."
+    "footer": "La web no sustituye un proyecto de instalación ni la revisión de un electricista.",
+    "meta": {
+      "title": "Mapa del cuadro eléctrico tras un código QR",
+      "description": "Un código QR en la puerta del cuadro abre el mapa de interruptores y el plano con los recorridos de cables. Funciona sin conexión, los datos van cifrados."
+    }
   },
   "network": {
     "title": "Redes y tubos",

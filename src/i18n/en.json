@@ -1170,17 +1170,29 @@
     },
     "diy": {
       "title": "Make your own",
-      "subtitle": "You need a free GitHub account. Your electrician can fill in the panel in the browser or in the desktop app.",
+      "subtitle": "Everything happens in the desktop app. All you need is a free GitHub account: no forking, no tokens.",
       "steps": [
-        "Fork the repository and turn on GitHub Pages: Settings → Pages → GitHub Actions.",
-        "Open the app, choose \"Create a new panel\" and pick a password. If your electrician sent you a .panel file, open that instead.",
-        "Fill in the panel and the plan. On the General tab, enter the site address: the QR codes will point there.",
-        "Press \"Publish\", which needs a GitHub token. You can also replace public/app/panel.enc.json by hand.",
+        "Download the desktop app and open it.",
+        "Choose \"Create a new panel\". If your electrician sent you a .panel file, open that instead.",
+        "Fill in the panel and the plan. The app asks for a password the first time you save.",
+        "In \"Save & publish\", press \"Sign in with GitHub\", then \"Create a new site\" and \"Publish\".",
         "Print the labels in \"Labels & QR\" and stick the QR code on the panel door.",
         "Press TEST on the RCDs once a month. If you forget, the app reminds you."
-      ]
+      ],
+      "electrician": {
+        "title": "If you are an electrician",
+        "text": "Describe the panel in the app on your side and hand the client the .panel file. They open it in the app and publish the site from their own GitHub account. Yours is not needed."
+      },
+      "manual": {
+        "title": "By hand, for developers",
+        "text": "You can fork the repository, turn on GitHub Pages and publish with a GitHub token, or just replace public/app/panel.enc.json. Details in the README."
+      }
     },
-    "footer": "The site does not replace a wiring design or an inspection by an electrician."
+    "footer": "The site does not replace a wiring design or an inspection by an electrician.",
+    "meta": {
+      "title": "Electrical panel map behind a QR code",
+      "description": "A QR code on the panel door opens the breaker map and the floor plan with cable runs. Works offline, the data is encrypted."
+    }
   },
   "network": {
     "title": "Networks & conduits",
