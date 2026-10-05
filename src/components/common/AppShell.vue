@@ -43,6 +43,12 @@ watch(
 const canLeave = computed(() => isDesktop || data.source !== 'published')
 
 async function leave() {
+  // on the web the demo is opened from the landing page, so that's where leaving it goes back to;
+  // re-initialising here would land on the password form of whatever panel the site publishes
+  if (!isDesktop && data.source === 'demo') {
+    location.assign(new URL('../', document.baseURI))
+    return
+  }
   // only the published panel's draft is autosaved; a file or a new project lives in memory until saved
   const unsaved = (data.source === 'new' && !data.file) || (data.hasDraft && (data.source === 'file' || data.source === 'new'))
   if (unsaved && !(await confirmAction(t('nav.leaveUnsaved')))) return
