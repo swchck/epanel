@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import { computed, ref, watch, watchEffect } from 'vue'
+import { computed, defineAsyncComponent, ref, watch, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useMagicKeys, whenever } from '@vueuse/core'
 import { CircleHelp, Ellipsis, Eye, FlaskConical, House, LogOut, PanelLeftClose, PanelLeftOpen, PencilLine, Search } from '@lucide/vue'
 import type { Component as Icon } from 'vue'
 import { Button } from '@/components/ui/button'
 import { Kbd } from '@/components/ui/kbd'
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { useText } from '@/composables/useText'
 import { confirmAction, editorFirst, isDesktop, viewerOnly } from '@/platform'
@@ -17,12 +16,18 @@ import { useData } from '@/stores/data'
 import { useUi } from '@/stores/ui'
 import BrandMark from './BrandMark.vue'
 import OfflineBadge from './OfflineBadge.vue'
-import SearchDialog from './SearchDialog.vue'
 import { NAV_ICONS } from './navIcons'
 import TourOverlay from '@/tour/TourOverlay.vue'
 import { MANUAL_ONLY, tourFor } from '@/tour/tours'
 import { useTour } from '@/tour/useTour'
+import { useOpenedOnce } from '@/composables/useOpenedOnce'
 
+// dialogs that nobody needs on the first paint load on first use, see useOpenedOnce
+const SearchDialog = defineAsyncComponent(() => import('./SearchDialog.vue'))
+const Sheet = defineAsyncComponent(() => import('@/components/ui/sheet').then((m) => m.Sheet))
+const SheetContent = defineAsyncComponent(() => import('@/components/ui/sheet').then((m) => m.SheetContent))
+const SheetHeader = defineAsyncComponent(() => import('@/components/ui/sheet').then((m) => m.SheetHeader))
+const SheetTitle = defineAsyncComponent(() => import('@/components/ui/sheet').then((m) => m.SheetTitle))
 const data = useData()
 const ui = useUi()
 const route = useRoute()
@@ -65,6 +70,8 @@ async function leave() {
 }
 const { t, tx } = useText()
 const moreOpen = ref(false)
+const moreUsed = useOpenedOnce(moreOpen)
+const searchUsed = useOpenedOnce(() => ui.searchOpen)
 const collapsed = computed(() => ui.sidebarCollapsed)
 // on <html> so the window drag strip in App.vue lines up with the sidebar too;
 // the rail keeps the macOS traffic lights centred: 16px inset + ~54px of buttons + the same gap on the right
@@ -297,7 +304,7 @@ whenever(
       </div>
     </nav>
 
-    <Sheet v-model:open="moreOpen">
+    <Sheet v-if="moreUsed" v-model:open="moreOpen">
       <SheetContent side="bottom" class="rounded-t-2xl pb-[max(1rem,env(safe-area-inset-bottom))]">
         <SheetHeader>
           <SheetTitle>{{ t('nav.more') }}</SheetTitle>
@@ -322,7 +329,7 @@ whenever(
       </SheetContent>
     </Sheet>
 
-    <SearchDialog />
+    <SearchDialog v-if="searchUsed" />
   </div>
 </template>
 

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue'
+import { watchDebounced } from '@vueuse/core'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { RotateCcw } from '@lucide/vue'
@@ -81,7 +82,10 @@ function render(time: number) {
 const DOOR_SPAN = [0, 210] as const
 const WINDOW_SPAN = [85, 225] as const
 
+let unmounted = false
 function build() {
+  // a debounced rebuild can still fire after the view is gone
+  if (unmounted) return
   disposeGroup(world.value)
   scene.remove(world.value)
   pointMeshes.clear()
@@ -342,6 +346,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
   cancelAnimationFrame(frame)
   frame = 0
+  unmounted = true
   resize?.disconnect()
   controls?.dispose()
   disposeGroup(scene)
@@ -355,7 +360,8 @@ onBeforeUnmount(() => {
   renderer?.domElement.remove()
 })
 
-watch(() => [d.value.rooms, d.value.points, d.value.routes, d.value.plan.wallHeight, d.value.plan.openings, props.showRoutes, isDark.value, locale.value], build, { deep: true })
+// build() recreates the whole scene; while dragging in the editor that would run on every pointer move
+watchDebounced(() => [d.value.rooms, d.value.points, d.value.routes, d.value.plan.wallHeight, d.value.plan.openings, props.showRoutes, isDark.value, locale.value], build, { deep: true, debounce: 120 })
 watch(() => [props.highlightPoints, props.deadPoints, props.focusPoint, props.selectedRoute], applyState)
 </script>
 

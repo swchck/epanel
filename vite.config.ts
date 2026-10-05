@@ -90,7 +90,7 @@ export default defineConfig({
     },
     vue(),
     // messages compiled at build time: the runtime-only vue-i18n ships no message compiler
-    VueI18nPlugin({ include: [page('./src/i18n/*.json')], runtimeOnly: true, compositionOnly: true, fullInstall: false }),
+    VueI18nPlugin({ include: [page('./src/i18n/*.json')], runtimeOnly: true, compositionOnly: true, fullInstall: false, dropMessageCompiler: true }),
     tailwindcss(),
     VitePWA({
       disable: desktop,

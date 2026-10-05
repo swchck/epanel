@@ -68,7 +68,8 @@ const hole = computed(() => {
   return r ? { left: r.left - PAD, top: r.top - PAD, width: r.width + PAD * 2, height: r.height + PAD * 2 } : null
 })
 
-// below the element when it fits, else above, else beside it, else over it; always clamped inside the viewport
+// below the element when it fits, else above, else beside it, else over it; always clamped inside the viewport.
+// Positioned with transform rather than left/top: moving boxes by layout counts as layout shift (CLS)
 const cardPos = computed(() => {
   const vw = window.innerWidth
   const vh = window.innerHeight
@@ -98,14 +99,14 @@ const key = computed(() => (tour.active.value && tour.step.value ? `tour.${tour.
       <div class="absolute inset-0" @click.self="tour.next()" />
       <div
         v-if="hole"
-        class="pointer-events-none absolute rounded-xl ring-2 ring-primary transition-all duration-200"
-        :style="{ left: `${hole.left}px`, top: `${hole.top}px`, width: `${hole.width}px`, height: `${hole.height}px`, boxShadow: '0 0 0 9999px rgb(0 0 0 / 0.55)' }"
+        class="pointer-events-none absolute top-0 left-0 rounded-xl ring-2 ring-primary transition-[transform,width,height] duration-200"
+        :style="{ transform: `translate(${hole.left}px, ${hole.top}px)`, width: `${hole.width}px`, height: `${hole.height}px`, boxShadow: '0 0 0 9999px rgb(0 0 0 / 0.55)' }"
       />
       <div v-else class="pointer-events-none absolute inset-0 bg-black/55" />
       <div
         ref="card"
-        class="absolute w-[min(340px,calc(100vw-24px))] rounded-2xl border bg-popover p-4 text-popover-foreground shadow-xl transition-[left,top] duration-200"
-        :style="{ left: `${cardPos.left}px`, top: `${cardPos.top}px` }"
+        class="absolute top-0 left-0 w-[min(340px,calc(100vw-24px))] rounded-2xl border bg-popover p-4 text-popover-foreground shadow-xl transition-transform duration-200"
+        :style="{ transform: `translate(${cardPos.left}px, ${cardPos.top}px)` }"
       >
         <div class="mb-1 flex items-start gap-2">
           <h3 class="mr-auto font-semibold">{{ t(`${key}.title`) }}</h3>

@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { viewerOnly } from '@/platform'
-import { computed, ref } from 'vue'
+import { computed, defineAsyncComponent, ref } from 'vue'
+import { useOpenedOnce } from '@/composables/useOpenedOnce'
 import { useRouter } from 'vue-router'
 import { ArrowDownToLine, ArrowUpFromLine, Map as MapIcon, MapPin, MessageSquarePlus, Power, QrCode, Send } from '@lucide/vue'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import DeviceChip from '@/components/common/DeviceChip.vue'
 import CheckItem from '@/components/common/CheckItem.vue'
-import QrDialog from '@/components/common/QrDialog.vue'
 import { POINT_ICONS } from '@/components/common/kinds'
 import FloorPlan from '@/components/plan/FloorPlan.vue'
 import { locate } from '@/domain/layout'
@@ -69,6 +69,8 @@ const utilPct = computed(() => Math.round((load.value?.utilization ?? 0) * 100))
 const utilTone = computed(() => (utilPct.value > 100 ? 'bg-danger' : utilPct.value > 80 ? 'bg-warn' : 'bg-ok'))
 
 const qrOpen = ref(false)
+const QrDialog = defineAsyncComponent(() => import('@/components/common/QrDialog.vue'))
+const qrUsed = useOpenedOnce(qrOpen)
 const noteOpen = ref(false)
 const noteText = ref('')
 const noteAuthor = ref(localStorage.getItem('panel.author') ?? '')
@@ -239,7 +241,7 @@ function simulateOff() {
       <p v-else-if="!noteOpen" class="text-sm text-muted-foreground">{{ t('device.noNotes') }}</p>
     </section>
 
-    <QrDialog v-model:open="qrOpen" :path="`/d/${id}`" :title="`${device.id} · ${tx(device.label)}`" />
+    <QrDialog v-if="qrUsed" v-model:open="qrOpen" :path="`/d/${id}`" :title="`${device.id} · ${tx(device.label)}`" />
   </div>
 </template>
 

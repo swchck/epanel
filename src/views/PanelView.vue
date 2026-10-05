@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { editorFirst } from '@/platform'
-import { computed, ref, watch } from 'vue'
+import { computed, defineAsyncComponent, ref, watch } from 'vue'
+import { useOpenedOnce } from '@/composables/useOpenedOnce'
 import { useRoute, useRouter } from 'vue-router'
 import { useMediaQuery } from '@vueuse/core'
 import { FilterX, MapPin, Power, RotateCcw, ScanSearch, TriangleAlert, X, ZoomIn, ZoomOut } from '@lucide/vue'
 import { Button } from '@/components/ui/button'
-import { Drawer, DrawerContent, DrawerDescription, DrawerTitle } from '@/components/ui/drawer'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
 import ContactList from '@/components/common/ContactList.vue'
@@ -57,6 +57,12 @@ const drawerOpen = computed({
     if (!v) ui.select(null)
   },
 })
+// the drawer is the phone layout only; desktops never load it
+const drawerUsed = useOpenedOnce(drawerOpen)
+const Drawer = defineAsyncComponent(() => import('@/components/ui/drawer').then((m) => m.Drawer))
+const DrawerContent = defineAsyncComponent(() => import('@/components/ui/drawer').then((m) => m.DrawerContent))
+const DrawerDescription = defineAsyncComponent(() => import('@/components/ui/drawer').then((m) => m.DrawerDescription))
+const DrawerTitle = defineAsyncComponent(() => import('@/components/ui/drawer').then((m) => m.DrawerTitle))
 
 const presentTypes = computed(() => {
   const s = new Set(data.data?.devices.map((d) => d.type))
@@ -115,12 +121,13 @@ watch(
           <dt class="text-xs whitespace-nowrap text-muted-foreground">{{ s.k }}</dt>
           <dd class="text-lg leading-tight font-semibold tabular">{{ s.v }}</dd>
         </div>
-        <RouterLink v-if="errors || warns" to="/checks" class="group flex flex-col-reverse px-4 py-2 transition hover:bg-accent">
+        <!-- a dl may only hold dt/dd groups, so the link sits inside the dd and stretches over the cell -->
+        <div v-if="errors || warns" class="group relative flex flex-col-reverse px-4 py-2 transition hover:bg-accent">
           <dt class="text-xs whitespace-nowrap text-muted-foreground group-hover:text-foreground">{{ errors ? t('panel.stat.errors') : t('panel.stat.warnings') }}</dt>
-          <dd class="flex items-center gap-1.5 text-lg leading-tight font-semibold tabular" :class="errors ? 'text-danger' : 'text-warn'">
-            <span class="size-2 rounded-full" :class="errors ? 'bg-danger' : 'bg-warn'" />{{ errors || warns }}
+          <dd class="text-lg leading-tight font-semibold tabular" :class="errors ? 'text-danger' : 'text-warn'">
+            <RouterLink to="/checks" class="flex items-center gap-1.5 after:absolute after:inset-0"><span class="size-2 rounded-full" :class="errors ? 'bg-danger' : 'bg-warn'" />{{ errors || warns }}</RouterLink>
           </dd>
-        </RouterLink>
+        </div>
       </dl>
     </div>
 
@@ -230,7 +237,7 @@ watch(
       </aside>
     </div>
 
-    <Drawer v-model:open="drawerOpen">
+    <Drawer v-if="drawerUsed" v-model:open="drawerOpen">
       <DrawerContent class="max-h-[88dvh]">
         <DrawerTitle class="sr-only">{{ ui.selectedDevice }}</DrawerTitle>
         <DrawerDescription class="sr-only">{{ t('panel.details') }}</DrawerDescription>

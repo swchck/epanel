@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watchEffect } from 'vue'
+import { computed, defineAsyncComponent, h, onMounted, ref, watchEffect } from 'vue'
 import {
   ArrowRight,
   BookOpen,
@@ -12,9 +12,7 @@ import {
   Network,
   PanelsTopLeft,
   PencilRuler,
-  Power,
   QrCode as QrIcon,
-  RotateCcw,
   ScanSearch,
   Siren,
   Tags,
@@ -23,21 +21,27 @@ import {
 } from '@lucide/vue'
 import BrandMark from '@/components/common/BrandMark.vue'
 import LangSwitch from '@/components/common/LangSwitch.vue'
-import QrCode from '@/components/common/QrCode.vue'
 import ThemeToggle from '@/components/common/ThemeToggle.vue'
-import FloorPlan from '@/components/plan/FloorPlan.vue'
-import PanelEnclosure from '@/components/panel/PanelEnclosure.vue'
-import { pointPowered } from '@/domain/graph'
 import { useText } from '@/composables/useText'
 import { useTheme } from '@/composables/useTheme'
-import { useData } from '@/stores/data'
-import { useUi } from '@/stores/ui'
 import { detectOs, latestInstaller, OS_NAME } from './download'
 
 useTheme()
-const data = useData()
-const ui = useUi()
-const { t, tx, tm, rt } = useText()
+// the live demo (panel, plan, the data store, zod, crypto) is most of the landing's code; loading it apart
+// lets the hero text paint first. The placeholder keeps the demo's footprint so nothing shifts when it arrives
+const LandingDemo = defineAsyncComponent({
+  loader: () => import('./LandingDemo.vue'),
+  loadingComponent: {
+    render: () =>
+      h('div', { class: 'mt-12 grid gap-4 lg:grid-cols-[1.15fr_1fr]' }, [
+        h('div', { class: 'rounded-3xl border bg-card/60 p-3 sm:p-4' }, [h('div', { class: 'aspect-[4/3] animate-pulse rounded-2xl bg-muted' })]),
+        h('div', { class: 'flex flex-col gap-4' }, [h('div', { class: 'min-h-72 flex-1 rounded-3xl border bg-card' }), h('div', { class: 'h-[54px] rounded-2xl border bg-card' })]),
+      ]),
+  },
+  delay: 0,
+})
+const QrCode = defineAsyncComponent(() => import('@/components/common/QrCode.vue'))
+const { t, tm, rt } = useText()
 // index.html ships the Russian title for crawlers; the tab follows the language the visitor picked
 watchEffect(() => {
   document.title = t('landing.meta.title')
@@ -48,22 +52,11 @@ const releases = `${repo}/releases/latest`
 const os = detectOs(navigator)
 const downloadUrl = ref(releases)
 const downloadLabel = computed(() => (os ? t('landing.cta.downloadFor', { os: OS_NAME[os] }) : t('landing.cta.download')))
-const ready = computed(() => data.status === 'ready')
 
 onMounted(async () => {
   if (os && repo) void latestInstaller(repo, os).then((url) => url && (downloadUrl.value = url))
-  await data.init({ demo: true, prefix: 'app/' })
-  ui.simulate = true
-  ui.planLayers.labels = false
-  // start with something switched off so the demo explains itself without a click
-  ui.toggleOff('QD1')
 })
 
-const dead = computed(() => {
-  if (!data.graph || !data.data) return new Set<string>()
-  return new Set(data.data.points.filter((p) => !pointPowered(data.graph!, p, ui.off)).map((p) => p.id))
-})
-const offLabels = computed(() => [...ui.off].map((id) => data.graph?.byId.get(id)).filter(Boolean))
 
 const FEATURES = [
   { id: 'panel', icon: PanelsTopLeft },
@@ -86,7 +79,6 @@ const STEPS = [
 const diy = computed(() => (tm('landing.diy.steps') as unknown[]).map((s) => rt(s as never)))
 const demoUrl = computed(() => new URL('app/#/?demo', document.baseURI).toString())
 const year = new Date().getFullYear()
-const hint = ref(true)
 </script>
 
 <template>
@@ -132,40 +124,7 @@ const hint = ref(true)
             </div>
           </div>
 
-          <div class="mt-12 grid gap-4 lg:grid-cols-[1.15fr_1fr]">
-            <div class="relative rounded-3xl border bg-card/60 p-3 shadow-xl shadow-black/5 sm:p-4">
-              <div v-if="ready">
-                <PanelEnclosure />
-              </div>
-              <div v-else class="aspect-[4/3] animate-pulse rounded-2xl bg-muted" />
-              <div
-                v-if="hint && ready"
-                class="absolute top-6 left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-full bg-foreground px-3.5 py-1.5 text-xs font-medium text-background shadow-lg"
-                @click="hint = false"
-              >
-                <Power class="size-3.5" /> {{ t('landing.hero.tap') }}
-              </div>
-            </div>
-            <div class="flex flex-col gap-4">
-              <div class="relative min-h-72 flex-1 overflow-hidden rounded-3xl border bg-card">
-                <FloorPlan v-if="ready" :interactive="false" :dead-points="dead" :show-routes="false" />
-              </div>
-              <div class="rounded-2xl border bg-card p-4 text-sm">
-                <div class="flex items-center gap-2 font-medium">
-                  <span class="relative flex size-2.5"><span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-live opacity-75" /><span class="relative inline-flex size-2.5 rounded-full bg-live" /></span>
-                  {{ t('landing.hero.live', { n: dead.size }) }}
-                </div>
-                <div v-if="offLabels.length" class="mt-2 flex flex-wrap gap-1.5">
-                  <button v-for="d in offLabels" :key="d!.id" class="rounded-md border px-2 py-0.5 text-xs hover:bg-accent" @click="ui.toggleOff(d!.id)">
-                    <b class="font-mono">{{ d!.id }}</b> · {{ tx(d!.label) }}
-                  </button>
-                </div>
-                <button v-if="ui.off.size" class="mt-3 inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground" @click="ui.resetSimulation()">
-                  <RotateCcw class="size-3.5" /> {{ t('panel.simReset') }}
-                </button>
-              </div>
-            </div>
-          </div>
+          <LandingDemo />
         </div>
       </section>
 

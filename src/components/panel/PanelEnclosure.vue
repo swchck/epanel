@@ -88,7 +88,8 @@ const isSlot = (ri: number, index: number) => props.activeSlot?.row === rowIndex
 
 function label(id: string) {
   const d = data.graph?.byId.get(id)
-  return d ? `${d.id} ${tr(d.label, locale.value)}` : id
+  // starts with what is printed on the module (id, rating) so voice control can target it by that
+  return d ? [d.id, d.rating ? `${d.curve ?? ''}${d.rating}` : '', tr(d.label, locale.value)].filter(Boolean).join(' ') : id
 }
 </script>
 

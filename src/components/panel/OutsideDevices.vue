@@ -12,7 +12,7 @@ const { t, tx } = useText()
 
 <template>
   <section v-if="data.outside.length" class="rounded-2xl border bg-card p-4">
-    <h3 class="flex items-center gap-2 text-sm font-medium"><MapPin class="size-4 text-primary" /> {{ title ?? t('panel.outside.title') }}</h3>
+    <h2 class="flex items-center gap-2 text-sm font-medium"><MapPin class="size-4 text-primary" /> {{ title ?? t('panel.outside.title') }}</h2>
     <p v-if="hint" class="mt-1 text-sm text-muted-foreground">{{ hint }}</p>
     <ul class="mt-3 space-y-3">
       <li v-for="dev in data.outside" :key="dev.id">
