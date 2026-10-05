@@ -1,6 +1,6 @@
 [package]
 name = "panel-editor"
-version = "1.0.2"
+version = "1.0.3"
 description = "Desktop editor for an apartment electrical panel map"
 authors = []
 license = "MIT"
