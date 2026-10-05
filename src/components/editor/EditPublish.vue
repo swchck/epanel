@@ -10,7 +10,7 @@ import { pruneAssets, type Bundle } from '@/domain/model'
 import { isoDay } from '@/domain/maintenance'
 import { tr } from '@/domain/model'
 import { emptyTarget, GithubError, loadTarget, publishFile, saveTarget } from '@/lib/github'
-import { canSignIn, freshToken, SignInError } from '@/lib/githubAuth'
+import { branchExists, canSignIn, freshToken, getRepo, SignInError } from '@/lib/githubAuth'
 import { useDraft } from '@/composables/useDraft'
 import { useText } from '@/composables/useText'
 import { isDesktop, openTextFile, saveTextFile } from '@/platform'
@@ -131,6 +131,22 @@ function onSite(url: string) {
 
 const ghReady = computed(() => gh.value.owner && gh.value.repo && gh.value.branch && gh.value.path && gh.value.token)
 
+// a saved branch goes stale when the repository is made again under the same name (master, then main);
+// a 404 then gets one retry on the branch GitHub reports as default now
+async function publishWithBranchRepair(text: string) {
+  const message = `Update panel data ${isoDay(new Date())}`
+  try {
+    return await publishFile(gh.value, text, message)
+  } catch (e) {
+    if (!(e instanceof GithubError && e.status === 404) || !canSignIn) throw e
+    const { owner, repo, branch } = gh.value
+    if (await branchExists(gh.value.token, owner, repo, branch)) throw e
+    gh.value.branch = (await getRepo(gh.value.token, owner, repo)).defaultBranch
+    await persistTarget()
+    return await publishFile(gh.value, text, message)
+  }
+}
+
 async function publish() {
   busy.value = 'publish'
   try {
@@ -138,7 +154,7 @@ async function publish() {
     if (!text) return
     await freshToken(gh.value, persistTarget)
     await persistTarget()
-    const { commitUrl } = await publishFile(gh.value, text, `Update panel data ${isoDay(new Date())}`)
+    const { commitUrl } = await publishWithBranchRepair(text)
     await data.commitDraft()
     toast.success(t('editor.publish.published'), {
       description: t('editor.publish.publishedHint'),
@@ -240,7 +256,7 @@ async function publish() {
         </Button>
         <Button variant="outline" @click="downloadPublishFile"><Download /> panel.enc.json</Button>
       </div>
-      <p class="text-xs text-muted-foreground">{{ t('editor.publish.manual') }}</p>
+      <p class="text-xs text-muted-foreground">{{ t('editor.publish.manual', { path: gh.path }) }}</p>
     </section>
 
     <section data-tour="pub-password" class="flex flex-wrap items-center gap-3 rounded-2xl border bg-card p-5 lg:col-span-2">

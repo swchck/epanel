@@ -1030,7 +1030,7 @@
       "failed": "No se ha podido publicar",
       "badToken": "El token no es válido o no tiene permiso de escritura",
       "notFound": "No se ha encontrado el repositorio o la rama",
-      "manual": "También puedes hacerlo a mano: descarga panel.enc.json y reemplaza public/app/panel.enc.json en el repositorio.",
+      "manual": "También puedes hacerlo a mano: descarga panel.enc.json y reemplaza {path} en el repositorio.",
       "passwordTitle": "Contraseña",
       "changePassword": "Cambiar contraseña",
       "passwordChanged": "Contraseña cambiada",

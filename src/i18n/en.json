@@ -1030,7 +1030,7 @@
       "failed": "Publishing failed",
       "badToken": "The token is invalid or lacks write access",
       "notFound": "Repository or branch not found",
-      "manual": "You can also do it by hand: download panel.enc.json and replace public/app/panel.enc.json in the repository.",
+      "manual": "You can also do it by hand: download panel.enc.json and replace {path} in the repository.",
       "passwordTitle": "Password",
       "changePassword": "Change password",
       "passwordChanged": "Password changed",

@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { GithubError, type GithubTarget } from '@/lib/github'
-import { branchExists, createSite, dataPath, currentUser, freshToken, listRepos, siteUrl, SignInError, startDeviceFlow, templateRepo, waitForToken, type DeviceCode, type Repo } from '@/lib/githubAuth'
+import { branchExists, createSite, dataPath, getRepo, currentUser, freshToken, listRepos, siteUrl, SignInError, startDeviceFlow, templateRepo, waitForToken, type DeviceCode, type Repo } from '@/lib/githubAuth'
 import { useText } from '@/composables/useText'
 import { openExternal } from '@/platform'
 import FormRow from './FormRow.vue'
@@ -120,7 +120,11 @@ async function pick(value: string) {
   target.value.repo = r.name
   target.value.branch = r.defaultBranch
   try {
-    target.value.path = await dataPath(await token(), r.owner, r.name, r.defaultBranch)
+    // the list is loaded once per sign-in; a repository deleted and made again since then has a new default branch
+    const tok = await token()
+    const fresh = await getRepo(tok, r.owner, r.name)
+    target.value.branch = fresh.defaultBranch
+    target.value.path = await dataPath(tok, r.owner, r.name, fresh.defaultBranch)
   } catch (e) {
     if (!onAuthError(e)) toast.error(t('editor.github.failed'), { description: (e as Error).message })
   }

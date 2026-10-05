@@ -171,6 +171,13 @@ export async function currentUser(token: string): Promise<string> {
 }
 
 /**
+ * Returns the repository as GitHub sees it now.
+ */
+export async function getRepo(token: string, owner: string, name: string): Promise<Repo> {
+  return toRepo(await api<ApiRepo>(token, `/repos/${owner}/${name}`))
+}
+
+/**
  * Lists repositories the user owns, most recently updated first.
  */
 export async function listRepos(token: string): Promise<Repo[]> {
@@ -212,7 +219,7 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
 // about 30 s in total; a template copy usually lands within a few seconds
 async function waitForFirstBranch(token: string, owner: string, name: string): Promise<Repo> {
   for (let attempt = 0; attempt < 12; attempt++) {
-    const repo = toRepo(await api<ApiRepo>(token, `/repos/${owner}/${name}`))
+    const repo = await getRepo(token, owner, name)
     if (await branchExists(token, owner, name, repo.defaultBranch)) return repo
     await sleep(1000 + attempt * 500)
   }

@@ -1030,7 +1030,7 @@
       "failed": "Objavljivanje nije uspelo",
       "badToken": "Token nije ispravan ili nema pravo upisa",
       "notFound": "Repozitorijum ili grana nisu pronađeni",
-      "manual": "Možete i ručno: preuzmite panel.enc.json i zamenite public/app/panel.enc.json u repozitorijumu.",
+      "manual": "Možete i ručno: preuzmite panel.enc.json i zamenite {path} u repozitorijumu.",
       "passwordTitle": "Lozinka",
       "changePassword": "Promeni lozinku",
       "passwordChanged": "Lozinka je promenjena",
