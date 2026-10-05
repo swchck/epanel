@@ -43,7 +43,10 @@
       "main": "Glavno",
       "engineering": "Instalacije",
       "service": "Servis",
-      "manage": "Upravljanje"
+      "manage": "Upravljanje",
+      "editor": "Editor",
+      "review": "Provera",
+      "finish": "Završetak"
     },
     "short": {
       "panel": "Tabla",
@@ -55,7 +58,8 @@
     "leave": "Na početak",
     "leaveUnsaved": "Nesačuvane izmene će biti izgubljene. Ako su vam potrebne, prvo sačuvajte fajl u uređivaču. Vratiti se na početak?",
     "collapse": "Skupi meni",
-    "expand": "Proširi meni"
+    "expand": "Proširi meni",
+    "preview": "Kako će videti klijent"
   },
   "banner": {
     "demo": "Ovo je demo stan. Podaci su izmišljeni i izmene se nigde ne čuvaju.",
@@ -782,7 +786,8 @@
       "published": "sa sajta",
       "demo": "demo",
       "file": "iz fajla",
-      "new": "novi projekat"
+      "new": "novi projekat",
+      "preview": "Pregled iz editora"
     }
   },
   "editor": {
@@ -1379,6 +1384,10 @@
       "contacts": {
         "title": "Kontakti",
         "text": "Električar i upravnik zgrade. Njihovi brojevi se prikazuju u „Izbacilo je osigurač”."
+      },
+      "preview": {
+        "title": "Kako će videti klijent",
+        "text": "U posebnom prozoru otvara ono što će vlasnik table videti na sajtu. Prozor se sam osvežava dok uređujete."
       }
     },
     "edit-panel": {

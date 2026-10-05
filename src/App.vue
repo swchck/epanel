@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted, watchEffect } from 'vue'
+import { watchDebounced } from '@vueuse/core'
 import { useRoute, useRouter } from 'vue-router'
 import 'vue-sonner/style.css'
 import { Toaster } from '@/components/ui/sonner'
@@ -11,7 +12,8 @@ import StartView from '@/views/StartView.vue'
 import NotPublishedView from '@/views/NotPublishedView.vue'
 import { useTheme } from '@/composables/useTheme'
 import { useData } from '@/stores/data'
-import { confirmAction, isDesktop, onOpenFile, viewerOnly } from '@/platform'
+import { confirmAction, editorFirst, isDesktop, onOpenFile, viewerOnly } from '@/platform'
+import { receivePreview, servePreview } from '@/platform/preview'
 import { i18n } from '@/i18n'
 import { tr } from '@/domain/model'
 
@@ -28,12 +30,17 @@ watchEffect(() => {
 
 onMounted(async () => {
   await router.isReady()
+  if (isDesktop && viewerOnly) return receivePreview((b) => data.showPreview(b))
   const { k, demo, ...rest } = route.query
   const key = typeof k === 'string' && k ? k : undefined
   // the password from a QR code must not linger in the address bar or history, not even while PBKDF2 runs
   if (key) await router.replace({ path: route.path, query: { ...rest, ...(demo !== undefined ? { demo } : {}) } })
   await data.init({ key, demo: viewerOnly || demo === undefined ? false : typeof demo === 'string' && demo ? demo : true })
   if (isDesktop) onOpenFile(openFromOs)
+  if (editorFirst) {
+    const send = await servePreview(() => data.active)
+    watchDebounced(() => data.active, send, { deep: true, debounce: 300 })
+  }
 })
 
 async function openFromOs(f: { name: string; path?: string; text: string }) {

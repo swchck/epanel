@@ -11,7 +11,7 @@ import { pruneAssets, referenceIssues, type Bundle, type PanelData } from '@/dom
 import { isDesktop, viewerOnly } from '@/platform'
 
 export type Status = 'idle' | 'loading' | 'locked' | 'ready' | 'empty' | 'error'
-export type Source = 'published' | 'demo' | 'file' | 'new'
+export type Source = 'published' | 'demo' | 'file' | 'new' | 'preview'
 
 const KEY_STORAGE = 'panel.key'
 const DRAFT_KEY = 'panel.draft'
@@ -301,6 +301,11 @@ export const useData = defineStore('data', () => {
     status.value = 'ready'
   }
 
+  // the desktop preview window shows whatever the editor sends, and is never saved from
+  function showPreview(b: Bundle) {
+    adoptBundle(b, null, 'preview')
+  }
+
   type LoadResult = { ok: true } | { ok: false; reason: 'needs-password' | 'wrong-password' | 'invalid'; details?: string[] }
 
   async function loadText(text: string, f: { name: string; path?: string }, pw?: string): Promise<LoadResult> {
@@ -389,5 +394,6 @@ export const useData = defineStore('data', () => {
     importIntoDraft,
     createNew,
     setPassword,
+    showPreview,
   }
 })

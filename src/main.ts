@@ -5,11 +5,11 @@ import { i18n, i18nReady } from './i18n'
 import { router } from './router'
 import { registerPwa } from './composables/usePwa'
 import './style.css'
-import { isDesktop, routeExternalLinks, watchFullscreen } from './platform'
+import { editorFirst, routeExternalLinks, watchFullscreen } from './platform'
 
-// the macOS window has no title bar (titleBarStyle: Overlay), so the page keeps the traffic lights' strip clear;
-// fullscreen hides the traffic lights, and the strip goes with them
-if (isDesktop && /Mac/.test(navigator.userAgent)) {
+// the macOS editor window has no title bar (titleBarStyle: Overlay), so the page keeps the traffic lights' strip clear;
+// fullscreen hides the traffic lights, and the strip goes with them. The preview window keeps a normal title bar
+if (editorFirst && /Mac/.test(navigator.userAgent)) {
   document.documentElement.dataset.titlebar = 'overlay'
   void watchFullscreen((full) => {
     if (full) delete document.documentElement.dataset.titlebar

@@ -1,6 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import PanelView from '@/views/PanelView.vue'
-import { viewerOnly } from '@/platform'
+import { editorFirst, viewerOnly } from '@/platform'
 
 const ALL_NAV = [
   { name: 'panel', path: '/', icon: 'panel' },
@@ -26,7 +26,8 @@ export const router = createRouter({
   history: createWebHashHistory(),
   scrollBehavior: () => ({ top: 0 }),
   routes: [
-    { path: '/', name: 'panel', component: PanelView },
+    // the desktop editor opens on editing; the viewer itself is its preview window
+    editorFirst ? { path: '/', name: 'panel', redirect: '/edit' } : { path: '/', name: 'panel', component: PanelView },
     { path: '/d/:id', name: 'device', component: PanelView, props: true },
     { path: '/plan', name: 'plan', component: () => import('@/views/PlanView.vue'), meta: { fill: true } },
     { path: '/find', name: 'find', component: () => import('@/views/FindView.vue') },

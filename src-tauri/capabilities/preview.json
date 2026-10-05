@@ -1,0 +1,13 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "preview",
+  "description": "Preview window: the viewer fed by the editor over events, plus handing tel:, mailto: and web links to the system",
+  "windows": [
+    "preview"
+  ],
+  "permissions": [
+    "core:default",
+    "opener:allow-open-url",
+    "opener:allow-default-urls"
+  ]
+}

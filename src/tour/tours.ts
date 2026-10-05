@@ -19,7 +19,7 @@ export const TOURS: Record<string, TourStep[]> = {
   maintenance: [step('task', 'maint-task'), step('done', 'maint-done'), step('log', 'maint-log')],
   labels: [step('options', 'labels-options'), step('sticker', 'labels-sticker'), step('print', 'labels-print')],
   emergency: [step('scenarios', 'emergency-scenarios'), step('smell', 'emergency-smell')],
-  'edit-general': [step('tabs', 'edit-tabs'), step('history', 'edit-history'), step('meta', 'gen-meta'), step('supply', 'gen-supply'), step('contacts', 'gen-contacts')],
+  'edit-general': [step('tabs', 'edit-tabs'), step('preview', 'preview'), step('history', 'edit-history'), step('meta', 'gen-meta'), step('supply', 'gen-supply'), step('contacts', 'gen-contacts')],
   'edit-panel': [step('tabs', 'edit-tabs'), step('board', 'epanel-board'), step('view', 'epanel-view'), step('addrow', 'epanel-addrow'), step('aside', 'epanel-aside')],
   'edit-plan': [step('modes', 'eplan-modes'), step('canvas', 'eplan-canvas'), step('view3d', 'eplan-3d'), step('aside', 'eplan-aside')],
   'edit-maintenance': [step('add', 'emaint-add'), step('task', 'emaint-task')],

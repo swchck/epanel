@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { CalendarCheck, Images, Info, Map as MapIcon, PanelsTopLeft, Redo2, Send, Undo2 } from '@lucide/vue'
+import { Redo2, Undo2 } from '@lucide/vue'
 import { Button } from '@/components/ui/button'
 import EditGeneral from '@/components/editor/EditGeneral.vue'
 import EditMaintenance from '@/components/editor/EditMaintenance.vue'
@@ -11,6 +11,8 @@ import EditPlan from '@/components/editor/EditPlan.vue'
 import EditPublish from '@/components/editor/EditPublish.vue'
 import { useText } from '@/composables/useText'
 import { useHistory } from '@/editor/history'
+import { EDIT_TABS } from '@/editor/tabs'
+import { editorFirst } from '@/platform'
 import { useData } from '@/stores/data'
 import { useUi } from '@/stores/ui'
 
@@ -20,14 +22,8 @@ const ui = useUi()
 const router = useRouter()
 const { t } = useText()
 
-const TABS = [
-  { id: 'general', icon: Info, comp: EditGeneral },
-  { id: 'panel', icon: PanelsTopLeft, comp: EditPanel },
-  { id: 'plan', icon: MapIcon, comp: EditPlan },
-  { id: 'media', icon: Images, comp: EditMedia },
-  { id: 'maintenance', icon: CalendarCheck, comp: EditMaintenance },
-  { id: 'publish', icon: Send, comp: EditPublish },
-] as const
+const COMPONENTS = { general: EditGeneral, panel: EditPanel, plan: EditPlan, media: EditMedia, maintenance: EditMaintenance, publish: EditPublish }
+const TABS = EDIT_TABS.map((x) => ({ ...x, comp: COMPONENTS[x.id] }))
 
 const active = computed(() => TABS.find((x) => x.id === props.tab) ?? TABS[1])
 
@@ -73,7 +69,8 @@ onBeforeUnmount(() => {
       <span v-if="data.hasDraft" class="rounded-full bg-warn/15 px-3 py-1 text-xs font-medium text-warn">{{ t('editor.draftBadge') }}</span>
     </div>
 
-    <nav data-tour="edit-tabs" class="no-print mb-6 flex flex-wrap gap-1 rounded-xl border bg-card p-1">
+    <!-- the desktop sidebar already lists the sections -->
+    <nav v-if="!editorFirst" data-tour="edit-tabs" class="no-print mb-6 flex flex-wrap gap-1 rounded-xl border bg-card p-1">
       <button
         v-for="item in TABS"
         :key="item.id"

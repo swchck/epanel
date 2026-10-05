@@ -2,13 +2,16 @@
 import { computed, ref, watch, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useMagicKeys, whenever } from '@vueuse/core'
-import { CircleHelp, Ellipsis, FlaskConical, House, LogOut, PanelLeftClose, PanelLeftOpen, PencilLine, Search } from '@lucide/vue'
+import { CircleHelp, Ellipsis, Eye, FlaskConical, House, LogOut, PanelLeftClose, PanelLeftOpen, PencilLine, Search } from '@lucide/vue'
+import type { Component as Icon } from 'vue'
 import { Button } from '@/components/ui/button'
 import { Kbd } from '@/components/ui/kbd'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { useText } from '@/composables/useText'
-import { confirmAction, isDesktop, viewerOnly } from '@/platform'
+import { confirmAction, editorFirst, isDesktop, viewerOnly } from '@/platform'
+import { openPreview } from '@/platform/preview'
+import { EDIT_TABS } from '@/editor/tabs'
 import { NAV, type NavName } from '@/router'
 import { useData } from '@/stores/data'
 import { useUi } from '@/stores/ui'
@@ -78,6 +81,22 @@ const pathOf = (n: NavName) => NAV.find((x) => x.name === n)!.path
 const hasSmart = computed(() => !!data.data && (data.data.devices.some((d) => d.smart) || data.data.points.some((p) => p.kind === 'panel')))
 const hasNetwork = computed(() => !!data.data?.routes.some((r) => r.kind === 'low' || r.kind === 'conduit'))
 const visible = (n: NavName) => (n === 'smart' ? hasSmart.value : n === 'network' ? hasNetwork.value : true)
+
+type NavItem = { id: string; to: string; label: string; icon: Icon; badge?: { n: number; tone: string }; danger?: boolean }
+const viewItem = (n: NavName): NavItem => ({ id: n, to: pathOf(n), label: t(`nav.${n}`), icon: NAV_ICONS[n], badge: badge.value[n], danger: n === 'emergency' })
+const editItem = (tab: (typeof EDIT_TABS)[number]): NavItem => ({ id: `edit-${tab.id}`, to: `/edit/${tab.id}`, label: t(`editor.tab.${tab.id}`), icon: tab.icon })
+// the desktop editor lists its own sections; viewer pages it still needs (checks, labels) sit under them
+const navGroups = computed<{ key: string; items: NavItem[] }[]>(() =>
+  editorFirst
+    ? [
+        { key: 'editor', items: EDIT_TABS.filter((x) => x.id !== 'publish').map(editItem) },
+        { key: 'review', items: [viewItem('checks'), viewItem('labels')] },
+        { key: 'finish', items: [editItem(EDIT_TABS.find((x) => x.id === 'publish')!), viewItem('settings')] },
+      ]
+    : GROUPS.map((g) => ({ key: g.key, items: g.items.filter(visible).map(viewItem) })),
+)
+const currentId = computed(() => (route.name === 'edit' ? `edit-${route.params.tab || 'panel'}` : current.value))
+const preview = () => openPreview(`${t('nav.preview')} · ${tx(data.data?.meta.title) || t('app.name')}`)
 
 const current = computed<NavName>(() => {
   const n = route.name as string
@@ -156,31 +175,39 @@ whenever(
         </TooltipTrigger>
         <TooltipContent side="right">{{ t('search.placeholderShort') }}</TooltipContent>
       </Tooltip>
+      <Tooltip v-if="editorFirst" :disabled="!collapsed">
+        <TooltipTrigger as-child>
+          <Button variant="outline" class="mb-3" :class="collapsed ? 'mx-auto size-9 p-0' : 'mx-4 justify-start'" :aria-label="t('nav.preview')" data-tour="preview" @click="preview">
+            <Eye /><span v-if="!collapsed">{{ t('nav.preview') }}</span>
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent side="right">{{ t('nav.preview') }}</TooltipContent>
+      </Tooltip>
       <!-- scrolls only on a very short window; the bar itself would just be noise next to the icons -->
       <nav data-tour="nav" class="flex-1 [scrollbar-width:none] overflow-y-auto pb-2 [&::-webkit-scrollbar]:hidden" :class="collapsed ? 'px-2' : 'px-3'">
-        <div v-for="(g, gi) in GROUPS" :key="g.key" :class="collapsed ? 'mb-1.5' : 'mb-2.5'">
+        <div v-for="(g, gi) in navGroups" :key="g.key" :class="collapsed ? 'mb-1.5' : 'mb-2.5'">
           <div v-if="!collapsed" class="px-2 pt-1 pb-1 text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">{{ t(`nav.group.${g.key}`) }}</div>
           <div v-else-if="gi > 0" class="mx-auto mb-1.5 w-8 border-t border-sidebar-border" />
-          <Tooltip v-for="n in g.items.filter(visible)" :key="n" :disabled="!collapsed">
+          <Tooltip v-for="n in g.items" :key="n.id" :disabled="!collapsed">
             <TooltipTrigger as-child>
               <RouterLink
-                :to="pathOf(n)"
+                :to="n.to"
                 class="group relative flex items-center gap-3 rounded-lg text-sm transition"
                 :class="[
                   collapsed ? 'mx-auto size-9 justify-center' : 'px-2.5 py-1.5',
-                  current === n ? 'bg-sidebar-accent font-medium text-foreground' : 'text-muted-foreground hover:bg-sidebar-accent/60 hover:text-foreground',
+                  currentId === n.id ? 'bg-sidebar-accent font-medium text-foreground' : 'text-muted-foreground hover:bg-sidebar-accent/60 hover:text-foreground',
                 ]"
-                :aria-label="collapsed ? t(`nav.${n}`) : undefined"
+                :aria-label="collapsed ? n.label : undefined"
               >
-                <component :is="NAV_ICONS[n]" class="size-4.5 shrink-0" :class="current === n ? 'text-primary' : n === 'emergency' ? 'text-danger' : ''" />
+                <component :is="n.icon" class="size-4.5 shrink-0" :class="currentId === n.id ? 'text-primary' : n.danger ? 'text-danger' : ''" />
                 <template v-if="!collapsed">
-                  <span class="flex-1">{{ t(`nav.${n}`) }}</span>
-                  <span v-if="badge[n]" class="rounded-full px-1.5 text-[11px] font-semibold tabular" :class="badge[n]!.tone">{{ badge[n]!.n }}</span>
+                  <span class="flex-1">{{ n.label }}</span>
+                  <span v-if="n.badge" class="rounded-full px-1.5 text-[11px] font-semibold tabular" :class="n.badge.tone">{{ n.badge.n }}</span>
                 </template>
-                <span v-else-if="badge[n]" class="absolute top-1.5 right-1.5 size-2 rounded-full" :class="badge[n]!.tone" />
+                <span v-else-if="n.badge" class="absolute top-1.5 right-1.5 size-2 rounded-full" :class="n.badge.tone" />
               </RouterLink>
             </TooltipTrigger>
-            <TooltipContent side="right">{{ t(`nav.${n}`) }}<template v-if="badge[n]"> · {{ badge[n]!.n }}</template></TooltipContent>
+            <TooltipContent side="right">{{ n.label }}<template v-if="n.badge"> · {{ n.badge.n }}</template></TooltipContent>
           </Tooltip>
         </div>
       </nav>

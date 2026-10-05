@@ -5,7 +5,17 @@ export const isDesktop: boolean =
  * Reports whether this build is a published panel site: the viewer alone, without the landing page,
  * the start screen, the editor or the demo. A static site has nowhere to save edits, so it offers none.
  */
-export const viewerOnly: boolean = import.meta.env.VITE_SITE === 'viewer'
+export const viewerOnly: boolean = import.meta.env.VITE_SITE === 'viewer' || isPreviewWindow()
+
+function isPreviewWindow(): boolean {
+  return isDesktop && typeof location !== 'undefined' && /[?&]preview\b/.test(location.hash)
+}
+
+/**
+ * Reports whether this window is the desktop editor, where editing is the main view and the viewer
+ * is a preview in a window of its own.
+ */
+export const editorFirst: boolean = isDesktop && !viewerOnly
 
 export interface OpenedText {
   name: string

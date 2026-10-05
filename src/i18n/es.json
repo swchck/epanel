@@ -43,7 +43,10 @@
       "main": "Principal",
       "engineering": "Instalación",
       "service": "Servicio",
-      "manage": "Gestión"
+      "manage": "Gestión",
+      "editor": "Editor",
+      "review": "Revisión",
+      "finish": "Finalizar"
     },
     "short": {
       "panel": "Cuadro",
@@ -55,7 +58,8 @@
     "leave": "Volver al inicio",
     "leaveUnsaved": "Los cambios sin guardar se perderán. Si los necesitas, guarda primero el archivo en el editor. ¿Volver al inicio?",
     "collapse": "Contraer menú",
-    "expand": "Expandir menú"
+    "expand": "Expandir menú",
+    "preview": "Vista del cliente"
   },
   "banner": {
     "demo": "Este es un piso de demostración. Los datos son inventados y los cambios no se guardan en ningún sitio.",
@@ -782,7 +786,8 @@
       "published": "desde la web",
       "demo": "demo",
       "file": "desde un archivo",
-      "new": "proyecto nuevo"
+      "new": "proyecto nuevo",
+      "preview": "Vista previa del editor"
     }
   },
   "editor": {
@@ -1379,6 +1384,10 @@
       "contacts": {
         "title": "Contactos",
         "text": "El electricista y la administración. Sus teléfonos aparecen en «Ha saltado algo»."
+      },
+      "preview": {
+        "title": "Vista del cliente",
+        "text": "Abre en una ventana aparte lo que verá el propietario del cuadro en el sitio. Se actualiza sola mientras editas."
       }
     },
     "edit-panel": {

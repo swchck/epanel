@@ -43,7 +43,10 @@
       "main": "Main",
       "engineering": "Engineering",
       "service": "Service",
-      "manage": "Manage"
+      "manage": "Manage",
+      "editor": "Editor",
+      "review": "Review",
+      "finish": "Finish"
     },
     "short": {
       "panel": "Panel",
@@ -55,7 +58,8 @@
     "leave": "Back to start",
     "leaveUnsaved": "Unsaved changes will be lost. Save the file in the editor first if you need them. Go back to the start screen?",
     "collapse": "Collapse sidebar",
-    "expand": "Expand sidebar"
+    "expand": "Expand sidebar",
+    "preview": "Preview as the client"
   },
   "banner": {
     "demo": "This is a demo apartment. The data is made up and nothing you change is saved anywhere.",
@@ -782,7 +786,8 @@
       "published": "from the site",
       "demo": "demo",
       "file": "from a file",
-      "new": "new project"
+      "new": "new project",
+      "preview": "Preview from the editor"
     }
   },
   "editor": {
@@ -1379,6 +1384,10 @@
       "contacts": {
         "title": "Contacts",
         "text": "The electrician and the building management. Their numbers show up in \"Something tripped\"."
+      },
+      "preview": {
+        "title": "Preview as the client",
+        "text": "Opens what the panel owner will see on the site in a separate window. It updates by itself while you edit."
       }
     },
     "edit-panel": {
