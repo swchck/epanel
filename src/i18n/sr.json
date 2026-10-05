@@ -1097,7 +1097,9 @@
       "smart": "KNX demo",
       "download": "Preuzmi editor",
       "open": "Otvori aplikaciju",
-      "source": "Izvorni kod"
+      "source": "Izvorni kod",
+      "downloadFor": "Preuzmi za {os}",
+      "otherSystems": "Drugi sistemi"
     },
     "hero": {
       "badge": "QR kod na vratima table",

@@ -32,6 +32,7 @@ import { useText } from '@/composables/useText'
 import { useTheme } from '@/composables/useTheme'
 import { useData } from '@/stores/data'
 import { useUi } from '@/stores/ui'
+import { detectOs, latestInstaller, OS_NAME } from './download'
 
 useTheme()
 const data = useData()
@@ -43,9 +44,14 @@ watchEffect(() => {
   document.querySelector('meta[name="description"]')?.setAttribute('content', t('landing.meta.description'))
 })
 const repo = __REPO_URL__
+const releases = `${repo}/releases/latest`
+const os = detectOs(navigator)
+const downloadUrl = ref(releases)
+const downloadLabel = computed(() => (os ? t('landing.cta.downloadFor', { os: OS_NAME[os] }) : t('landing.cta.download')))
 const ready = computed(() => data.status === 'ready')
 
 onMounted(async () => {
+  if (os && repo) void latestInstaller(repo, os).then((url) => url && (downloadUrl.value = url))
   await data.init({ demo: true, prefix: 'app/' })
   ui.simulate = true
   ui.planLayers.labels = false
@@ -120,8 +126,8 @@ const hint = ref(true)
               <a href="app/#/?demo=smart" class="inline-flex items-center gap-2 rounded-xl border bg-card px-5 py-3 font-medium transition hover:border-foreground/30">
                 <Network class="size-4 text-green-600" /> {{ t('landing.cta.smart') }}
               </a>
-              <a v-if="repo" :href="`${repo}/releases/latest`" class="inline-flex items-center gap-2 rounded-xl border bg-card px-5 py-3 font-medium transition hover:border-foreground/30">
-                <Download class="size-4" /> {{ t('landing.cta.download') }}
+              <a v-if="repo" :href="downloadUrl" class="inline-flex items-center gap-2 rounded-xl border bg-card px-5 py-3 font-medium transition hover:border-foreground/30">
+                <Download class="size-4" /> {{ downloadLabel }}
               </a>
             </div>
           </div>
@@ -219,8 +225,9 @@ const hint = ref(true)
           </li>
         </ol>
         <div class="mt-8 flex flex-wrap gap-3">
-          <a v-if="repo" :href="`${repo}/releases/latest`" class="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3 font-medium text-primary-foreground"><Download class="size-4" /> {{ t('landing.cta.download') }}</a>
+          <a v-if="repo" :href="downloadUrl" class="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3 font-medium text-primary-foreground"><Download class="size-4" /> {{ downloadLabel }}</a>
           <a href="app/" class="inline-flex items-center gap-2 rounded-xl border bg-card px-5 py-3 font-medium">{{ t('landing.cta.open') }} <ArrowRight class="size-4" /></a>
+          <a v-if="repo && os" :href="releases" class="self-center text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline">{{ t('landing.cta.otherSystems') }}</a>
         </div>
 
         <div class="mt-10 grid gap-3 md:grid-cols-2">

@@ -1097,7 +1097,9 @@
       "smart": "Demo con KNX",
       "download": "Descargar el editor",
       "open": "Abrir la aplicación",
-      "source": "Código fuente"
+      "source": "Código fuente",
+      "downloadFor": "Descargar para {os}",
+      "otherSystems": "Otros sistemas"
     },
     "hero": {
       "badge": "Un QR en la puerta del cuadro",
