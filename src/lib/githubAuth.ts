@@ -4,7 +4,7 @@
 
 import { GithubError, type GithubTarget } from './github'
 
-export const GITHUB_CLIENT_ID: string = import.meta.env.VITE_GITHUB_CLIENT_ID ?? ''
+const GITHUB_CLIENT_ID: string = import.meta.env.VITE_GITHUB_CLIENT_ID ?? ''
 // `repo` because enabling Pages on a new site needs it; `public_repo` would leave that step to the user
 const SCOPE = 'repo'
 

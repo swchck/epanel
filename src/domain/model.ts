@@ -169,7 +169,7 @@ export function referenceIssues(d: PanelData): ValidationIssue[] {
   return issues
 }
 
-export const MOUNT_DEFAULT: Record<Route['kind'], 'floor' | 'wall' | 'ceiling'> = { power: 'wall', bus: 'wall', low: 'floor', conduit: 'floor' }
+const MOUNT_DEFAULT: Record<Route['kind'], 'floor' | 'wall' | 'ceiling'> = { power: 'wall', bus: 'wall', low: 'floor', conduit: 'floor' }
 
 // an explicit elevation without a mount means a wall run at that height
 export function routeMount(r: Route): 'floor' | 'wall' | 'ceiling' {

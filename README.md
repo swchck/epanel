@@ -97,6 +97,8 @@ npm run build          # landing + app into dist/
 npm run desktop:build  # desktop build
 npm run seed:demo      # rebuild the demo files from data/*.yaml
 npm run icons          # PWA icons from public/icon.svg
+npm run og-image       # link preview image, public/og.png
+npm run dmg-background # macOS installer background
 ```
 
 Layout:

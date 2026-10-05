@@ -9,5 +9,3 @@ export const EDIT_TABS = [
   { id: 'maintenance', icon: CalendarCheck },
   { id: 'publish', icon: Send },
 ] as const
-
-export type EditTab = (typeof EDIT_TABS)[number]['id']

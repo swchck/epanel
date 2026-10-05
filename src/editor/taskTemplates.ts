@@ -9,7 +9,7 @@ export interface TaskTemplate {
   howTo: LocalizedText
 }
 
-export const TASK_TEMPLATES: TaskTemplate[] = [
+const TASK_TEMPLATES: TaskTemplate[] = [
   {
     id: 'rcd-test',
     types: ['rcd', 'rcbo'],

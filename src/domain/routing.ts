@@ -18,13 +18,13 @@ const DEFAULT_HEIGHT: Record<PlanPoint['kind'], number> = {
 }
 
 // a route end this close to a point (plan units) feeds it, and the cable drops vertically to it
-export const DROP_SNAP = 45
+const DROP_SNAP = 45
 // a run or a drop this close to a wall line counts as being in that wall
 const WALL_NEAR = 30
 // height differences below this are a connection at the same level, not a drop
 const DROP_MIN = 20
 
-export function ceilingOf(data: PanelData, roomId?: string): number {
+function ceilingOf(data: PanelData, roomId?: string): number {
   return data.rooms.find((r) => r.id === roomId)?.ceilingCm ?? data.plan.wallHeight
 }
 

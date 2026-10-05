@@ -13,6 +13,8 @@
     "validate": "tsx scripts/validate.ts",
     "seed": "tsx scripts/seed.ts",
     "icons": "pwa-assets-generator",
+    "og-image": "node scripts/og-image.mjs",
+    "dmg-background": "node scripts/dmg-background.mjs",
     "seed:demo": "tsx scripts/make-smart-demo.ts && cross-env PANEL_PASSWORD=demo tsx scripts/seed.ts data/demo.yaml public/app/demo.panel && cross-env PANEL_PASSWORD=demo tsx scripts/seed.ts data/demo-smart.yaml public/app/demo-smart.panel",
     "dev:desktop": "cross-env VITE_TARGET=desktop vite --port 5181",
     "build:desktop": "cross-env VITE_TARGET=desktop vite build",
