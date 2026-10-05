@@ -6,11 +6,26 @@
     <meta name="robots" content="noindex, nofollow" />
     <meta name="description" content="Интерактивная карта электрощитка: автоматы, план квартиры, что делать, если выбило." />
     <meta name="referrer" content="no-referrer" />
-    <meta name="theme-color" content="#16181d" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f9f6f2" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0c0f12" />
     <link rel="icon" href="../icons/favicon.ico" sizes="48x48" />
     <link rel="icon" href="../icon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="../icons/apple-touch-icon-180x180.png" />
     <link rel="manifest" href="../manifest.webmanifest" />
+    <meta name="application-name" content="Щиток" />
+    <meta name="apple-mobile-web-app-title" content="Щиток" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <!-- a shared panel link previews only the generic card: the panel itself is encrypted and stays that way -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Щиток" />
+    <meta property="og:title" content="Схема электрощитка" />
+    <meta property="og:description" content="Что отключает каждый автомат, план квартиры и что делать, если выбило." />
+    <meta property="og:image" content="%SITE_ROOT%og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="%SITE_ROOT%og.png" />
     <title>Щиток</title>
     <script>
       // apply the theme before first paint so dark-mode users don't get a white flash

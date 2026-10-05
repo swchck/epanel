@@ -11,6 +11,9 @@ const desktop = process.env.VITE_TARGET === 'desktop'
 const viewer = !desktop && process.env.VITE_SITE === 'viewer'
 // GitHub Pages serves a project site under /<repo>/; CI sets BASE_PATH accordingly
 const base = desktop ? '/' : (process.env.BASE_PATH ?? '/')
+// crawlers only follow absolute og:image and canonical links; outside CI the base path has to do
+const [ghOwner, ghRepo] = (process.env.GITHUB_REPOSITORY ?? '').split('/')
+const siteRoot = process.env.SITE_URL ?? (ghOwner && ghRepo ? `https://${ghOwner.toLowerCase()}.github.io${base}` : base)
 const pkg = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8')) as { version: string }
 const page = (p: string) => fileURLToPath(new URL(p, import.meta.url))
 // REPO_URL may come from .env.local for local builds; Vite only exposes VITE_* to the app, not to this config
@@ -78,6 +81,7 @@ export default defineConfig({
       },
     },
     preloadStartupChunks(),
+    { name: 'site-root', transformIndexHtml: (html) => html.replaceAll('%SITE_ROOT%', siteRoot) },
     {
       // icons and the PWA manifest live next to the landing page; the desktop shell has neither
       name: 'desktop-head',
@@ -96,13 +100,22 @@ export default defineConfig({
       manifest: {
         name: 'Электрощиток',
         short_name: 'Щиток',
-        description: 'Interactive map of an apartment electrical panel',
+        description: 'Что отключает каждый автомат, план квартиры и что делать, если выбило',
+        lang: 'ru',
+        dir: 'ltr',
+        categories: ['utilities', 'productivity'],
         id: `${base}app/`,
         start_url: `${base}app/`,
         scope: `${base}app/`,
         display: 'standalone',
-        background_color: '#16181d',
-        theme_color: '#16181d',
+        // the dark --background token; the splash screen can't follow the theme, and dark is kinder at night
+        background_color: '#0c0f12',
+        theme_color: '#0c0f12',
+        shortcuts: [
+          { name: 'Что отключить?', url: `${base}app/#/find`, icons: [{ src: `${base}icons/pwa-192x192.png`, sizes: '192x192' }] },
+          { name: 'Выбило автомат', url: `${base}app/#/emergency`, icons: [{ src: `${base}icons/pwa-192x192.png`, sizes: '192x192' }] },
+          { name: 'План квартиры', url: `${base}app/#/plan`, icons: [{ src: `${base}icons/pwa-192x192.png`, sizes: '192x192' }] },
+        ],
         icons: [
           { src: `${base}icons/pwa-64x64.png`, sizes: '64x64', type: 'image/png' },
           { src: `${base}icons/pwa-192x192.png`, sizes: '192x192', type: 'image/png' },
@@ -115,7 +128,7 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,svg,png,ico,woff2,webmanifest}', ...(viewer ? [] : ['app/demo*.panel'])],
         // offline matters for the panel itself: PDF import is editor-only (pdf.js and its 1.2 MB worker),
         // and font subsets for scripts the four locales don't use would only bloat the first install
-        globIgnores: ['**/pdf.worker*', '**/pdf-*.js', '**/*-{greek,greek-ext,vietnamese,cyrillic-ext}-*.woff2', 'index.html', '**/landing-*'],
+        globIgnores: ['**/pdf.worker*', '**/pdf-*.js', '**/*-{greek,greek-ext,vietnamese,cyrillic-ext}-*.woff2', 'index.html', '**/landing-*', 'og.png'],
         maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
         navigateFallback: `${base}app/index.html`,
         navigateFallbackAllowlist: [/\/app\//],
