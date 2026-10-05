@@ -183,7 +183,22 @@ export async function createSite(token: string, owner: string, name: string): Pr
       await new Promise((r) => setTimeout(r, 1500 * (attempt + 1)))
     }
   }
-  return repo
+  // the generate reply is sent before the template's first commit lands, so its default_branch can still
+  // be the account default (often master); read the repo again now that the Pages call saw the commit
+  return toRepo(await api<ApiRepo>(token, `/repos/${repo.owner}/${repo.name}`))
+}
+
+/**
+ * Reports whether the branch exists in the repository.
+ */
+export async function branchExists(token: string, owner: string, repo: string, branch: string): Promise<boolean> {
+  try {
+    await api(token, `/repos/${owner}/${repo}/branches/${encodeURIComponent(branch)}`)
+    return true
+  } catch (e) {
+    if (e instanceof GithubError && e.status === 404) return false
+    throw e
+  }
 }
 
 /**

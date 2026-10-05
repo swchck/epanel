@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { GithubError, type GithubTarget } from '@/lib/github'
-import { createSite, currentUser, freshToken, listRepos, siteUrl, SignInError, startDeviceFlow, templateRepo, waitForToken, type DeviceCode, type Repo } from '@/lib/githubAuth'
+import { branchExists, createSite, currentUser, freshToken, listRepos, siteUrl, SignInError, startDeviceFlow, templateRepo, waitForToken, type DeviceCode, type Repo } from '@/lib/githubAuth'
 import { useText } from '@/composables/useText'
 import { openExternal } from '@/platform'
 import FormRow from './FormRow.vue'
@@ -48,7 +48,15 @@ async function loadAccount() {
     const tok = await token()
     login.value = await currentUser(tok)
     repos.value = await listRepos(tok)
-    if (target.value.owner && target.value.repo) choice.value = `${target.value.owner}/${target.value.repo}`
+    const saved = repos.value.find((r) => r.owner === target.value.owner && r.name === target.value.repo)
+    if (saved) {
+      choice.value = `${saved.owner}/${saved.name}`
+      // a saved branch can be gone (or was never real, see createSite); fall back to the default one
+      if (!(await branchExists(tok, saved.owner, saved.name, target.value.branch))) {
+        target.value.branch = saved.defaultBranch
+        await props.persist()
+      }
+    }
   } catch (e) {
     if (!onAuthError(e)) toast.error(t('editor.github.failed'), { description: (e as Error).message })
   } finally {

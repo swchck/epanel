@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, toRaw } from 'vue'
-import { CircleAlert, CloudUpload, Download, FileDown, FileUp, KeyRound, LoaderCircle, Save, Trash2, TriangleAlert } from '@lucide/vue'
+import { ChevronRight, CircleAlert, CloudUpload, Download, FileDown, FileUp, KeyRound, LoaderCircle, Save, Trash2, TriangleAlert } from '@lucide/vue'
 import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -161,7 +161,7 @@ async function publish() {
 </script>
 
 <template>
-  <div class="grid gap-6 lg:grid-cols-2">
+  <div class="grid items-start gap-6 lg:grid-cols-2">
     <section class="space-y-3 rounded-2xl border bg-card p-5 lg:col-span-2">
       <div class="flex flex-wrap items-center gap-3">
         <div class="mr-auto">
@@ -197,14 +197,14 @@ async function publish() {
         <Input v-model="importPw" type="password" :placeholder="t('editor.publish.importPassword')" autofocus />
         <Button type="submit">{{ t('unlock.submit') }}</Button>
       </form>
-      <details class="text-sm">
-        <summary class="cursor-pointer text-muted-foreground">{{ t('editor.publish.plain') }}</summary>
-        <p class="my-2 flex gap-2 text-xs text-warn"><TriangleAlert class="size-4 shrink-0" />{{ t('editor.publish.plainWarn') }}</p>
+      <div class="space-y-2 border-t pt-4">
+        <div class="text-sm font-medium">{{ t('editor.publish.plain') }}</div>
+        <p class="flex gap-2 text-xs text-muted-foreground"><TriangleAlert class="size-3.5 shrink-0 text-warn" />{{ t('editor.publish.plainWarn') }}</p>
         <div class="flex gap-2">
           <Button variant="outline" size="sm" @click="downloadPlain('yaml')"><FileDown /> YAML</Button>
           <Button variant="outline" size="sm" @click="downloadPlain('json')"><FileDown /> JSON</Button>
         </div>
-      </details>
+      </div>
     </section>
 
     <section class="space-y-4 rounded-2xl border bg-card p-5">
@@ -214,8 +214,10 @@ async function publish() {
       </div>
       <template v-if="canSignIn">
         <GithubConnect v-model="gh" :persist="persistTarget" @signed-in="onSignedIn" @site="onSite" />
-        <details class="text-sm">
-          <summary class="cursor-pointer text-muted-foreground">{{ t('editor.github.advanced') }}</summary>
+        <details class="group text-sm">
+          <summary class="flex cursor-pointer list-none items-center gap-1 text-muted-foreground hover:text-foreground [&::-webkit-details-marker]:hidden">
+            <ChevronRight class="size-4 transition-transform group-open:rotate-90" /> {{ t('editor.github.advanced') }}
+          </summary>
           <div class="mt-3 grid grid-cols-2 gap-3">
             <FormRow :label="t('editor.publish.branch')"><Input v-model="gh.branch" /></FormRow>
             <FormRow :label="t('editor.publish.path')"><Input v-model="gh.path" class="font-mono text-xs" /></FormRow>
