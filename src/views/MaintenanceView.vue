@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { viewerOnly } from '@/platform'
 import { computed, ref } from 'vue'
 import { CalendarCheck, Check, History } from '@lucide/vue'
 import { toast } from 'vue-sonner'
@@ -67,6 +68,7 @@ function deviceOf(id: string) {
   <div class="mx-auto max-w-4xl px-4 pt-5 lg:px-8 lg:pt-8">
     <h1 class="text-2xl font-semibold tracking-tight lg:text-3xl">{{ t('maintenance.title') }}</h1>
     <p class="mt-1 text-muted-foreground">{{ t('maintenance.subtitle') }}</p>
+    <p v-if="viewerOnly" class="mt-3 rounded-xl border bg-muted/40 px-4 py-3 text-sm text-muted-foreground">{{ t('maintenance.viewerHint') }}</p>
 
     <div class="mt-6 space-y-3">
       <article v-for="s in statuses" :key="s.task.id" data-tour="maint-task" class="rounded-2xl border bg-card p-5">
@@ -95,7 +97,7 @@ function deviceOf(id: string) {
             <RouterLink v-if="deviceOf(id)" :to="`/d/${id}`"><DeviceChip :device="deviceOf(id)!" size="sm" /></RouterLink>
           </template>
         </div>
-        <div class="mt-4">
+        <div v-if="!viewerOnly" class="mt-4">
           <Button size="sm" data-tour="maint-done" :variant="s.state === 'overdue' ? 'default' : 'outline'" @click="openMark(s)"><Check /> {{ t('maintenance.markDone') }}</Button>
         </div>
       </article>

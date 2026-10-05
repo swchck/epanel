@@ -710,7 +710,8 @@
     "note": "Komentar",
     "saved": "Dodato u dnevnik",
     "journal": "Dnevnik",
-    "empty": "Još nema unosa."
+    "empty": "Još nema unosa.",
+    "viewerHint": "Obavljene zadatke beleži vlasnik u aplikaciji, a ovde se pojavljuju posle sledećeg objavljivanja."
   },
   "photos": {
     "title": "Fotografije i dokumenti",
@@ -1442,5 +1443,12 @@
         "text": "Njom su šifrovani podaci i ne može se povratiti. Zapišite je."
       }
     }
+  },
+  "viewer": {
+    "emptyTitle": "Šema još nije objavljena",
+    "emptyHint": "Vlasnik table još nije postavio podatke na ovaj sajt. Svratite kasnije.",
+    "failedTitle": "Šema nije učitana",
+    "failedHint": "Proverite internet vezu i pokušajte ponovo.",
+    "retry": "Pokušaj ponovo"
   }
 }

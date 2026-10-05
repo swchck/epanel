@@ -2,6 +2,8 @@
 
 interface ImportMetaEnv {
   readonly VITE_TARGET?: 'web' | 'desktop'
+  // 'viewer' for a published panel site, see viewerOnly
+  readonly VITE_SITE?: 'full' | 'viewer'
   // OAuth app client id for GitHub sign-in in the desktop build; public by design, not a secret
   readonly VITE_GITHUB_CLIENT_ID?: string
 }

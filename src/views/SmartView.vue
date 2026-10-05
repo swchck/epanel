@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { viewerOnly } from '@/platform'
 import { computed } from 'vue'
 import { Network, TabletSmartphone } from '@lucide/vue'
 import DeviceChip from '@/components/common/DeviceChip.vue'
@@ -44,7 +45,7 @@ const pointName = (p: PlanPoint) => tx(p.label, t(`point.kind.${p.kind}`))
 
     <div v-if="!devices.length && !panels.length" class="mt-8 rounded-2xl border border-dashed p-8 text-center">
       <p class="mx-auto max-w-lg text-sm text-muted-foreground">{{ t('smart.empty') }}</p>
-      <a href="#/?demo=smart" class="mt-4 inline-block text-sm font-medium text-primary underline-offset-4 hover:underline" @click.prevent="data.init({ demo: 'smart' })">{{ t('smart.openDemo') }}</a>
+      <a v-if="!viewerOnly" href="#/?demo=smart" class="mt-4 inline-block text-sm font-medium text-primary underline-offset-4 hover:underline" @click.prevent="data.init({ demo: 'smart' })">{{ t('smart.openDemo') }}</a>
     </div>
 
     <template v-else>

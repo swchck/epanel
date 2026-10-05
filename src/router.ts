@@ -1,7 +1,8 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import PanelView from '@/views/PanelView.vue'
+import { viewerOnly } from '@/platform'
 
-export const NAV = [
+const ALL_NAV = [
   { name: 'panel', path: '/', icon: 'panel' },
   { name: 'plan', path: '/plan', icon: 'plan' },
   { name: 'find', path: '/find', icon: 'find' },
@@ -17,7 +18,9 @@ export const NAV = [
   { name: 'settings', path: '/settings', icon: 'settings' },
 ] as const
 
-export type NavName = (typeof NAV)[number]['name']
+export type NavName = (typeof ALL_NAV)[number]['name']
+
+export const NAV: readonly (typeof ALL_NAV)[number][] = viewerOnly ? ALL_NAV.filter((n) => n.name !== 'edit') : ALL_NAV
 
 export const router = createRouter({
   history: createWebHashHistory(),
@@ -35,7 +38,7 @@ export const router = createRouter({
     { path: '/maintenance', name: 'maintenance', component: () => import('@/views/MaintenanceView.vue') },
     { path: '/photos', name: 'photos', component: () => import('@/views/PhotosView.vue') },
     { path: '/labels', name: 'labels', component: () => import('@/views/LabelsView.vue') },
-    { path: '/edit/:tab?', name: 'edit', component: () => import('@/views/EditView.vue'), props: true },
+    ...(viewerOnly ? [] : [{ path: '/edit/:tab?', name: 'edit', component: () => import('@/views/EditView.vue'), props: true }]),
     { path: '/settings', name: 'settings', component: () => import('@/views/SettingsView.vue') },
     { path: '/:pathMatch(.*)*', redirect: '/' },
   ],

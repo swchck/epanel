@@ -15,10 +15,28 @@ export const canSignIn = import.meta.env.VITE_TARGET === 'desktop' && !!GITHUB_C
 
 /**
  * Names the repository new sites are generated from, as "owner/repo", or returns null when unknown.
+ * It is the viewer-only template that lives next to the app's repository: "<app repo>-site".
  */
 export function templateRepo(): string | null {
   const m = /github\.com\/([^/]+\/[^/]+?)(?:\.git)?\/?$/.exec(__REPO_URL__)
-  return m?.[1] ?? null
+  return m ? `${m[1]}-site` : null
+}
+
+// a site made from the template keeps its data at the root; a fork of the app itself keeps it next to the app
+const SITE_DATA_PATH = 'panel.enc.json'
+const APP_DATA_PATH = 'public/app/panel.enc.json'
+
+/**
+ * Returns where the encrypted panel lives in the repository, telling a site from a fork of the app.
+ */
+export async function dataPath(token: string, owner: string, repo: string, branch: string): Promise<string> {
+  try {
+    await api(token, `/repos/${owner}/${repo}/contents/public/app?ref=${encodeURIComponent(branch)}`)
+    return APP_DATA_PATH
+  } catch (e) {
+    if (e instanceof GithubError && e.status === 404) return SITE_DATA_PATH
+    throw e
+  }
 }
 
 export interface DeviceCode {

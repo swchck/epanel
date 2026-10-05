@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { GithubError, type GithubTarget } from '@/lib/github'
-import { branchExists, createSite, currentUser, freshToken, listRepos, siteUrl, SignInError, startDeviceFlow, templateRepo, waitForToken, type DeviceCode, type Repo } from '@/lib/githubAuth'
+import { branchExists, createSite, dataPath, currentUser, freshToken, listRepos, siteUrl, SignInError, startDeviceFlow, templateRepo, waitForToken, type DeviceCode, type Repo } from '@/lib/githubAuth'
 import { useText } from '@/composables/useText'
 import { openExternal } from '@/platform'
 import FormRow from './FormRow.vue'
@@ -111,7 +111,7 @@ function signOut() {
   choice.value = ''
 }
 
-function pick(value: string) {
+async function pick(value: string) {
   choice.value = value
   if (value === NEW) return
   const r = repos.value.find((x) => `${x.owner}/${x.name}` === value)
@@ -119,6 +119,11 @@ function pick(value: string) {
   target.value.owner = r.owner
   target.value.repo = r.name
   target.value.branch = r.defaultBranch
+  try {
+    target.value.path = await dataPath(await token(), r.owner, r.name, r.defaultBranch)
+  } catch (e) {
+    if (!onAuthError(e)) toast.error(t('editor.github.failed'), { description: (e as Error).message })
+  }
 }
 
 async function create() {
@@ -127,7 +132,7 @@ async function create() {
   try {
     const r = await createSite(await token(), login.value, newName.value.trim())
     repos.value = [r, ...repos.value]
-    pick(`${r.owner}/${r.name}`)
+    await pick(`${r.owner}/${r.name}`)
     emit('site', siteUrl(r.owner, r.name))
     toast.success(t('editor.github.created'), { description: t('editor.github.createdHint') })
   } catch (e) {
@@ -157,7 +162,7 @@ const ready = computed(() => !!login.value)
         <Button variant="ghost" size="sm" class="h-7" @click="signOut"><LogOut /> {{ t('editor.github.signOut') }}</Button>
       </div>
       <FormRow v-if="ready" :label="t('editor.github.site')">
-        <Select :model-value="choice" @update:model-value="(v) => pick(String(v))">
+        <Select :model-value="choice" @update:model-value="(v) => void pick(String(v))">
           <SelectTrigger class="w-full"><SelectValue :placeholder="t('editor.github.pickRepo')" /></SelectTrigger>
           <SelectContent>
             <SelectItem :value="NEW"><Plus class="size-4" /> {{ t('editor.github.newSite') }}</SelectItem>

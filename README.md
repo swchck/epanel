@@ -12,6 +12,8 @@ It has three parts:
 | Web app | `/app/` on GitHub Pages | What the QR code opens. A PWA that works offline |
 | Desktop app | Tauri, builds in GitHub Releases | Where the panel is filled in and published |
 
+A site made for a real panel is a viewer only: no landing page, no demo and no editor. Its root forwards to `/app/`, which asks for the password, or opens the panel right away when the password comes in the QR link. A static site has nowhere to save changes, so maintenance marks and device notes are added in the desktop app and appear on the site after the next publish. Such sites are made from the [epanel-site](https://github.com/swchck/epanel-site) template. It holds only the encrypted `panel.enc.json` and a workflow that builds the viewer from this repository (`VITE_SITE=viewer`) with that file inside, so every site picks up viewer fixes on its next publish.
+
 The interface is available in Russian, English, Serbian (Latin) and Spanish, with light and dark themes.
 
 ## Features
@@ -68,14 +70,14 @@ The same app in a Tauri shell. It opens and saves `.panel` files through the sys
 
 ### Sign in with GitHub
 
-The desktop app publishes through **Sign in with GitHub** (OAuth device flow): it shows a code, the user confirms it on github.com, then picks a repository or creates a new site. A new site is generated from this repository as a template, and GitHub Pages is turned on automatically. The web app keeps the pasted-token option.
+The desktop app publishes through **Sign in with GitHub** (OAuth device flow): it shows a code, the user confirms it on github.com, then picks a repository or creates a new site. A new site is generated from the `epanel-site` template, and GitHub Pages is turned on automatically. The web app keeps the pasted-token option.
 
 To enable the button in your own builds:
 
 1. Register an OAuth App: **Settings → Developer settings → OAuth Apps → New OAuth App**. The homepage and callback URLs can both be the site address; they are not used. Turn on **Enable Device Flow** and keep **Expire user access tokens** on: tokens last 8 hours, and the app refreshes them without a client secret.
 2. Copy the **Client ID**. It is not a secret and is built into the app as is.
 3. For releases, add it as a repository variable (**Settings → Secrets and variables → Actions → Variables**) named `OAUTH_CLIENT_ID`. For local builds, put `VITE_GITHUB_CLIENT_ID=<client id>` and `REPO_URL=https://github.com/<user>/<repo>` in `.env.local`.
-4. Mark the repository as a template: **Settings → General → Template repository**. Without it, creating a new site fails.
+4. Put a copy of [epanel-site](https://github.com/swchck/epanel-site) next to your repository, named `<repo>-site`, mark it as a template (**Settings → General → Template repository**) and set its `EPANEL_REPO` variable to your repository. New sites are generated from it; without it, creating a site fails.
 
 The app asks for the `repo` scope: GitHub does not allow turning on Pages for a new repository without it.
 

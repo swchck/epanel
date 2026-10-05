@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { viewerOnly } from '@/platform'
 import { ref } from 'vue'
 import { Eye, EyeOff, KeyRound, LoaderCircle, QrCode } from '@lucide/vue'
 import { Button } from '@/components/ui/button'
@@ -77,7 +78,7 @@ async function submit() {
         <QrCode class="mt-0.5 size-4 shrink-0" />
         {{ $t('unlock.hint') }}
       </p>
-      <p class="mt-3 text-center text-sm">
+      <p v-if="!viewerOnly" class="mt-3 text-center text-sm">
         <button type="button" class="text-muted-foreground underline-offset-4 hover:text-foreground hover:underline" @click="data.init({ demo: true })">{{ $t('unlock.demo') }}</button>
       </p>
     </form>

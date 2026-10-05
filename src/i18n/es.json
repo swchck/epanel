@@ -710,7 +710,8 @@
     "note": "Comentario",
     "saved": "Añadido al registro",
     "journal": "Registro",
-    "empty": "Aún no hay entradas."
+    "empty": "Aún no hay entradas.",
+    "viewerHint": "El propietario registra las tareas hechas en la aplicación y aparecen aquí tras la siguiente publicación."
   },
   "photos": {
     "title": "Fotos y documentos",
@@ -1442,5 +1443,12 @@
         "text": "Cifra los datos y no se puede recuperar. Apúntala."
       }
     }
+  },
+  "viewer": {
+    "emptyTitle": "Aún no hay nada publicado",
+    "emptyHint": "El propietario del cuadro todavía no ha subido los datos a este sitio. Vuelve más tarde.",
+    "failedTitle": "No se pudo cargar el cuadro",
+    "failedHint": "Comprueba la conexión e inténtalo de nuevo.",
+    "retry": "Reintentar"
   }
 }

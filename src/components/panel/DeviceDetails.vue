@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { viewerOnly } from '@/platform'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { ArrowDownToLine, ArrowUpFromLine, Map as MapIcon, MapPin, MessageSquarePlus, Power, QrCode, Send } from '@lucide/vue'
@@ -216,7 +217,7 @@ function simulateOff() {
     <section>
       <div class="mb-2 flex items-center justify-between">
         <h3 class="section-title mb-0">{{ t('device.notes') }}</h3>
-        <Button v-if="!noteOpen" variant="ghost" size="sm" @click="noteOpen = true"><MessageSquarePlus /> {{ t('device.addNote') }}</Button>
+        <Button v-if="!noteOpen && !viewerOnly" variant="ghost" size="sm" @click="noteOpen = true"><MessageSquarePlus /> {{ t('device.addNote') }}</Button>
       </div>
       <div v-if="noteOpen" class="mb-3 space-y-2 rounded-xl border p-3">
         <input v-model="noteAuthor" class="w-full rounded-md border bg-transparent px-2.5 py-1.5 text-sm" :placeholder="t('device.noteAuthor')" />

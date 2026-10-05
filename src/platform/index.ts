@@ -1,6 +1,12 @@
 export const isDesktop: boolean =
   import.meta.env.VITE_TARGET === 'desktop' || (typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window)
 
+/**
+ * Reports whether this build is a published panel site: the viewer alone, without the landing page,
+ * the start screen, the editor or the demo. A static site has nowhere to save edits, so it offers none.
+ */
+export const viewerOnly: boolean = import.meta.env.VITE_SITE === 'viewer'
+
 export interface OpenedText {
   name: string
   text: string

@@ -7,6 +7,8 @@ import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
 const desktop = process.env.VITE_TARGET === 'desktop'
+// a published panel site (see viewerOnly in src/platform): the app alone, the root just forwards to it
+const viewer = !desktop && process.env.VITE_SITE === 'viewer'
 // GitHub Pages serves a project site under /<repo>/; CI sets BASE_PATH accordingly
 const base = desktop ? '/' : (process.env.BASE_PATH ?? '/')
 const pkg = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8')) as { version: string }
@@ -63,6 +65,18 @@ export default defineConfig({
         if (desktop) rmSync(page('./dist-desktop/panel.enc.json'), { force: true })
       },
     },
+    {
+      name: 'viewer-site',
+      apply: () => viewer,
+      generateBundle() {
+        // the hash carries the password from a QR code, so it travels along
+        const html = `<!doctype html><meta charset="utf-8"><meta name="robots" content="noindex"><meta http-equiv="refresh" content="0; url=./app/"><script>location.replace('./app/' + location.hash)</script>`
+        this.emitFile({ type: 'asset', fileName: 'index.html', source: html })
+      },
+      closeBundle() {
+        for (const f of ['demo.panel', 'demo-smart.panel']) rmSync(page(`./dist/app/${f}`), { force: true })
+      },
+    },
     preloadStartupChunks(),
     {
       // icons and the PWA manifest live next to the landing page; the desktop shell has neither
@@ -97,7 +111,8 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,png,ico,woff2,webmanifest}', 'app/demo*.panel'],
+        // the viewer build ships no demos
+        globPatterns: ['**/*.{js,css,html,svg,png,ico,woff2,webmanifest}', ...(viewer ? [] : ['app/demo*.panel'])],
         // offline matters for the panel itself: PDF import is editor-only (pdf.js and its 1.2 MB worker),
         // and font subsets for scripts the four locales don't use would only bloat the first install
         globIgnores: ['**/pdf.worker*', '**/pdf-*.js', '**/*-{greek,greek-ext,vietnamese,cyrillic-ext}-*.woff2', 'index.html', '**/landing-*'],
@@ -124,7 +139,7 @@ export default defineConfig({
     emptyOutDir: true,
     chunkSizeWarningLimit: 900,
     rollupOptions: {
-      input: desktop ? { app: page('./app/index.html') } : { landing: page('./index.html'), app: page('./app/index.html') },
+      input: desktop || viewer ? { app: page('./app/index.html') } : { landing: page('./index.html'), app: page('./app/index.html') },
     },
   },
 })

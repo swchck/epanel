@@ -710,7 +710,8 @@
     "note": "Comment",
     "saved": "Added to the log",
     "journal": "Log",
-    "empty": "No entries yet."
+    "empty": "No entries yet.",
+    "viewerHint": "Completed tasks are logged by the owner in the app and show up here after the next publish."
   },
   "photos": {
     "title": "Photos & documents",
@@ -1442,5 +1443,12 @@
         "text": "It encrypts the data and cannot be recovered. Write it down."
       }
     }
+  },
+  "viewer": {
+    "emptyTitle": "Nothing published yet",
+    "emptyHint": "The owner of this panel has not put the data on this site yet. Check back later.",
+    "failedTitle": "Could not load the panel",
+    "failedHint": "Check your connection and try again.",
+    "retry": "Try again"
   }
 }

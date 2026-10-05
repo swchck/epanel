@@ -8,7 +8,7 @@ import { layoutPanel } from '@/domain/layout'
 import { taskStatuses } from '@/domain/maintenance'
 import { buildSearch } from '@/domain/lookup'
 import { pruneAssets, referenceIssues, type Bundle, type PanelData } from '@/domain/model'
-import { isDesktop } from '@/platform'
+import { isDesktop, viewerOnly } from '@/platform'
 
 export type Status = 'idle' | 'loading' | 'locked' | 'ready' | 'empty' | 'error'
 export type Source = 'published' | 'demo' | 'file' | 'new'
@@ -211,7 +211,7 @@ export const useData = defineStore('data', () => {
       published.value = parsed.bundle
       password.value = pw
       if (remember && source.value === 'published') writeStoredKey(pw)
-      if (source.value !== 'demo') await restoreDraft(pw)
+      if (source.value !== 'demo' && !viewerOnly) await restoreDraft(pw)
       status.value = 'ready'
       error.value = undefined
       return true

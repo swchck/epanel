@@ -5,7 +5,7 @@ vi.mock('@tauri-apps/plugin-http', () => ({
   fetch: vi.fn(async () => ({ ok: true, json: async () => replies.shift() })),
 }))
 
-const { createSite, freshToken, siteUrl, SignInError, templateRepo, waitForToken } = await import('../githubAuth')
+const { createSite, dataPath, freshToken, siteUrl, SignInError, templateRepo, waitForToken } = await import('../githubAuth')
 const { emptyTarget } = await import('../github')
 const { fetch: httpFetch } = await import('@tauri-apps/plugin-http')
 const code = { deviceCode: 'dc', userCode: 'ABCD-1234', verificationUri: 'https://github.com/login/device', interval: 5, expiresIn: 900 }
@@ -21,8 +21,8 @@ describe('github sign-in', () => {
     expect(siteUrl('Ann', 'ann.github.io')).toBe('https://ann.github.io/app/')
   })
 
-  it('reads the template repository from the build-time repo url', () => {
-    expect(templateRepo()).toBe('someone/panel-app')
+  it('names the site template next to the build-time repo', () => {
+    expect(templateRepo()).toBe('someone/panel-app-site')
   })
 
   it('keeps polling while pending, backs off on slow_down and returns the token', async () => {
@@ -99,6 +99,14 @@ describe('github sign-in', () => {
     await expect(p).resolves.toMatchObject({ defaultBranch: 'main' })
     const pages = calls.indexOf('POST /repos/ann/site/pages')
     expect(pages).toBeGreaterThan(calls.indexOf('GET /repos/ann/site/branches/main'))
+    vi.unstubAllGlobals()
+  })
+
+  it('keeps the data at the root of a site and next to the app in a fork of it', async () => {
+    const reply = (status: number) => ({ ok: status < 300, status, json: async () => [], text: async () => '' })
+    vi.stubGlobal('fetch', vi.fn(async (url: string) => reply(url.includes('/repos/ann/fork/') ? 200 : 404)))
+    await expect(dataPath('tok', 'ann', 'site', 'main')).resolves.toBe('panel.enc.json')
+    await expect(dataPath('tok', 'ann', 'fork', 'main')).resolves.toBe('public/app/panel.enc.json')
     vi.unstubAllGlobals()
   })
 })

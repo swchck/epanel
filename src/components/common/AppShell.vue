@@ -8,7 +8,7 @@ import { Kbd } from '@/components/ui/kbd'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { useText } from '@/composables/useText'
-import { confirmAction, isDesktop } from '@/platform'
+import { confirmAction, isDesktop, viewerOnly } from '@/platform'
 import { NAV, type NavName } from '@/router'
 import { useData } from '@/stores/data'
 import { useUi } from '@/stores/ui'
@@ -65,7 +65,7 @@ const GROUPS: { key: string; items: NavName[] }[] = [
   { key: 'main', items: ['panel', 'plan', 'find', 'emergency'] },
   { key: 'engineering', items: ['schema', 'checks', 'smart', 'network'] },
   { key: 'service', items: ['maintenance', 'photos', 'labels'] },
-  { key: 'manage', items: ['edit', 'settings'] },
+  { key: 'manage', items: viewerOnly ? ['settings'] : ['edit', 'settings'] },
 ]
 const MOBILE: NavName[] = ['panel', 'plan', 'find', 'emergency']
 const pathOf = (n: NavName) => NAV.find((x) => x.name === n)!.path
