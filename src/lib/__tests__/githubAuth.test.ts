@@ -5,7 +5,7 @@ vi.mock('@tauri-apps/plugin-http', () => ({
   fetch: vi.fn(async () => ({ ok: true, json: async () => replies.shift() })),
 }))
 
-const { freshToken, siteUrl, SignInError, templateRepo, waitForToken } = await import('../githubAuth')
+const { createSite, freshToken, siteUrl, SignInError, templateRepo, waitForToken } = await import('../githubAuth')
 const { emptyTarget } = await import('../github')
 const { fetch: httpFetch } = await import('@tauri-apps/plugin-http')
 const code = { deviceCode: 'dc', userCode: 'ABCD-1234', verificationUri: 'https://github.com/login/device', interval: 5, expiresIn: 900 }
@@ -77,5 +77,28 @@ describe('github sign-in', () => {
     await expect(freshToken({ ...emptyTarget(), token: 'ghu', expiresAt: Date.now() - 1 }, persist)).rejects.toMatchObject({ code: 'expired' })
     replies.push({ error: 'bad_refresh_token' })
     await expect(freshToken({ ...emptyTarget(), token: 'ghu', refreshToken: 'ghr', expiresAt: Date.now() - 1 }, persist)).rejects.toMatchObject({ code: 'expired' })
+  })
+
+  it('turns Pages on only after the template commit gives the repo its real default branch', async () => {
+    vi.useFakeTimers()
+    const calls: string[] = []
+    let gets = 0
+    const reply = (status: number, body: unknown) => ({ ok: status < 300, status, json: async () => body, text: async () => JSON.stringify(body) })
+    vi.stubGlobal('fetch', vi.fn(async (url: string, init?: RequestInit) => {
+      const path = url.replace('https://api.github.com', '')
+      calls.push(`${init?.method ?? 'GET'} ${path}`)
+      const repo = (branch: string) => ({ name: 'site', owner: { login: 'ann' }, default_branch: branch, private: false })
+      if (path.endsWith('/generate')) return reply(201, repo('master'))
+      if (path === '/repos/ann/site') return reply(200, repo(++gets < 2 ? 'master' : 'main'))
+      if (path.startsWith('/repos/ann/site/branches/')) return path.endsWith('/main') ? reply(200, {}) : reply(404, {})
+      if (path === '/repos/ann/site/pages') return reply(201, {})
+      return reply(404, {})
+    }))
+    const p = createSite('tok', 'ann', 'site')
+    await vi.runAllTimersAsync()
+    await expect(p).resolves.toMatchObject({ defaultBranch: 'main' })
+    const pages = calls.indexOf('POST /repos/ann/site/pages')
+    expect(pages).toBeGreaterThan(calls.indexOf('GET /repos/ann/site/branches/main'))
+    vi.unstubAllGlobals()
   })
 })

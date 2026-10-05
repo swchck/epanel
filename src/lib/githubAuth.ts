@@ -172,20 +172,33 @@ export async function createSite(token: string, owner: string, name: string): Pr
       body: JSON.stringify({ owner, name, private: false, description: 'Electrical panel map', include_all_branches: false }),
     }),
   )
-  // the generated repo exists before its first commit lands; Pages refuses to configure an empty repo
+  // the generate reply arrives before the template's first commit, while default_branch is still the
+  // account default (often master); Pages copies whatever branch is default at that moment into the
+  // github-pages deployment rule, so it must wait until the real branch exists
+  const ready = await waitForFirstBranch(token, repo.owner, repo.name)
   for (let attempt = 0; ; attempt++) {
     try {
-      await api(token, `/repos/${repo.owner}/${repo.name}/pages`, { method: 'POST', body: JSON.stringify({ build_type: 'workflow' }) })
+      await api(token, `/repos/${ready.owner}/${ready.name}/pages`, { method: 'POST', body: JSON.stringify({ build_type: 'workflow' }) })
       break
     } catch (e) {
       if (e instanceof GithubError && e.status === 409) break
       if (attempt >= 5 || !(e instanceof GithubError) || e.status === 401 || e.status === 403) throw e
-      await new Promise((r) => setTimeout(r, 1500 * (attempt + 1)))
+      await sleep(1500 * (attempt + 1))
     }
   }
-  // the generate reply is sent before the template's first commit lands, so its default_branch can still
-  // be the account default (often master); read the repo again now that the Pages call saw the commit
-  return toRepo(await api<ApiRepo>(token, `/repos/${repo.owner}/${repo.name}`))
+  return ready
+}
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
+
+// about 30 s in total; a template copy usually lands within a few seconds
+async function waitForFirstBranch(token: string, owner: string, name: string): Promise<Repo> {
+  for (let attempt = 0; attempt < 12; attempt++) {
+    const repo = toRepo(await api<ApiRepo>(token, `/repos/${owner}/${name}`))
+    if (await branchExists(token, owner, name, repo.defaultBranch)) return repo
+    await sleep(1000 + attempt * 500)
+  }
+  throw new GithubError(504, 'the new repository has no commits yet')
 }
 
 /**
