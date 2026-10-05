@@ -72,10 +72,11 @@ async function saveFile(saveAs: boolean) {
   try {
     const text = await encrypted()
     if (!text) return
+    const written = data.revision
     const path = await saveTextFile(`${fileBase.value}.panel`, text, saveAs ? undefined : data.file?.path)
     if (!path) return
     if (isDesktop) data.file = { name: path.split(/[\\/]/).pop() ?? path, path }
-    await data.commitDraft()
+    await data.commitDraft(written)
     toast.success(t('editor.publish.saved'), { description: path })
   } finally {
     busy.value = null
@@ -93,7 +94,6 @@ async function downloadPublishFile() {
   if (text) await saveTextFile('panel.enc.json', text)
 }
 
-// importing someone else's file (the electrician's) replaces the draft, never the published copy
 const importPw = ref('')
 const pendingImport = ref<string | null>(null)
 async function importFile() {
@@ -152,10 +152,12 @@ async function publish() {
   try {
     const text = await encrypted()
     if (!text) return
+    const written = data.revision
     await freshToken(gh.value, persistTarget)
+    // the picked site and the remember checkbox are only saved here
     await persistTarget()
     const { commitUrl } = await publishWithBranchRepair(text)
-    await data.commitDraft()
+    await data.commitDraft(written)
     toast.success(t('editor.publish.published'), {
       description: t('editor.publish.publishedHint'),
       action: { label: t('editor.publish.commit'), onClick: () => window.open(commitUrl, '_blank', 'noopener') },

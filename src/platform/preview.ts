@@ -1,6 +1,8 @@
 // The desktop editor's "as the client sees it" window. It runs the same app in viewer mode
-// (see viewerOnly) and gets the draft over Tauri events instead of loading anything itself.
+// (see viewerOnly, which tells it by its window label) and gets the draft over Tauri events
+// instead of loading anything itself.
 
+import { ref } from 'vue'
 import type { WebviewWindow } from '@tauri-apps/api/webviewWindow'
 import type { Bundle } from '@/domain/model'
 
@@ -9,15 +11,29 @@ const READY = 'preview:ready'
 const BUNDLE = 'preview:bundle'
 
 let win: WebviewWindow | null = null
+// true once the preview has asked for its first bundle; the editor watches the draft only while it is
+const open = ref(false)
+export const previewOpen = open
 
 /**
  * Opens the preview window, or brings it to the front when it is already open.
  */
 export async function openPreview(title: string): Promise<void> {
-  if (win) return void (await win.setFocus())
+  if (win) {
+    try {
+      return await win.setFocus()
+    } catch {
+      win = null
+    }
+  }
   const { WebviewWindow } = await import('@tauri-apps/api/webviewWindow')
-  win = new WebviewWindow(LABEL, { url: 'index.html#/?preview', title, width: 1280, height: 840, minWidth: 900, minHeight: 600 })
-  void win.once('tauri://destroyed', () => (win = null))
+  win = new WebviewWindow(LABEL, { url: 'index.html', title, width: 1280, height: 840, minWidth: 900, minHeight: 600 })
+  const closed = () => {
+    win = null
+    open.value = false
+  }
+  void win.once('tauri://destroyed', closed)
+  void win.once('tauri://error', closed)
 }
 
 /**
@@ -30,7 +46,10 @@ export async function servePreview(current: () => Bundle | null): Promise<() => 
     const b = current()
     if (win && b) void emitTo(LABEL, BUNDLE, b)
   }
-  await listen(READY, send)
+  await listen(READY, () => {
+    open.value = true
+    send()
+  })
   return send
 }
 

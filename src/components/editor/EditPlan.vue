@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { isoDay } from '@/domain/maintenance'
 import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref } from 'vue'
 import { Camera, Check, ChevronLeft, DoorOpen, ImagePlus, Magnet, MousePointer2, Pentagon, Plug, Spline, Square, Trash2, Undo2, X } from '@lucide/vue'
 import { toast } from 'vue-sonner'
@@ -81,7 +82,6 @@ function place(x: number, y: number): Point2 {
 
 const typed = ref('')
 
-// fresh tuples: `a` is a proxy from `pending`, and a proxy left inside the draft breaks structuredClone on autosave
 function rectFrom(a: Point2, b: Point2): Point2[] {
   return [[a[0], a[1]], [b[0], a[1]], [b[0], b[1]], [a[0], b[1]]]
 }
@@ -91,7 +91,8 @@ function addRoom(polygon: Point2[]) {
     d.value.rooms.map((r) => r.id),
     'room-',
   )
-  d.value.rooms.push({ id, name: t('editor.plan.roomN', { n: d.value.rooms.length + 1 }), wet: false, polygon })
+  // fresh tuples: `pending` holds reactive proxies, and one left in the draft breaks structuredClone on autosave
+  d.value.rooms.push({ id, name: t('editor.plan.roomN', { n: d.value.rooms.length + 1 }), wet: false, polygon: polygon.map(([x, y]) => [x, y]) })
   sel.value = { kind: 'room', id }
   pending.value = []
   mode.value = 'select'
@@ -181,7 +182,6 @@ async function onCanvas(x: number, y: number) {
   } else if (mode.value === 'room' || mode.value === 'route') {
     const first = pending.value[0]
     const last = pending.value.at(-1)
-    // clicking the first vertex again closes the polygon
     if (mode.value === 'room' && first && pending.value.length >= 3 && Math.hypot(first[0] - px, first[1] - py) < d.value.plan.grid / 3) return finish()
     // a second click on the last vertex (a double click, in practice) ends the line where the cursor already is
     if (last && Math.hypot(last[0] - px, last[1] - py) < d.value.plan.grid / 3) return finish()
@@ -214,7 +214,7 @@ async function onCanvas(x: number, y: number) {
         d.value.photos.map((p) => p.id),
         'ph-',
       )
-      d.value.photos.push({ id, src: ASSET_PREFIX + assetId, x: px, y: py, room: roomAt(px, py), date: new Date().toISOString().slice(0, 10) })
+      d.value.photos.push({ id, src: ASSET_PREFIX + assetId, x: px, y: py, room: roomAt(px, py), date: isoDay(new Date()) })
       sel.value = { kind: 'photo', id }
       mode.value = 'select'
     } finally {
@@ -224,16 +224,17 @@ async function onCanvas(x: number, y: number) {
 }
 
 function finish() {
-  if (mode.value === 'room' && pending.value.length >= 3) {
-    return addRoom(pending.value)
-  } else if (mode.value === 'route' && pending.value.length >= 2) {
+  // too few vertices yet (a double click on the first one, an early Enter): keep drawing
+  if (pending.value.length < (mode.value === 'room' ? 3 : 2)) return
+  if (mode.value === 'room') return addRoom(pending.value)
+  if (mode.value === 'route') {
     const id = uniqueId(
       d.value.routes.map((r) => r.id),
       'rt-',
     )
     d.value.routes.push({
       id,
-      points: pending.value,
+      points: pending.value.map(([x, y]) => [x, y]),
       device: newRouteKind.value === 'power' || newRouteKind.value === 'bus' ? (newDevice.value === '__' ? undefined : newDevice.value) : undefined,
       safeWidth: 15,
       kind: newRouteKind.value,
@@ -269,7 +270,8 @@ function onKey(e: KeyboardEvent) {
     e.preventDefault()
     return
   }
-  if (e.key === 'Escape') {
+  // Esc that closes a dropdown or a dialog is theirs, not the plan's
+  if (e.key === 'Escape' && !target?.closest('[role=listbox],[role=dialog]')) {
     pending.value = []
     if (mode.value !== 'select') mode.value = 'select'
     else sel.value = null
@@ -287,6 +289,7 @@ onMounted(() => {
 })
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', onKey)
+  endDrag()
   window.removeEventListener('keyup', onAlt)
 })
 
@@ -308,7 +311,9 @@ function startDrag(e: PointerEvent, set: (x: number, y: number) => void) {
   e.preventDefault()
   dragTarget = { set }
   window.addEventListener('pointermove', onDrag)
-  window.addEventListener('pointerup', endDrag, { once: true })
+  // a touch drag the system takes over (scroll, a gesture) ends in pointercancel, never in pointerup
+  window.addEventListener('pointerup', endDrag)
+  window.addEventListener('pointercancel', endDrag)
 }
 function onDrag(e: PointerEvent) {
   const pz = plan.value?.pz
@@ -320,7 +325,11 @@ function onDrag(e: PointerEvent) {
 }
 function endDrag() {
   window.removeEventListener('pointermove', onDrag)
+  window.removeEventListener('pointerup', endDrag)
+  window.removeEventListener('pointercancel', endDrag)
   if (point.value) point.value.room = roomAt(point.value.x, point.value.y)
+  const ph = photo.value
+  if (ph?.x !== undefined && ph.y !== undefined) ph.room = roomAt(ph.x, ph.y)
   dragTarget = null
 }
 
@@ -335,7 +344,6 @@ async function uploadBackground() {
     const assetId = newId('plan')
     assets.value[assetId] = img.url
     d.value.plan.background = ASSET_PREFIX + assetId
-    // keep the plan width in centimetres and follow the image's aspect ratio
     d.value.plan.height = Math.round((d.value.plan.width * img.height) / img.width)
     toast.success(t('editor.plan.bgLoaded'))
   } catch (e) {

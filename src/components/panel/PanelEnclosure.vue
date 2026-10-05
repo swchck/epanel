@@ -59,7 +59,7 @@ function isOn(id: string) {
 const deadDevices = computed(() => {
   const g = data.graph
   if (!g || !ui.off.size) return new Set<string>()
-  return new Set([...g.byId.keys()].filter((id) => !g.isPowered(id, ui.off)))
+  return new Set([...g.byId.keys()].filter((id) => !g.isFed(id, ui.off)))
 })
 
 function isEnergized(id: string) {
@@ -113,7 +113,6 @@ function label(id: string) {
       <g v-for="s in Math.floor((row.modules * MODULE + RAIL_PAD * 2) / 40)" :key="'slot' + s">
         <rect :x="-RAIL_PAD + (s - 1) * 40 + 14" :y="HEIGHT / 2 - 4" width="22" height="8" rx="4" fill="#6f747c" />
       </g>
-      <!-- module grid ghost so empty slots read as space -->
       <rect x="0" y="0" :width="row.modules * MODULE" :height="HEIGHT" fill="none" stroke="#000" stroke-opacity="0.08" stroke-dasharray="3 5" rx="4" />
       <text :x="-RAIL_PAD + 4" :y="-10" class="rowno">{{ (onlyRow ?? ri) + 1 }}</text>
 

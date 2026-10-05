@@ -751,7 +751,8 @@
     "withPasswordHint": "Ko skenira kod, otvara podatke bez kucanja lozinke. Lozinka ide posle #, pa nikad ne stiže do servera.",
     "noPublicUrl": "Adresa sajta nije podešena. Dodajte je u uređivaču (Opšte → Adresa sajta), inače se QR neće otvoriti na telefonu.",
     "copy": "Kopiraj",
-    "copied": "Link je kopiran"
+    "copied": "Link je kopiran",
+    "copyFailed": "Kopiranje nije uspelo. Označite link ručno."
   },
   "pwa": {
     "offline": "Oflajn",

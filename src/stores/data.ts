@@ -91,6 +91,8 @@ export const useData = defineStore('data', () => {
   const password = ref<string | null>(null)
   const file = ref<{ name: string; path?: string } | null>(null)
   const draftSavedAt = ref<number>()
+  // bumped on every edit of the draft; a publish or save compares it to know what it actually wrote
+  const revision = ref(0)
   // an encrypted file opened from the OS that still needs its password
   const pendingFile = ref<{ name: string; path?: string; text: string } | null>(null)
 
@@ -211,7 +213,8 @@ export const useData = defineStore('data', () => {
       published.value = parsed.bundle
       password.value = pw
       if (remember && source.value === 'published') writeStoredKey(pw)
-      if (source.value !== 'demo' && !viewerOnly) await restoreDraft(pw)
+      // the saved draft belongs to the published panel; a file sharing its password must not pick it up
+      if (source.value === 'published' && !viewerOnly) await restoreDraft(pw)
       status.value = 'ready'
       error.value = undefined
       return true
@@ -247,9 +250,10 @@ export const useData = defineStore('data', () => {
     await idbSafe(() => idbDel(DRAFT_KEY))
   }
 
-  // the draft becomes the new baseline, e.g. after it was published or saved to a file
-  async function commitDraft() {
-    if (!draft.value) return
+  // `since` is the revision that was written out; edits made while the upload or the save dialog
+  // was open never reached the file, so the draft stays for them
+  async function commitDraft(since?: number) {
+    if (!draft.value || (since !== undefined && since !== revision.value)) return
     published.value = clone(draft.value as Bundle)
     await discardDraft()
   }
@@ -266,7 +270,10 @@ export const useData = defineStore('data', () => {
   watch(
     draft,
     (b, prev) => {
-      if (b && b === prev) dirty.value = true
+      if (b && b === prev) {
+        dirty.value = true
+        revision.value++
+      }
       clearTimeout(saveTimer)
       if (!b || !dirty.value || !password.value || source.value !== 'published') return
       const pw = password.value
@@ -291,7 +298,9 @@ export const useData = defineStore('data', () => {
     return encryptJson(pruneAssets(clone(b)), pw)
   }
 
-  function adoptBundle(b: Bundle, pw: string | null, src: Source, f: { name: string; path?: string } | null = null) {
+  function adoptBundle(b: Bundle, pw: string | null, src: Source, f: { name: string; path?: string } | null = null, env: EncryptedEnvelope | null = null) {
+    // lock() goes back to whatever envelope is left here, so a plain file or a new panel must not keep the last one
+    envelope.value = env
     published.value = b
     draft.value = null
     dirty.value = false
@@ -320,8 +329,7 @@ export const useData = defineStore('data', () => {
     try {
       const inner = bundleFromUnknown(await decryptJson(parsed.envelope, pw))
       if (inner.kind !== 'bundle') return { ok: false, reason: 'invalid' }
-      envelope.value = parsed.envelope
-      adoptBundle(inner.bundle, pw, 'file', f)
+      adoptBundle(inner.bundle, pw, 'file', f, parsed.envelope)
       return { ok: true }
     } catch {
       return { ok: false, reason: 'wrong-password' }
@@ -350,7 +358,6 @@ export const useData = defineStore('data', () => {
     return { ok: true }
   }
 
-  // the password is asked on the first encrypted export, not up front
   function createNew(title: string, pw: string | null = null) {
     adoptBundle(emptyBundle(title), pw, 'new', null)
     startDraft()
@@ -370,6 +377,7 @@ export const useData = defineStore('data', () => {
     password,
     file,
     draftSavedAt,
+    revision,
     pendingFile,
     active,
     data,

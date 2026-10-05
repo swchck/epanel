@@ -84,7 +84,6 @@ const busColor = computed(() => {
 
     <template v-if="t !== 'bus' && t !== 'terminal'">
       <rect x="1" y="0" :width="W - 2" :height="HEIGHT" rx="4" fill="url(#body)" stroke="#a8a8a0" stroke-width="1" />
-      <!-- terminal recesses -->
       <rect x="3" y="3" :width="W - 6" height="26" rx="2" fill="url(#recess)" />
       <rect x="3" :y="HEIGHT - 29" :width="W - 6" height="26" rx="2" fill="url(#recess)" />
       <g v-for="i in terminalsTop" :key="'t' + i">
@@ -92,16 +91,13 @@ const busColor = computed(() => {
         <line :x1="i * MODULE + MODULE / 2 - 5" y1="16" :x2="i * MODULE + MODULE / 2 + 5" y2="16" stroke="#55554f" stroke-width="1.6" />
         <circle :cx="i * MODULE + MODULE / 2" :cy="HEIGHT - 16" r="7" fill="url(#screw)" stroke="#6b6b66" stroke-width="0.8" />
         <line :x1="i * MODULE + MODULE / 2 - 5" :y1="HEIGHT - 16" :x2="i * MODULE + MODULE / 2 + 5" :y2="HEIGHT - 16" stroke="#55554f" stroke-width="1.6" />
-        <!-- live wire glow at the top terminal -->
         <circle v-if="energized" :cx="i * MODULE + MODULE / 2" cy="16" r="3" fill="var(--live)" class="live-dot" />
       </g>
-      <!-- raised front shoulder -->
       <rect x="2" y="40" :width="W - 4" :height="HEIGHT - 80" rx="3" fill="url(#shoulder)" stroke="#c4c4bc" stroke-width="0.6" />
     </template>
 
     <template v-if="isBreakerLike">
       <text :x="W / 2" y="54" text-anchor="middle" class="brand">{{ device.brand ?? '' }}</text>
-      <!-- lever slot -->
       <rect :x="leverX - 1" y="66" :width="leverW + 2" height="46" rx="3" fill="#2a2a28" />
       <!-- position indicator: red I when on, green O when off, as printed on most European breakers -->
       <rect :x="leverX + leverW / 2 - 5" y="60" width="10" height="5" rx="1" :fill="on ? '#d93a2b' : '#2f9e44'" />
@@ -109,7 +105,6 @@ const busColor = computed(() => {
         <rect :x="leverX + 1" y="68" :width="leverW - 2" height="22" rx="3" :fill="leverColor" />
         <rect :x="leverX + 3" y="70" :width="leverW - 6" height="4" rx="1.5" fill="white" opacity="0.25" />
       </g>
-      <!-- RCD extras: test button and leakage -->
       <template v-if="hasTestButton">
         <circle :cx="W - MODULE / 2" cy="80" r="8" fill="#e8c547" stroke="#a88a1e" />
         <text :x="W - MODULE / 2" y="83.5" text-anchor="middle" class="test">T</text>

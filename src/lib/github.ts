@@ -40,9 +40,19 @@ export async function loadTarget(password: string | null): Promise<GithubTarget>
   }
 }
 
+function storedToken(): unknown {
+  try {
+    return (JSON.parse(localStorage.getItem(STORAGE) ?? '{}') as { token?: unknown }).token
+  } catch {
+    return undefined
+  }
+}
+
 export async function saveTarget(t: GithubTarget, rememberToken: boolean, password: string | null) {
   const secrets: Secrets = { token: t.token, refreshToken: t.refreshToken, expiresAt: t.expiresAt, refreshExpiresAt: t.refreshExpiresAt }
-  const token = rememberToken && password && t.token ? await encryptJson(secrets, password, 60_000) : undefined
+  // no password yet (a new panel before its first save): there is nothing to encrypt with, so the token
+  // saved for another panel stays rather than being wiped
+  const token = !rememberToken || !t.token ? undefined : password ? await encryptJson(secrets, password, 60_000) : storedToken()
   try {
     localStorage.setItem(STORAGE, JSON.stringify({ owner: t.owner, repo: t.repo, branch: t.branch, path: t.path, token }))
   } catch {
@@ -66,7 +76,6 @@ export class GithubError extends Error {
   }
 }
 
-// contents API: one commit per publish; the Pages workflow picks it up and redeploys
 export async function publishFile(t: GithubTarget, content: string, message: string): Promise<{ commitUrl: string }> {
   const api = `https://api.github.com/repos/${encodeURIComponent(t.owner)}/${encodeURIComponent(t.repo)}/contents/${t.path.split('/').map(encodeURIComponent).join('/')}`
   const headers = {

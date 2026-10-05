@@ -12,12 +12,17 @@ export interface TaskStatus {
 
 const DAY = 86_400_000
 
+/**
+ * Returns the local calendar date as YYYY-MM-DD.
+ */
 export function isoDay(d: Date): string {
-  return d.toISOString().slice(0, 10)
+  // local, not toISOString(): just after midnight east of UTC that would still be yesterday
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }
 
 export function taskStatuses(tasks: MaintenanceTask[], log: MaintenanceLog[], today = new Date()): TaskStatus[] {
-  const now = Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate())
+  // the log holds calendar days, so the math runs on UTC midnights of those days, today included
+  const now = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate())
   return tasks.map((task) => {
     const last = log
       .filter((l) => l.task === task.id)
@@ -27,6 +32,6 @@ export function taskStatuses(tasks: MaintenanceTask[], log: MaintenanceLog[], to
     const overdueDays = Math.floor((now - dueMs) / DAY)
     const soonWindow = Math.min(7, Math.ceil(task.intervalDays * 0.2))
     const state = overdueDays > 0 ? 'overdue' : overdueDays > -soonWindow ? 'soon' : 'ok'
-    return { task, last, due: isoDay(new Date(dueMs)), overdueDays, state }
+    return { task, last, due: new Date(dueMs).toISOString().slice(0, 10), overdueDays, state }
   })
 }

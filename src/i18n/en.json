@@ -751,7 +751,8 @@
     "withPasswordHint": "Whoever scans the code opens the data without typing the password. It travels after #, so it never reaches the server.",
     "noPublicUrl": "The site address isn't set. Add it in the editor (General → Site address) or the QR won't open on a phone.",
     "copy": "Copy",
-    "copied": "Link copied"
+    "copied": "Link copied",
+    "copyFailed": "Could not copy. Select the link by hand."
   },
   "pwa": {
     "offline": "Offline",

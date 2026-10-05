@@ -13,7 +13,8 @@ import NotPublishedView from '@/views/NotPublishedView.vue'
 import { useTheme } from '@/composables/useTheme'
 import { useData } from '@/stores/data'
 import { confirmAction, editorFirst, isDesktop, onOpenFile, viewerOnly } from '@/platform'
-import { receivePreview, servePreview } from '@/platform/preview'
+import { previewOpen, receivePreview, servePreview } from '@/platform/preview'
+import { toast } from 'vue-sonner'
 import { i18n } from '@/i18n'
 import { tr } from '@/domain/model'
 
@@ -39,7 +40,8 @@ onMounted(async () => {
   if (isDesktop) onOpenFile(openFromOs)
   if (editorFirst) {
     const send = await servePreview(() => data.active)
-    watchDebounced(() => data.active, send, { deep: true, debounce: 300 })
+    // the deep walk over the bundle only happens while a preview window is there to receive it
+    watchDebounced(() => previewOpen.value && data.active, send, { deep: true, debounce: 300 })
   }
 })
 
@@ -52,7 +54,7 @@ async function openFromOs(f: { name: string; path?: string; text: string }) {
   if (r.reason === 'needs-password') {
     data.pendingFile = f
     data.status = 'empty'
-  }
+  } else toast.error(i18n.global.t('start.invalid'), { description: r.details?.slice(0, 3).join('\n') })
 }
 </script>
 

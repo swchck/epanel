@@ -43,7 +43,7 @@ watch(
 )
 
 // on the web a published panel is the home page itself; everywhere else there is a start screen to go back to
-const canLeave = computed(() => isDesktop || data.source !== 'published')
+const canLeave = computed(() => !viewerOnly && (isDesktop || data.source !== 'published'))
 
 async function leave() {
   // on the web the demo is opened from the landing page, so that's where leaving it goes back to;
@@ -104,7 +104,6 @@ const current = computed<NavName>(() => {
   return (NAV.find((x) => x.name === n)?.name ?? 'panel') as NavName
 })
 
-// full-height views (the plan) take exactly what is left under the banners instead of the whole viewport
 // selecting a device swaps / for /d/:id; both are the same page, so it must not remount and fade
 const pageKey = computed(() => (route.name === 'panel' || route.name === 'device' ? 'panel' : route.name === 'edit' ? 'edit' : route.path))
 const fill = computed(() => route.meta.fill === true)

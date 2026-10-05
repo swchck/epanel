@@ -7,8 +7,12 @@ export const isDesktop: boolean =
  */
 export const viewerOnly: boolean = import.meta.env.VITE_SITE === 'viewer' || isPreviewWindow()
 
+// the window label, not the URL: the router rewrites the hash on the first navigation, and a reload
+// would then boot the preview as a second editor. Read from the internals because getCurrentWindow()
+// would pull the Tauri window API into the web bundle for this one string
 function isPreviewWindow(): boolean {
-  return isDesktop && typeof location !== 'undefined' && /[?&]preview\b/.test(location.hash)
+  const internals = typeof window !== 'undefined' ? (window as { __TAURI_INTERNALS__?: { metadata?: { currentWindow?: { label?: string } } } }).__TAURI_INTERNALS__ : undefined
+  return internals?.metadata?.currentWindow?.label === 'preview'
 }
 
 /**
@@ -89,7 +93,6 @@ export async function saveTextFile(suggestedName: string, text: string, path?: s
   return suggestedName
 }
 
-// files opened from Finder/Explorer ("Open with", double-click on a .panel) reach the app this way
 export async function onOpenFile(cb: (f: OpenedText) => void) {
   if (!isDesktop) return
   const { invoke } = await import('@tauri-apps/api/core')

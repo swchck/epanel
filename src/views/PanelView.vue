@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { editorFirst } from '@/platform'
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useMediaQuery } from '@vueuse/core'
@@ -44,8 +45,9 @@ function onSelect(id: string) {
 watch(
   () => ui.selectedDevice,
   (id) => {
-    const target = id ? `/d/${id}` : '/'
-    if (route.path !== target && (route.name === 'panel' || route.name === 'device')) router.replace(target)
+    // in the desktop editor '/' is the editor itself, so deselecting just stays on the device page
+    const target = id ? `/d/${id}` : editorFirst ? null : '/'
+    if (target && route.path !== target && (route.name === 'panel' || route.name === 'device')) router.replace(target)
   },
 )
 

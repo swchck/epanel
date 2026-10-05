@@ -96,14 +96,18 @@ export async function waitForToken(code: DeviceCode, signal: AbortSignal): Promi
   const deadline = Date.now() + code.expiresIn * 1000
   while (Date.now() < deadline) {
     await new Promise<void>((resolve, reject) => {
-      const t = setTimeout(resolve, interval * 1000)
-      signal.addEventListener('abort', () => (clearTimeout(t), reject(new SignInError('cancelled'))), { once: true })
+      const cancel = () => (clearTimeout(t), reject(new SignInError('cancelled')))
+      const t = setTimeout(() => (signal.removeEventListener('abort', cancel), resolve()), interval * 1000)
+      if (signal.aborted) cancel()
+      else signal.addEventListener('abort', cancel, { once: true })
     })
     const r = await loginPost<TokenReply>('https://github.com/login/oauth/access_token', {
       client_id: GITHUB_CLIENT_ID,
       device_code: code.deviceCode,
       grant_type: 'urn:ietf:params:oauth:grant-type:device_code',
     })
+    // the dialog may have been closed while this poll was in flight; a grant then is not wanted
+    if (signal.aborted) throw new SignInError('cancelled')
     if (r.access_token) return toGrant({ ...r, access_token: r.access_token })
     // RFC 8628 §3.5: slow_down means add 5 seconds, and GitHub sends the new interval along
     if (r.error === 'slow_down') interval = r.interval ?? interval + 5

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { isoDay } from '@/domain/maintenance'
 import { ref } from 'vue'
 import { FilePlus2, ImagePlus, Link2, Trash2 } from '@lucide/vue'
 import { toast } from 'vue-sonner'
@@ -42,7 +43,7 @@ async function addPhotos() {
         ),
         src: ASSET_PREFIX + aid,
         caption: f.name.replace(/\.[^.]+$/, ''),
-        date: new Date().toISOString().slice(0, 10),
+        date: isoDay(new Date()),
       })
     }
     if (added) toast.success(t('editor.media.added', { n: added }))
@@ -71,7 +72,7 @@ async function addDocument() {
       title: f.name.replace(/\.[^.]+$/, ''),
       kind: 'other',
       href: ASSET_PREFIX + aid,
-      date: new Date().toISOString().slice(0, 10),
+      date: isoDay(new Date()),
     })
   } catch {
     toast.error(t('editor.media.unreadable', { name: f.name }))

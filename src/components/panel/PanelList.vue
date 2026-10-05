@@ -24,7 +24,7 @@ const issueByDevice = computed(() => {
 const deadDevices = computed(() => {
   const g = data.graph
   if (!g || !ui.off.size) return new Set<string>()
-  return new Set([...g.byId.keys()].filter((id) => !g.isPowered(id, ui.off)))
+  return new Set([...g.byId.keys()].filter((id) => !g.isFed(id, ui.off)))
 })
 
 function rating(d: Device) {

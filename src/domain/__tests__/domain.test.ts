@@ -8,7 +8,7 @@ import { buildGraph } from '../graph'
 import { layoutPanel, locate } from '../layout'
 import { coincidence, deviceLoad, pointsLoad } from '../load'
 import { buildSearch, whatToSwitchOff } from '../lookup'
-import { taskStatuses } from '../maintenance'
+import { isoDay, taskStatuses } from '../maintenance'
 import { routeIssues } from '../routing'
 import { defaultWidth, referenceIssues, tr } from '../model'
 import { demo, tiny } from './fixture'
@@ -212,6 +212,24 @@ describe('maintenance', () => {
     expect(s[0]).toMatchObject({ due: '2026-10-01', overdueDays: 3, state: 'overdue' })
     expect(s[1]).toMatchObject({ due: '2027-01-01', state: 'ok' })
     expect(s[2]!.state).toBe('never')
+  })
+
+  it('takes today from the local calendar, not from UTC', () => {
+    // 00:30 local is still the previous day in UTC for anyone east of Greenwich
+    expect(isoDay(new Date(2026, 9, 5, 0, 30))).toBe('2026-10-05')
+    expect(isoDay(new Date(2026, 9, 5, 23, 50))).toBe('2026-10-05')
+    const [a] = taskStatuses([{ id: 'a', title: 'a', intervalDays: 30, devices: [] }], [{ task: 'a', date: '2026-09-05' }], new Date(2026, 9, 5, 0, 30))
+    expect(a).toMatchObject({ due: '2026-10-05', overdueDays: 0 })
+  })
+})
+
+describe('simulation', () => {
+  it('keeps the supply side of a switched-off breaker live', () => {
+    const g = buildGraph(tiny({ devices: [{ id: 'Q0', type: 'mcb' }, { id: 'Q1', type: 'mcb', upstream: 'Q0' }] }))
+    const off = new Set(['Q0'])
+    expect(g.isFed('Q0', off)).toBe(true)
+    expect(g.isPowered('Q0', off)).toBe(false)
+    expect(g.isFed('Q1', off)).toBe(false)
   })
 })
 

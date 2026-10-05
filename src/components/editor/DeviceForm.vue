@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { isoDay } from '@/domain/maintenance'
 import { computed, ref, watch } from 'vue'
 import { CalendarClock, Plus, Trash2, X } from '@lucide/vue'
 import { toast } from 'vue-sonner'
@@ -56,7 +57,6 @@ const tagsText = computed({
   set: (v: string) => (device.value.tags = v.split(',').map((s) => s.trim()).filter(Boolean)),
 })
 
-// a device can't be fed by itself or by anything downstream of it
 const upstreamOptions = computed(() => {
   const banned = new Set([device.value.id])
   let grew = true
@@ -213,7 +213,7 @@ function circuit() {
     <section class="space-y-3">
       <div class="flex items-center justify-between">
         <h3 class="section-title">{{ t('device.notes') }}</h3>
-        <Button variant="ghost" size="sm" class="h-7" @click="device.notes.push({ author: '', date: new Date().toISOString().slice(0, 10), text: '' })"><Plus /> {{ t('common.add') }}</Button>
+        <Button variant="ghost" size="sm" class="h-7" @click="device.notes.push({ author: '', date: isoDay(new Date()), text: '' })"><Plus /> {{ t('common.add') }}</Button>
       </div>
       <div v-for="(n, i) in device.notes" :key="i" class="space-y-2 rounded-xl border p-3">
         <div class="flex gap-2">

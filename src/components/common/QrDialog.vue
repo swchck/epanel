@@ -22,12 +22,22 @@ const url = computed(() => appUrl(data.data?.meta.publicUrl, props.path, withKey
 const noBase = computed(() => !url.value.startsWith('http'))
 
 async function copy() {
-  await navigator.clipboard.writeText(url.value)
-  toast.success(t('qr.copied'))
+  try {
+    await navigator.clipboard.writeText(url.value)
+    toast.success(t('qr.copied'))
+  } catch {
+    // clipboard blocked: the link is still on screen to select by hand
+    toast.error(t('qr.copyFailed'))
+  }
 }
 
-function download() {
-  if (qr.value?.svg) saveTextFile(`qr-${props.path.replace(/\W+/g, '-').replace(/^-|-$/g, '') || 'panel'}.svg`, qr.value.svg)
+async function download() {
+  if (!qr.value?.svg) return
+  try {
+    await saveTextFile(`qr-${props.path.replace(/\W+/g, '-').replace(/^-|-$/g, '') || 'panel'}.svg`, qr.value.svg)
+  } catch (e) {
+    toast.error((e as Error).message)
+  }
 }
 </script>
 

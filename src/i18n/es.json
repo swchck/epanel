@@ -751,7 +751,8 @@
     "withPasswordHint": "Quien escanee el código abrirá los datos sin escribir la contraseña. Va después de #, así que nunca llega al servidor.",
     "noPublicUrl": "No se ha configurado la dirección web. Añádela en el editor (General → Dirección web) o el QR no se abrirá en el móvil.",
     "copy": "Copiar",
-    "copied": "Enlace copiado"
+    "copied": "Enlace copiado",
+    "copyFailed": "No se pudo copiar. Selecciona el enlace a mano."
   },
   "pwa": {
     "offline": "Sin conexión",

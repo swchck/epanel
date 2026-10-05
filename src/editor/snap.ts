@@ -52,7 +52,6 @@ export function placeOnWall(p: Point2, rooms: Room[], reach: number, inset = 10)
   const [a, b] = best.edge
   const len = dist(a, b) || 1
   let n: Point2 = [-(b[1] - a[1]) / len, (b[0] - a[0]) / len]
-  // the side the user clicked on is the room the outlet belongs to
   if ((p[0] - best.foot[0]) * n[0] + (p[1] - best.foot[1]) * n[1] < 0) n = [-n[0], -n[1]]
   return round([best.foot[0] + n[0] * inset, best.foot[1] + n[1] * inset])
 }

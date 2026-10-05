@@ -10,6 +10,8 @@ export interface PowerGraph {
   descendants(id: string): Device[]
   pointsOf(id: string, deep?: boolean): PlanPoint[]
   isPowered(id: string, off: ReadonlySet<string>): boolean
+  // whether the device's own input is live: a switched-off breaker still has voltage on its supply side
+  isFed(id: string, off: ReadonlySet<string>): boolean
   rcdChain(id: string): Device[]
   depth(id: string): number
 }
@@ -84,9 +86,12 @@ export function buildGraph(data: Pick<PanelData, 'devices' | 'points'>): PowerGr
     return [own, ...descendants(id).map((d) => pointsByDevice.get(d.id) ?? [])].flat()
   }
 
-  function isPowered(id: string, off: ReadonlySet<string>): boolean {
-    if (off.has(id)) return false
+  function isFed(id: string, off: ReadonlySet<string>): boolean {
     return ancestors(id).every((a) => !off.has(a.id))
+  }
+
+  function isPowered(id: string, off: ReadonlySet<string>): boolean {
+    return !off.has(id) && isFed(id, off)
   }
 
   function rcdChain(id: string): Device[] {
@@ -98,7 +103,7 @@ export function buildGraph(data: Pick<PanelData, 'devices' | 'points'>): PowerGr
     return ancestors(id).length
   }
 
-  return { byId, children, roots, cycles, ancestors, descendants, pointsOf, isPowered, rcdChain, depth }
+  return { byId, children, roots, cycles, ancestors, descendants, pointsOf, isFed, isPowered, rcdChain, depth }
 }
 
 export function pointPowered(g: PowerGraph, p: PlanPoint, off: ReadonlySet<string>): boolean {

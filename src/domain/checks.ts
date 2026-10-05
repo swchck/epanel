@@ -107,7 +107,8 @@ export function runChecks(data: PanelData, g: PowerGraph): CheckResult[] {
       continue
     }
     const chain = g.rcdChain(p.device)
-    const minLeak = Math.min(...chain.map((c) => c.leakage ?? Infinity))
+    // an RCD with no rating filled in is taken as the household 30 mA, not as missing protection
+    const minLeak = Math.min(...chain.map((c) => c.leakage ?? 30))
     // panels and sensors sit on the SELV bus, switches carry no exposed live parts
     const selv = p.kind === 'switch' || p.kind === 'panel' || p.kind === 'sensor' || p.kind === 'data'
     if (p.room && wetRooms.has(p.room) && !selv && minLeak > 30)
