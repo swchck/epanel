@@ -57,9 +57,9 @@ function toggle(task: { devices: string[] }, id: string) {
     <section class="space-y-3">
       <div class="flex items-center justify-between">
         <h3 class="font-semibold">{{ t('editor.maintenance.tasks') }}</h3>
-        <Button size="sm" variant="outline" @click="addTask"><Plus /> {{ t('common.add') }}</Button>
+        <Button size="sm" variant="outline" data-tour="emaint-add" @click="addTask"><Plus /> {{ t('common.add') }}</Button>
       </div>
-      <div v-for="(task, i) in d.maintenance.tasks" :key="task.id" class="space-y-3 rounded-xl border bg-card p-4">
+      <div v-for="(task, i) in d.maintenance.tasks" :key="task.id" data-tour="emaint-task" class="space-y-3 rounded-xl border bg-card p-4">
         <div class="grid items-end gap-3 sm:grid-cols-[1fr_9rem_auto]">
           <FormRow :label="t('editor.maintenance.title')"><LocalizedInput v-model="task.title" /></FormRow>
           <FormRow :label="t('editor.maintenance.interval')"><NumberInput v-model="task.intervalDays" integer :suffix="t('units.days')" /></FormRow>

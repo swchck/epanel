@@ -69,7 +69,7 @@ function deviceOf(id: string) {
     <p class="mt-1 text-muted-foreground">{{ t('maintenance.subtitle') }}</p>
 
     <div class="mt-6 space-y-3">
-      <article v-for="s in statuses" :key="s.task.id" class="rounded-2xl border bg-card p-5">
+      <article v-for="s in statuses" :key="s.task.id" data-tour="maint-task" class="rounded-2xl border bg-card p-5">
         <div class="flex flex-wrap items-start gap-3">
           <CalendarCheck class="mt-0.5 size-5 text-primary" />
           <div class="min-w-0 flex-1">
@@ -96,12 +96,12 @@ function deviceOf(id: string) {
           </template>
         </div>
         <div class="mt-4">
-          <Button size="sm" :variant="s.state === 'overdue' ? 'default' : 'outline'" @click="openMark(s)"><Check /> {{ t('maintenance.markDone') }}</Button>
+          <Button size="sm" data-tour="maint-done" :variant="s.state === 'overdue' ? 'default' : 'outline'" @click="openMark(s)"><Check /> {{ t('maintenance.markDone') }}</Button>
         </div>
       </article>
     </div>
 
-    <section class="mt-8 mb-6">
+    <section data-tour="maint-log" class="mt-8 mb-6">
       <h2 class="mb-3 flex items-center gap-2 font-semibold"><History class="size-4.5" /> {{ t('maintenance.journal') }}</h2>
       <ol v-if="log.length" class="relative space-y-4 border-l pl-5">
         <li v-for="(l, i) in log" :key="i" class="relative">

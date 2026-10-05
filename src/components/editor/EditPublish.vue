@@ -180,7 +180,7 @@ async function publish() {
       <p v-if="errors" class="flex items-center gap-2 text-sm text-warn"><TriangleAlert class="size-4" /> {{ t('editor.publish.checkErrors', { n: errors }) }}</p>
     </section>
 
-    <section class="space-y-4 rounded-2xl border bg-card p-5">
+    <section data-tour="pub-file" class="space-y-4 rounded-2xl border bg-card p-5">
       <div>
         <h3 class="font-semibold">{{ t('editor.publish.fileTitle') }}</h3>
         <p class="text-sm text-muted-foreground">{{ t('editor.publish.fileHint') }}</p>
@@ -207,7 +207,7 @@ async function publish() {
       </div>
     </section>
 
-    <section class="space-y-4 rounded-2xl border bg-card p-5">
+    <section data-tour="pub-site" class="space-y-4 rounded-2xl border bg-card p-5">
       <div>
         <h3 class="font-semibold">{{ t('editor.publish.siteTitle') }}</h3>
         <p class="text-sm text-muted-foreground">{{ t('editor.publish.siteHint') }}</p>
@@ -243,7 +243,7 @@ async function publish() {
       <p class="text-xs text-muted-foreground">{{ t('editor.publish.manual') }}</p>
     </section>
 
-    <section class="flex flex-wrap items-center gap-3 rounded-2xl border bg-card p-5 lg:col-span-2">
+    <section data-tour="pub-password" class="flex flex-wrap items-center gap-3 rounded-2xl border bg-card p-5 lg:col-span-2">
       <KeyRound class="size-4.5 shrink-0" />
       <div class="mr-auto min-w-0">
         <h3 class="font-semibold">{{ t('editor.publish.passwordTitle') }}</h3>

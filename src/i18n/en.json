@@ -1225,5 +1225,222 @@
     "phone": "Phone",
     "alarm": "Alarm",
     "other": "Other cable"
+  },
+  "tour": {
+    "next": "Next",
+    "back": "Back",
+    "done": "Got it",
+    "skip": "Close the tips",
+    "replay": "Tips for this section",
+    "resetTitle": "Tips",
+    "resetHint": "Show the tips in every section again.",
+    "reset": "Show again",
+    "resetDone": "The tips will show again in every section",
+    "panel": {
+      "nav": {
+        "title": "Sections",
+        "text": "All sections live here: the panel, the floor plan, what to switch off, what to do when something trips, and setup."
+      },
+      "stats": {
+        "title": "The panel at a glance",
+        "text": "How many circuits, RCDs and points, how many modules are used. The orange number is open issues; tap it for the list."
+      },
+      "board": {
+        "title": "The panel as it is",
+        "text": "Tap any breaker: what it feeds, where those sockets are on the plan, how loaded it is."
+      },
+      "view": {
+        "title": "Panel or list",
+        "text": "For a big panel, switch to the list: the same devices as rows with their ratings."
+      },
+      "simulate": {
+        "title": "Simulation",
+        "text": "Turn it on and tap breakers to see what loses power, on the plan too."
+      },
+      "filters": {
+        "title": "Filters",
+        "text": "Show only RCDs, only the kitchen, or only devices with issues."
+      }
+    },
+    "plan": {
+      "canvas": {
+        "title": "Floor plan",
+        "text": "Sockets, lights and appliances. Tap a point to see which breaker cuts it. Red hatching means do not drill here."
+      },
+      "view": {
+        "title": "2D and 3D",
+        "text": "3D shows socket heights and where cables run along walls and ceilings."
+      },
+      "simulate": {
+        "title": "What goes dark",
+        "text": "Switch a breaker off in the simulation and the points without power dim on the plan."
+      },
+      "layers": {
+        "title": "Layers",
+        "text": "Hide what you do not need: low voltage, dimensions, wall photos."
+      },
+      "aside": {
+        "title": "Details",
+        "text": "The selected point, room or cable run shows up here."
+      }
+    },
+    "find": {
+      "search": {
+        "title": "Find it",
+        "text": "Start typing: \"kettle\", \"bathroom\", \"QF5\". The app tells you which breaker to switch off."
+      },
+      "rooms": {
+        "title": "Or pick a room",
+        "text": "Tap a room, then a socket or light in it."
+      }
+    },
+    "schema": {
+      "tree": {
+        "title": "Single-line diagram",
+        "text": "Built automatically: the supply at the top, RCDs and circuits below. Tap a block to open the device."
+      },
+      "simulate": {
+        "title": "Simulation",
+        "text": "Switch breakers on the diagram: branches without power go dark."
+      }
+    },
+    "checks": {
+      "counts": {
+        "title": "Issues",
+        "text": "Errors are worth fixing, warnings worth checking, tips are optional."
+      },
+      "load": {
+        "title": "Load",
+        "text": "How much the flat can draw at once and whether the allowed supply is enough."
+      },
+      "list": {
+        "title": "What is wrong",
+        "text": "Each issue explains the problem and links to the device."
+      }
+    },
+    "maintenance": {
+      "task": {
+        "title": "Schedule",
+        "text": "What to do with the panel and how often: RCD test, terminal re-torque, meter readings."
+      },
+      "done": {
+        "title": "Mark as done",
+        "text": "Press it when done; the next due date is worked out for you."
+      },
+      "log": {
+        "title": "Log",
+        "text": "Who did what, and when."
+      }
+    },
+    "labels": {
+      "options": {
+        "title": "What to print",
+        "text": "A door sticker, strips for the breakers and a QR code for every device."
+      },
+      "sticker": {
+        "title": "QR for the door",
+        "text": "This code opens the site straight away, no password to type."
+      },
+      "print": {
+        "title": "Printing",
+        "text": "Print at 100% so the strips match the breaker widths."
+      }
+    },
+    "emergency": {
+      "scenarios": {
+        "title": "What happened?",
+        "text": "Pick the situation and the app walks you through it."
+      },
+      "smell": {
+        "title": "If it is dangerous",
+        "text": "A burning smell, sparks or a hot panel: this button first."
+      }
+    },
+    "edit-general": {
+      "tabs": {
+        "title": "Editor tabs",
+        "text": "General, panel, plan, photos, maintenance and publishing."
+      },
+      "history": {
+        "title": "Undo and draft",
+        "text": "Every change goes to a draft on this device, and mistakes can be undone."
+      },
+      "meta": {
+        "title": "Name and address",
+        "text": "The site address is used in the QR codes. A site created from the app fills it in."
+      },
+      "supply": {
+        "title": "Supply",
+        "text": "Phases, voltage, allowed power and the account number."
+      },
+      "contacts": {
+        "title": "Contacts",
+        "text": "The electrician and the building management. Their numbers show up in \"Something tripped\"."
+      }
+    },
+    "edit-panel": {
+      "tabs": {
+        "title": "Editor tabs",
+        "text": "General, panel, plan, photos, maintenance and publishing."
+      },
+      "board": {
+        "title": "Add a device",
+        "text": "Press \"+\" on a free spot of the rail and pick what goes there."
+      },
+      "view": {
+        "title": "Panel or list",
+        "text": "The list is handy for row widths and blanks."
+      },
+      "addrow": {
+        "title": "Rows",
+        "text": "Add a row if the panel has more rails."
+      },
+      "aside": {
+        "title": "Properties",
+        "text": "The selected device is set up here: rating, wiring, maintenance."
+      }
+    },
+    "edit-plan": {
+      "modes": {
+        "title": "Tools",
+        "text": "Room, outline, opening, point, cable and photo. Click the plan to place one."
+      },
+      "canvas": {
+        "title": "Plan",
+        "text": "Drag to move, scroll to zoom. Type a number to set a wall or cable length."
+      },
+      "view3d": {
+        "title": "Check in 3D",
+        "text": "Switch over to see heights and runs in space."
+      },
+      "aside": {
+        "title": "Properties",
+        "text": "The selected room, point or run is edited here."
+      }
+    },
+    "edit-maintenance": {
+      "add": {
+        "title": "New task",
+        "text": "Add your own task. Standard ones are suggested on the device card."
+      },
+      "task": {
+        "title": "Task and log",
+        "text": "Interval, instructions, devices and the record of when it was done."
+      }
+    },
+    "edit-publish": {
+      "file": {
+        "title": "File",
+        "text": "Save an encrypted .panel to hand to the electrician or the owner."
+      },
+      "site": {
+        "title": "Site",
+        "text": "Publish the panel to your own site: sign in with GitHub and create one in a couple of clicks."
+      },
+      "password": {
+        "title": "Password",
+        "text": "It encrypts the data and cannot be recovered. Write it down."
+      }
+    }
   }
 }

@@ -66,14 +66,14 @@ onBeforeUnmount(() => {
         <h1 class="text-2xl font-semibold tracking-tight lg:text-3xl">{{ t('editor.title') }}</h1>
         <p class="mt-1 text-sm text-muted-foreground">{{ t('editor.subtitle') }}</p>
       </div>
-      <div class="flex items-center gap-1">
+      <div data-tour="edit-history" class="flex items-center gap-1">
         <Button variant="ghost" size="icon-sm" :disabled="!history.canUndo.value" :aria-label="t('editor.undo')" :title="t('editor.undo')" @click="history.undo()"><Undo2 /></Button>
         <Button variant="ghost" size="icon-sm" :disabled="!history.canRedo.value" :aria-label="t('editor.redo')" :title="t('editor.redo')" @click="history.redo()"><Redo2 /></Button>
       </div>
       <span v-if="data.hasDraft" class="rounded-full bg-warn/15 px-3 py-1 text-xs font-medium text-warn">{{ t('editor.draftBadge') }}</span>
     </div>
 
-    <nav class="no-print mb-6 flex flex-wrap gap-1 rounded-xl border bg-card p-1">
+    <nav data-tour="edit-tabs" class="no-print mb-6 flex flex-wrap gap-1 rounded-xl border bg-card p-1">
       <button
         v-for="item in TABS"
         :key="item.id"

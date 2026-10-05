@@ -2,7 +2,7 @@
 import { computed, ref, watch, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useMagicKeys, whenever } from '@vueuse/core'
-import { Ellipsis, FlaskConical, House, LogOut, PanelLeftClose, PanelLeftOpen, PencilLine, Search } from '@lucide/vue'
+import { CircleHelp, Ellipsis, FlaskConical, House, LogOut, PanelLeftClose, PanelLeftOpen, PencilLine, Search } from '@lucide/vue'
 import { Button } from '@/components/ui/button'
 import { Kbd } from '@/components/ui/kbd'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
@@ -16,11 +16,28 @@ import BrandMark from './BrandMark.vue'
 import OfflineBadge from './OfflineBadge.vue'
 import SearchDialog from './SearchDialog.vue'
 import { NAV_ICONS } from './navIcons'
+import TourOverlay from '@/tour/TourOverlay.vue'
+import { MANUAL_ONLY, tourFor } from '@/tour/tours'
+import { useTour } from '@/tour/useTour'
 
 const data = useData()
 const ui = useUi()
 const route = useRoute()
 const router = useRouter()
+const tour = useTour()
+const tourId = computed(() => tourFor(route.name, route.params))
+// first visit to a section: give lazy views and their transition a moment to put the targets on screen
+let tourTimer: ReturnType<typeof setTimeout> | undefined
+watch(
+  tourId,
+  (id) => {
+    clearTimeout(tourTimer)
+    tour.finish()
+    if (!id || MANUAL_ONLY.has(id) || tour.isSeen(id)) return
+    tourTimer = setTimeout(() => !tour.active.value && tour.start(id), 700)
+  },
+  { immediate: true },
+)
 
 // on the web a published panel is the home page itself; everywhere else there is a start screen to go back to
 const canLeave = computed(() => isDesktop || data.source !== 'published')
@@ -134,7 +151,7 @@ whenever(
         <TooltipContent side="right">{{ t('search.placeholderShort') }}</TooltipContent>
       </Tooltip>
       <!-- scrolls only on a very short window; the bar itself would just be noise next to the icons -->
-      <nav class="flex-1 [scrollbar-width:none] overflow-y-auto pb-2 [&::-webkit-scrollbar]:hidden" :class="collapsed ? 'px-2' : 'px-3'">
+      <nav data-tour="nav" class="flex-1 [scrollbar-width:none] overflow-y-auto pb-2 [&::-webkit-scrollbar]:hidden" :class="collapsed ? 'px-2' : 'px-3'">
         <div v-for="(g, gi) in GROUPS" :key="g.key" :class="collapsed ? 'mb-1.5' : 'mb-2.5'">
           <div v-if="!collapsed" class="px-2 pt-1 pb-1 text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">{{ t(`nav.group.${g.key}`) }}</div>
           <div v-else-if="gi > 0" class="mx-auto mb-1.5 w-8 border-t border-sidebar-border" />
@@ -178,6 +195,12 @@ whenever(
           <TooltipContent side="right">{{ t('nav.leave') }}</TooltipContent>
         </Tooltip>
         <div v-else-if="!collapsed" class="flex-1" />
+        <Tooltip v-if="tourId && tour.has(tourId)">
+          <TooltipTrigger as-child>
+            <Button variant="ghost" size="icon" class="size-9 shrink-0 text-muted-foreground" :aria-label="t('tour.replay')" @click="tour.start(tourId)"><CircleHelp /></Button>
+          </TooltipTrigger>
+          <TooltipContent side="right">{{ t('tour.replay') }}</TooltipContent>
+        </Tooltip>
         <Tooltip>
           <TooltipTrigger as-child>
             <Button variant="ghost" size="icon" class="size-9 shrink-0 text-muted-foreground" :aria-label="t(collapsed ? 'nav.expand' : 'nav.collapse')" @click="ui.sidebarCollapsed = !collapsed">
@@ -188,6 +211,7 @@ whenever(
         </Tooltip>
       </div>
     </aside>
+    <TourOverlay />
 
     <div class="relative flex min-w-0 flex-col overflow-x-clip lg:h-dvh lg:overflow-hidden print:block print:h-auto print:overflow-visible">
       <!-- the window has no title bar: the banners are the drag handle when shown, otherwise this strip over the page's top padding -->

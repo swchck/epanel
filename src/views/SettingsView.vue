@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { LockKeyhole, Monitor, Moon, RefreshCw, Sun, Trash2 } from '@lucide/vue'
+import { CircleHelp, LockKeyhole, Monitor, Moon, RefreshCw, Sun, Trash2 } from '@lucide/vue'
 import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
 import { LOCALES } from '@/domain/model'
@@ -11,11 +11,17 @@ import { useText } from '@/composables/useText'
 import { useTheme, type ThemeMode } from '@/composables/useTheme'
 import { isDesktop } from '@/platform'
 import { useData } from '@/stores/data'
+import { useTour } from '@/tour/useTour'
 
 const data = useData()
 const router = useRouter()
 const { t, locale } = useText()
 const { mode } = useTheme()
+const tour = useTour()
+function resetTours() {
+  tour.reset()
+  toast.success(t('tour.resetDone'))
+}
 const THEMES: { id: ThemeMode; icon: typeof Sun }[] = [
   { id: 'auto', icon: Monitor },
   { id: 'light', icon: Sun },
@@ -93,6 +99,13 @@ async function discard() {
             <div class="text-xs text-muted-foreground">{{ t('settings.draftHint') }}</div>
           </div>
           <Button variant="destructive" size="sm" @click="discard"><Trash2 /> {{ t('settings.discard') }}</Button>
+        </div>
+        <div class="flex items-center justify-between gap-4 p-4">
+          <div>
+            <div class="text-sm font-medium">{{ t('tour.resetTitle') }}</div>
+            <div class="text-xs text-muted-foreground">{{ t('tour.resetHint') }}</div>
+          </div>
+          <Button variant="outline" size="sm" @click="resetTours"><CircleHelp /> {{ t('tour.reset') }}</Button>
         </div>
         <div v-if="!isDesktop" class="flex items-center justify-between gap-4 p-4">
           <div>

@@ -1225,5 +1225,222 @@
     "phone": "Telefonski",
     "alarm": "Alarm",
     "other": "Drugi kabl"
+  },
+  "tour": {
+    "next": "Dalje",
+    "back": "Nazad",
+    "done": "Razumem",
+    "skip": "Zatvori savete",
+    "replay": "Saveti za ovaj odeljak",
+    "resetTitle": "Saveti",
+    "resetHint": "Ponovo prikaži savete u svim odeljcima.",
+    "reset": "Prikaži ponovo",
+    "resetDone": "Saveti će se ponovo pojaviti u svakom odeljku",
+    "panel": {
+      "nav": {
+        "title": "Odeljci",
+        "text": "Ovde su svi odeljci: tabla, plan stana, šta isključiti, šta raditi kad nešto izbaci i podešavanje."
+      },
+      "stats": {
+        "title": "Tabla ukratko",
+        "text": "Koliko kola, FID sklopki i tačaka, koliko modula je zauzeto. Narandžasti broj su napomene; dodirnite za listu."
+      },
+      "board": {
+        "title": "Tabla kao u stvarnosti",
+        "text": "Dodirnite bilo koji osigurač: šta napaja, gde su te utičnice na planu, koliko je opterećen."
+      },
+      "view": {
+        "title": "Tabla ili lista",
+        "text": "Za veliku tablu pređite na listu: isti uređaji u redovima, sa jačinom."
+      },
+      "simulate": {
+        "title": "Simulacija",
+        "text": "Uključite je i dodirujte osigurače: odmah se vidi šta ostaje bez struje, i na planu."
+      },
+      "filters": {
+        "title": "Filteri",
+        "text": "Prikažite samo FID sklopke, samo kuhinju ili samo uređaje sa napomenama."
+      }
+    },
+    "plan": {
+      "canvas": {
+        "title": "Plan stana",
+        "text": "Utičnice, svetla i uređaji. Dodirnite tačku da vidite koji je osigurač isključuje. Crvene šrafure znače da se tu ne buši."
+      },
+      "view": {
+        "title": "2D i 3D",
+        "text": "3D pokazuje visinu utičnica i gde kablovi idu po zidovima i plafonu."
+      },
+      "simulate": {
+        "title": "Šta se gasi",
+        "text": "Isključite osigurač u simulaciji i tačke bez struje potamne na planu."
+      },
+      "layers": {
+        "title": "Slojevi",
+        "text": "Sakrijte ono što vam ne treba: slabu struju, dimenzije, fotografije zidova."
+      },
+      "aside": {
+        "title": "Detalji",
+        "text": "Ovde se pojavljuje izabrana tačka, prostorija ili trasa."
+      }
+    },
+    "find": {
+      "search": {
+        "title": "Pronađite",
+        "text": "Počnite da kucate: „bojler”, „kupatilo”, „QF5”. Aplikacija kaže koji osigurač da isključite."
+      },
+      "rooms": {
+        "title": "Ili izaberite prostoriju",
+        "text": "Dodirnite prostoriju, pa utičnicu ili svetlo u njoj."
+      }
+    },
+    "schema": {
+      "tree": {
+        "title": "Jednopolna šema",
+        "text": "Pravi se sama: priključak gore, ispod FID sklopke i kola. Dodirnite blok da otvorite uređaj."
+      },
+      "simulate": {
+        "title": "Simulacija",
+        "text": "Uključujte i isključujte osigurače na šemi: grane bez struje se gase."
+      }
+    },
+    "checks": {
+      "counts": {
+        "title": "Napomene",
+        "text": "Greške treba ispraviti, upozorenja proveriti, saveti su po želji."
+      },
+      "load": {
+        "title": "Opterećenje",
+        "text": "Koliko stan može da troši odjednom i da li je odobrena snaga dovoljna."
+      },
+      "list": {
+        "title": "Šta nije u redu",
+        "text": "Svaka napomena objašnjava problem i vodi do uređaja."
+      }
+    },
+    "maintenance": {
+      "task": {
+        "title": "Raspored",
+        "text": "Šta raditi sa tablom i koliko često: test FID sklopke, pritezanje klema, stanje brojila."
+      },
+      "done": {
+        "title": "Označi kao urađeno",
+        "text": "Pritisnite kad završite; sledeći rok se računa sam."
+      },
+      "log": {
+        "title": "Dnevnik",
+        "text": "Ko je šta i kada radio."
+      }
+    },
+    "labels": {
+      "options": {
+        "title": "Šta štampati",
+        "text": "Nalepnicu za vrata, trake za osigurače i QR za svaki uređaj."
+      },
+      "sticker": {
+        "title": "QR za vrata",
+        "text": "Ovaj kod odmah otvara sajt, bez kucanja lozinke."
+      },
+      "print": {
+        "title": "Štampa",
+        "text": "Štampajte u razmeri 100% da se trake poklope sa širinom osigurača."
+      }
+    },
+    "emergency": {
+      "scenarios": {
+        "title": "Šta se desilo?",
+        "text": "Izaberite situaciju i aplikacija vas vodi korak po korak."
+      },
+      "smell": {
+        "title": "Ako je opasno",
+        "text": "Miris paljevine, varnice ili vruća tabla: prvo ovo dugme."
+      }
+    },
+    "edit-general": {
+      "tabs": {
+        "title": "Kartice uređivača",
+        "text": "Opšte, tabla, plan, fotografije, održavanje i objavljivanje."
+      },
+      "history": {
+        "title": "Poništavanje i nacrt",
+        "text": "Sve izmene idu u nacrt na ovom uređaju, a greške se mogu poništiti."
+      },
+      "meta": {
+        "title": "Naziv i adresa",
+        "text": "Adresa sajta se koristi u QR kodovima. Sajt napravljen iz programa je sam upisuje."
+      },
+      "supply": {
+        "title": "Priključak",
+        "text": "Faze, napon, odobrena snaga i broj računa."
+      },
+      "contacts": {
+        "title": "Kontakti",
+        "text": "Električar i upravnik zgrade. Njihovi brojevi se prikazuju u „Izbacilo je osigurač”."
+      }
+    },
+    "edit-panel": {
+      "tabs": {
+        "title": "Kartice uređivača",
+        "text": "Opšte, tabla, plan, fotografije, održavanje i objavljivanje."
+      },
+      "board": {
+        "title": "Dodajte uređaj",
+        "text": "Pritisnite „+” na slobodnom mestu šine i izaberite šta ide tu."
+      },
+      "view": {
+        "title": "Tabla ili lista",
+        "text": "Lista je zgodna za širinu redova i prazna mesta."
+      },
+      "addrow": {
+        "title": "Redovi",
+        "text": "Dodajte red ako tabla ima više šina."
+      },
+      "aside": {
+        "title": "Svojstva",
+        "text": "Ovde se podešava izabrani uređaj: jačina, povezivanje, održavanje."
+      }
+    },
+    "edit-plan": {
+      "modes": {
+        "title": "Alati",
+        "text": "Prostorija, kontura, otvor, tačka, kabl i fotografija. Kliknite na plan da postavite."
+      },
+      "canvas": {
+        "title": "Plan",
+        "text": "Prevucite da pomerite, točkićem zumirajte. Dužinu zida ili kabla možete ukucati."
+      },
+      "view3d": {
+        "title": "Provera u 3D",
+        "text": "Prebacite da vidite visine i trase u prostoru."
+      },
+      "aside": {
+        "title": "Svojstva",
+        "text": "Ovde se uređuje izabrana prostorija, tačka ili trasa."
+      }
+    },
+    "edit-maintenance": {
+      "add": {
+        "title": "Novi zadatak",
+        "text": "Dodajte svoj zadatak. Uobičajene program sam predlaže na kartici uređaja."
+      },
+      "task": {
+        "title": "Zadatak i dnevnik",
+        "text": "Interval, uputstvo, uređaji i zapisi o izvršenju."
+      }
+    },
+    "edit-publish": {
+      "file": {
+        "title": "Fajl",
+        "text": "Sačuvajte šifrovani .panel da ga date električaru ili vlasniku."
+      },
+      "site": {
+        "title": "Sajt",
+        "text": "Objavite tablu na svoj sajt: prijavite se preko GitHub-a i napravite sajt u par klikova."
+      },
+      "password": {
+        "title": "Lozinka",
+        "text": "Njom su šifrovani podaci i ne može se povratiti. Zapišite je."
+      }
+    }
   }
 }

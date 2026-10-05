@@ -116,7 +116,7 @@ const hasAside = computed(() => {
 
     <div v-if="screen.kind === 'what'" class="space-y-3">
       <h2 class="text-lg font-semibold">{{ t('emergency.q.what') }}</h2>
-      <div class="grid gap-2.5 sm:grid-cols-2">
+      <div data-tour="emergency-scenarios" class="grid gap-2.5 sm:grid-cols-2">
         <button
           v-for="s in SCENARIOS"
           :key="s.id"
@@ -129,7 +129,7 @@ const hasAside = computed(() => {
             <div class="text-sm text-muted-foreground">{{ t(`emergency.scenario.${s.id}.hint`) }}</div>
           </div>
         </button>
-        <button class="flex items-center gap-3.5 rounded-2xl border border-danger/50 bg-danger/8 p-4 text-left transition hover:border-danger sm:col-span-2" @click="choose('smell')">
+        <button data-tour="emergency-smell" class="flex items-center gap-3.5 rounded-2xl border border-danger/50 bg-danger/8 p-4 text-left transition hover:border-danger sm:col-span-2" @click="choose('smell')">
           <Flame class="size-6 shrink-0 text-danger" />
           <div>
             <div class="font-medium">{{ t('emergency.scenario.smell.title') }}</div>

@@ -20,7 +20,7 @@ function addContact() {
 
 <template>
   <div class="space-y-8">
-    <section class="grid gap-4 md:grid-cols-2">
+    <section data-tour="gen-meta" class="grid gap-4 md:grid-cols-2">
       <FormRow :label="t('editor.general.title')" class="md:col-span-2"><LocalizedInput v-model="d.meta.title" /></FormRow>
       <FormRow :label="t('editor.general.location')" :hint="t('editor.general.locationHint')"><LocalizedInput v-model="d.meta.location" /></FormRow>
       <FormRow :label="t('editor.general.enclosure')"><Input v-model="d.meta.enclosure" /></FormRow>
@@ -28,7 +28,7 @@ function addContact() {
       <FormRow :label="t('editor.general.publicUrl')" :hint="t('editor.general.publicUrlHint')"><Input v-model="d.meta.publicUrl" placeholder="https://user.github.io/panel/app/" /></FormRow>
     </section>
 
-    <section>
+    <section data-tour="gen-supply">
       <h3 class="mb-3 font-semibold">{{ t('editor.general.supply') }}</h3>
       <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <FormRow :label="t('editor.general.phases')">
@@ -57,7 +57,7 @@ function addContact() {
       </div>
     </section>
 
-    <section>
+    <section data-tour="gen-contacts">
       <div class="mb-3 flex items-center justify-between">
         <h3 class="font-semibold">{{ t('emergency.contacts') }}</h3>
         <Button size="sm" variant="outline" @click="addContact"><Plus /> {{ t('common.add') }}</Button>

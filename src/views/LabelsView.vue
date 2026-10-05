@@ -58,7 +58,7 @@ function rating(id: string) {
       <h1 class="text-2xl font-semibold tracking-tight lg:text-3xl">{{ t('labels.title') }}</h1>
       <p class="mt-1 text-muted-foreground">{{ t('labels.subtitle') }}</p>
 
-      <div class="mt-5 flex flex-wrap items-center gap-x-6 gap-y-3 rounded-2xl border bg-card p-4">
+      <div data-tour="labels-options" class="mt-5 flex flex-wrap items-center gap-x-6 gap-y-3 rounded-2xl border bg-card p-4">
         <label class="flex items-center gap-2 text-sm"><Switch v-model="withKey" /> {{ t('qr.withPassword') }}</label>
         <label class="flex items-center gap-2 text-sm"><Switch v-model="showLabels" /> {{ t('labels.strips') }}</label>
         <label class="flex items-center gap-2 text-sm"><Switch v-model="perDeviceQr" /> {{ t('labels.perDevice') }}</label>
@@ -68,14 +68,14 @@ function rating(id: string) {
           {{ t('units.mm') }}
         </label>
         <div class="flex-1" />
-        <Button @click="print"><Printer /> {{ t('labels.print') }}</Button>
+        <Button data-tour="labels-print" @click="print"><Printer /> {{ t('labels.print') }}</Button>
       </div>
       <p v-if="noBase" class="mt-3 flex gap-2 rounded-xl bg-warn/15 p-3 text-sm"><TriangleAlert class="size-4 shrink-0 text-warn" />{{ t('qr.noPublicUrl') }}</p>
       <p class="mt-3 text-xs text-muted-foreground">{{ t('labels.printHint') }}</p>
     </div>
 
     <div class="print-area mt-6 space-y-8">
-      <section class="sticker mx-auto flex w-[90mm] flex-col items-center gap-[3mm] rounded-[4mm] border-[0.6mm] border-black bg-white p-[5mm] text-black">
+      <section data-tour="labels-sticker" class="sticker mx-auto flex w-[90mm] flex-col items-center gap-[3mm] rounded-[4mm] border-[0.6mm] border-black bg-white p-[5mm] text-black">
         <div class="text-center text-[4.2mm] leading-tight font-semibold">{{ tx(data.data?.meta.title) }}</div>
         <div class="size-[60mm]"><QrCode :value="mainUrl" :margin="0" /></div>
         <div class="text-center text-[3mm] leading-snug">{{ t('labels.scan') }}</div>

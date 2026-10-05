@@ -108,7 +108,7 @@ watch(
           <MapPin class="size-4" /> {{ tx(data.data.meta.location) }}
         </p>
       </div>
-      <dl class="flex overflow-hidden rounded-xl border bg-card">
+      <dl data-tour="panel-stats" class="flex overflow-hidden rounded-xl border bg-card">
         <div v-for="s in stats" :key="s.k" class="flex flex-col-reverse border-r px-4 py-2 last:border-r-0">
           <dt class="text-xs whitespace-nowrap text-muted-foreground">{{ s.k }}</dt>
           <dd class="text-lg leading-tight font-semibold tabular">{{ s.v }}</dd>
@@ -124,7 +124,7 @@ watch(
 
     <div class="no-print mb-4 space-y-2">
       <div class="flex flex-wrap items-center gap-2">
-        <div class="mr-auto flex flex-wrap gap-0.5 rounded-xl border bg-card p-1" role="group" :aria-label="t('panel.types')">
+        <div data-tour="panel-types" class="mr-auto flex flex-wrap gap-0.5 rounded-xl border bg-card p-1" role="group" :aria-label="t('panel.types')">
           <button
             v-for="tp in presentTypes"
             :key="tp"
@@ -137,17 +137,17 @@ watch(
             {{ t(`device.typeShort.${tp}`) }}
           </button>
         </div>
-        <label class="flex h-9 items-center gap-2 rounded-xl border bg-card px-3 text-sm" :class="{ 'border-live/60 bg-live/10': ui.simulate }">
+        <label data-tour="panel-simulate" class="flex h-9 items-center gap-2 rounded-xl border bg-card px-3 text-sm" :class="{ 'border-live/60 bg-live/10': ui.simulate }">
           <Power class="size-4" :class="ui.simulate ? 'text-live' : 'text-muted-foreground'" />
           {{ t('panel.simulate') }}
           <Switch v-model="ui.simulate" />
         </label>
-        <PanelViewToggle />
+        <PanelViewToggle data-tour="panel-view" />
         <Button v-if="ui.panelView === 'visual'" variant="outline" size="icon" class="hidden size-9 rounded-xl md:inline-flex" :aria-label="t('panel.zoom')" @click="zoomed = !zoomed">
           <component :is="zoomed ? ZoomOut : ZoomIn" />
         </Button>
       </div>
-      <div class="flex flex-wrap items-center gap-2">
+      <div data-tour="panel-filters" class="flex flex-wrap items-center gap-2">
         <Select :model-value="ui.filterRoom ?? '__all'" @update:model-value="(v) => (ui.filterRoom = v === '__all' ? null : (v as string))">
           <SelectTrigger class="min-w-40 bg-card" :aria-label="t('panel.allRooms')"><SelectValue /></SelectTrigger>
           <SelectContent>
@@ -186,12 +186,12 @@ watch(
 
     <div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_26rem]">
       <div class="min-w-0">
-        <div v-if="ui.panelView === 'visual'" class="overflow-x-auto rounded-2xl">
+        <div v-if="ui.panelView === 'visual'" data-tour="panel-board" class="overflow-x-auto rounded-2xl">
           <div :class="zoomed ? 'w-[1100px]' : 'mx-auto max-w-[900px]'">
             <PanelEnclosure @select="onSelect" />
           </div>
         </div>
-        <PanelList v-else @select="onSelect" />
+        <PanelList v-else data-tour="panel-board" @select="onSelect" />
         <div v-if="ui.panelView === 'visual'" class="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-xs text-muted-foreground">
           <span class="flex items-center gap-1.5"><span class="inline-block h-2 w-3 rounded-sm bg-[#d93a2b]" /> {{ t('panel.legend.on') }}</span>
           <span class="flex items-center gap-1.5"><span class="inline-block h-2 w-3 rounded-sm bg-[#2f9e44]" /> {{ t('panel.legend.off') }}</span>

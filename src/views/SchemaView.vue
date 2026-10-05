@@ -138,7 +138,7 @@ function activate(d: Device | null) {
         <h1 class="text-2xl font-semibold tracking-tight lg:text-3xl">{{ t('schema.title') }}</h1>
         <p class="mt-1 text-sm text-muted-foreground">{{ t('schema.subtitle') }}</p>
       </div>
-      <label class="flex h-9 items-center gap-2 rounded-xl border bg-card px-3 text-sm" :class="{ 'border-live/60 bg-live/10': ui.simulate }">
+      <label data-tour="schema-simulate" class="flex h-9 items-center gap-2 rounded-xl border bg-card px-3 text-sm" :class="{ 'border-live/60 bg-live/10': ui.simulate }">
         <Power class="size-4" :class="ui.simulate ? 'text-live' : 'text-muted-foreground'" />
         {{ t('panel.simulate') }}
         <Switch v-model="ui.simulate" />
@@ -146,7 +146,7 @@ function activate(d: Device | null) {
       <Button v-if="ui.off.size" size="sm" variant="ghost" @click="ui.resetSimulation()"><RotateCcw /> {{ t('panel.simReset') }}</Button>
     </div>
 
-    <div class="min-h-0 overflow-hidden rounded-2xl border bg-card lg:flex-1">
+    <div data-tour="schema-tree" class="min-h-0 overflow-hidden rounded-2xl border bg-card lg:flex-1">
       <svg :viewBox="`0 0 ${tree.width} ${tree.height}`" preserveAspectRatio="xMidYMid meet" class="block h-auto w-full lg:h-full">
         <defs>
           <pattern id="schema-grid" width="24" height="24" patternUnits="userSpaceOnUse">

@@ -80,9 +80,9 @@ function used(i: number) {
 <template>
   <div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_28rem]">
     <div class="min-w-0 space-y-4">
-      <PanelViewToggle />
+      <PanelViewToggle data-tour="epanel-view" />
 
-      <div v-if="ui.panelView === 'visual'" class="overflow-x-auto rounded-2xl">
+      <div v-if="ui.panelView === 'visual'" data-tour="epanel-board" class="overflow-x-auto rounded-2xl">
         <div class="mx-auto max-w-[900px]">
           <PanelEnclosure addable :active-slot="slot" @select="(id) => ui.select(ui.selectedDevice === id ? null : id)" @add="openSlot" />
         </div>
@@ -121,7 +121,7 @@ function used(i: number) {
           </div>
         </div>
         </template>
-        <Button variant="outline" size="sm" @click="addRow(d)"><Plus /> {{ t('editor.panel.addRow') }}</Button>
+        <Button variant="outline" size="sm" data-tour="epanel-addrow" @click="addRow(d)"><Plus /> {{ t('editor.panel.addRow') }}</Button>
       </div>
 
       <div v-if="unplaced.length" class="rounded-xl border border-warn/40 bg-warn/10 p-3">
@@ -132,7 +132,7 @@ function used(i: number) {
       </div>
     </div>
 
-    <aside class="space-y-4">
+    <aside data-tour="epanel-aside" class="space-y-4">
       <div v-if="selected" class="rounded-2xl border bg-card p-4">
         <div class="mb-4 flex items-start gap-3">
           <DeviceChip :device="selected" size="lg" />

@@ -48,7 +48,7 @@ const RULES = ['cable', 'load', 'selectivity', 'rcd', 'wet', 'class', 'input', '
     <h1 class="text-2xl font-semibold tracking-tight lg:text-3xl">{{ t('checks.title') }}</h1>
     <p class="mt-1 text-muted-foreground">{{ t('checks.subtitle') }}</p>
 
-    <div class="mt-6 grid gap-3 sm:grid-cols-3">
+    <div data-tour="checks-counts" class="mt-6 grid gap-3 sm:grid-cols-3">
       <div class="rounded-2xl border bg-card p-4">
         <div class="font-mono text-3xl font-semibold text-danger tabular">{{ counts.error }}</div>
         <div class="text-sm text-muted-foreground">{{ t('checks.level.error') }}</div>
@@ -63,7 +63,7 @@ const RULES = ['cable', 'load', 'selectivity', 'rcd', 'wet', 'class', 'input', '
       </div>
     </div>
 
-    <section class="mt-6 rounded-2xl border bg-card p-5">
+    <section data-tour="checks-load" class="mt-6 rounded-2xl border bg-card p-5">
       <div class="flex flex-wrap items-baseline justify-between gap-2">
         <h2 class="font-semibold">{{ t('checks.totalLoad') }}</h2>
         <span class="font-mono text-sm tabular">
@@ -77,7 +77,7 @@ const RULES = ['cable', 'load', 'selectivity', 'rcd', 'wet', 'class', 'input', '
       <p class="mt-2 text-xs text-muted-foreground">{{ t('checks.totalHint', { nameplate: (total.nameplateW / 1000).toFixed(1) }) }}</p>
     </section>
 
-    <section class="mt-6">
+    <section data-tour="checks-list" class="mt-6">
       <div class="mb-3 flex items-center justify-between">
         <h2 class="font-semibold">{{ t('checks.issues') }}</h2>
         <label class="flex items-center gap-2 text-sm text-muted-foreground">

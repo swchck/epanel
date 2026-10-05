@@ -105,10 +105,10 @@ const kindsPresent = computed(() => POINT_KINDS.filter((k) => data.data?.points.
   <div class="flex h-[calc(100dvh-7.5rem)] flex-col px-4 pt-4 lg:h-full lg:px-8 lg:pt-8 lg:pb-6">
     <div class="no-print mb-3 flex flex-wrap items-center gap-2">
       <h1 class="mr-auto text-xl font-semibold tracking-tight lg:text-2xl">{{ t('nav.plan') }}</h1>
-      <div class="flex overflow-hidden rounded-full border bg-card text-xs font-medium">
+      <div data-tour="plan-view" class="flex overflow-hidden rounded-full border bg-card text-xs font-medium">
         <button v-for="v in ['2d', '3d'] as const" :key="v" class="px-3 py-1 uppercase transition" :class="view === v ? 'bg-primary text-primary-foreground' : 'hover:bg-accent'" @click="view = v">{{ v }}</button>
       </div>
-      <label class="flex items-center gap-2 rounded-full border bg-card px-3 py-1 text-xs" :class="{ 'border-live bg-live/15': ui.simulate }">
+      <label data-tour="plan-simulate" class="flex items-center gap-2 rounded-full border bg-card px-3 py-1 text-xs" :class="{ 'border-live bg-live/15': ui.simulate }">
         <Power class="size-3.5" :class="ui.simulate ? 'text-live' : ''" />
         {{ t('panel.simulate') }}
         <Switch v-model="ui.simulate" class="scale-90" />
@@ -116,7 +116,7 @@ const kindsPresent = computed(() => POINT_KINDS.filter((k) => data.data?.points.
       <Button v-if="ui.simulate && ui.off.size" size="sm" variant="ghost" class="rounded-full" @click="ui.resetSimulation()"><RotateCcw /> {{ t('panel.simReset') }}</Button>
       <Popover>
         <PopoverTrigger as-child>
-          <Button variant="outline" size="sm" class="rounded-full"><Layers /> {{ t('plan.layers') }}</Button>
+          <Button data-tour="plan-layers" variant="outline" size="sm" class="rounded-full"><Layers /> {{ t('plan.layers') }}</Button>
         </PopoverTrigger>
         <PopoverContent align="end" class="max-h-(--reka-popover-content-available-height) w-64 overflow-y-auto p-1.5">
           <label v-for="k in kindsPresent" :key="k" class="flex items-center gap-2.5 rounded-md px-2 py-1 text-sm hover:bg-accent">
@@ -141,7 +141,7 @@ const kindsPresent = computed(() => POINT_KINDS.filter((k) => data.data?.points.
     </div>
 
     <div class="flex min-h-0 flex-1 gap-5">
-      <div class="relative min-h-0 flex-1 overflow-hidden rounded-2xl border bg-card">
+      <div data-tour="plan-canvas" class="relative min-h-0 flex-1 overflow-hidden rounded-2xl border bg-card">
         <Plan3D
           v-if="view === '3d'"
           :highlight-points="highlight"
@@ -173,7 +173,7 @@ const kindsPresent = computed(() => POINT_KINDS.filter((k) => data.data?.points.
         </div>
       </div>
 
-      <aside v-if="wide" class="no-print w-96 shrink-0 overflow-y-auto rounded-2xl border bg-card p-5">
+      <aside v-if="wide" data-tour="plan-aside" class="no-print w-96 shrink-0 overflow-y-auto rounded-2xl border bg-card p-5">
         <template v-if="hasSelection">
           <button class="float-right -mt-1 -mr-1 rounded-md p-1 text-muted-foreground hover:bg-accent" :aria-label="t('common.close')" @click="setQuery({})">
             <X class="size-4" />

@@ -1225,5 +1225,222 @@
     "phone": "Teléfono",
     "alarm": "Alarma",
     "other": "Otro cable"
+  },
+  "tour": {
+    "next": "Siguiente",
+    "back": "Atrás",
+    "done": "Entendido",
+    "skip": "Cerrar las ayudas",
+    "replay": "Ayuda de esta sección",
+    "resetTitle": "Ayudas",
+    "resetHint": "Volver a mostrar las ayudas en todas las secciones.",
+    "reset": "Mostrar otra vez",
+    "resetDone": "Las ayudas volverán a aparecer en cada sección",
+    "panel": {
+      "nav": {
+        "title": "Secciones",
+        "text": "Aquí están todas: el cuadro, el plano, qué apagar, qué hacer si salta algo y la configuración."
+      },
+      "stats": {
+        "title": "El cuadro de un vistazo",
+        "text": "Cuántos circuitos, diferenciales y puntos, cuántos módulos ocupados. El número naranja son avisos; pulsa para verlos."
+      },
+      "board": {
+        "title": "El cuadro tal cual",
+        "text": "Pulsa cualquier interruptor: qué alimenta, dónde están esos enchufes en el plano, cuánta carga lleva."
+      },
+      "view": {
+        "title": "Cuadro o lista",
+        "text": "Si el cuadro es grande, cambia a la lista: los mismos aparatos en filas con su calibre."
+      },
+      "simulate": {
+        "title": "Simulación",
+        "text": "Actívala y pulsa interruptores: se ve al momento qué se queda sin luz, también en el plano."
+      },
+      "filters": {
+        "title": "Filtros",
+        "text": "Muestra solo diferenciales, solo la cocina o solo lo que tiene avisos."
+      }
+    },
+    "plan": {
+      "canvas": {
+        "title": "Plano de la vivienda",
+        "text": "Enchufes, luces y aparatos. Pulsa un punto para ver qué interruptor lo corta. El rayado rojo indica que ahí no se taladra."
+      },
+      "view": {
+        "title": "2D y 3D",
+        "text": "En 3D se ve la altura de los enchufes y por dónde van los cables en paredes y techos."
+      },
+      "simulate": {
+        "title": "Qué se apaga",
+        "text": "Apaga un interruptor en la simulación y los puntos sin corriente se oscurecen en el plano."
+      },
+      "layers": {
+        "title": "Capas",
+        "text": "Oculta lo que no necesites: baja tensión, cotas, fotos de paredes."
+      },
+      "aside": {
+        "title": "Detalles",
+        "text": "Aquí aparece el punto, la habitación o el recorrido seleccionado."
+      }
+    },
+    "find": {
+      "search": {
+        "title": "Búscalo",
+        "text": "Empieza a escribir: «hervidor», «baño», «QF5». La app te dice qué interruptor apagar."
+      },
+      "rooms": {
+        "title": "O elige una habitación",
+        "text": "Pulsa una habitación y luego un enchufe o una luz."
+      }
+    },
+    "schema": {
+      "tree": {
+        "title": "Esquema unifilar",
+        "text": "Se genera solo: la acometida arriba, debajo los diferenciales y circuitos. Pulsa un bloque para abrir el aparato."
+      },
+      "simulate": {
+        "title": "Simulación",
+        "text": "Apaga interruptores en el esquema: las ramas sin corriente se oscurecen."
+      }
+    },
+    "checks": {
+      "counts": {
+        "title": "Avisos",
+        "text": "Los errores conviene arreglarlos, las advertencias revisarlas, los consejos son opcionales."
+      },
+      "load": {
+        "title": "Carga",
+        "text": "Cuánto puede consumir la vivienda a la vez y si la potencia contratada alcanza."
+      },
+      "list": {
+        "title": "Qué falla",
+        "text": "Cada aviso explica el problema y lleva al aparato."
+      }
+    },
+    "maintenance": {
+      "task": {
+        "title": "Calendario",
+        "text": "Qué hacer con el cuadro y cada cuánto: prueba de diferenciales, reapriete de bornes, lectura del contador."
+      },
+      "done": {
+        "title": "Marcar como hecho",
+        "text": "Púlsalo al terminar; la próxima fecha se calcula sola."
+      },
+      "log": {
+        "title": "Registro",
+        "text": "Quién hizo qué y cuándo."
+      }
+    },
+    "labels": {
+      "options": {
+        "title": "Qué imprimir",
+        "text": "Una pegatina para la puerta, tiras para los interruptores y un QR por aparato."
+      },
+      "sticker": {
+        "title": "QR para la puerta",
+        "text": "Este código abre el sitio directamente, sin escribir la contraseña."
+      },
+      "print": {
+        "title": "Impresión",
+        "text": "Imprime al 100% para que las tiras coincidan con el ancho de los interruptores."
+      }
+    },
+    "emergency": {
+      "scenarios": {
+        "title": "¿Qué ha pasado?",
+        "text": "Elige la situación y la app te guía paso a paso."
+      },
+      "smell": {
+        "title": "Si es peligroso",
+        "text": "Olor a quemado, chispas o el cuadro caliente: primero este botón."
+      }
+    },
+    "edit-general": {
+      "tabs": {
+        "title": "Pestañas del editor",
+        "text": "General, cuadro, plano, fotos, mantenimiento y publicación."
+      },
+      "history": {
+        "title": "Deshacer y borrador",
+        "text": "Cada cambio va a un borrador en este dispositivo y los errores se pueden deshacer."
+      },
+      "meta": {
+        "title": "Nombre y dirección",
+        "text": "La dirección del sitio se usa en los QR. Un sitio creado desde la app la rellena solo."
+      },
+      "supply": {
+        "title": "Acometida",
+        "text": "Fases, tensión, potencia contratada y número de contrato."
+      },
+      "contacts": {
+        "title": "Contactos",
+        "text": "El electricista y la administración. Sus teléfonos aparecen en «Ha saltado algo»."
+      }
+    },
+    "edit-panel": {
+      "tabs": {
+        "title": "Pestañas del editor",
+        "text": "General, cuadro, plano, fotos, mantenimiento y publicación."
+      },
+      "board": {
+        "title": "Añadir un aparato",
+        "text": "Pulsa «+» en un hueco del carril y elige qué va ahí."
+      },
+      "view": {
+        "title": "Cuadro o lista",
+        "text": "La lista viene bien para el ancho de las filas y los huecos."
+      },
+      "addrow": {
+        "title": "Filas",
+        "text": "Añade una fila si el cuadro tiene más carriles."
+      },
+      "aside": {
+        "title": "Propiedades",
+        "text": "El aparato seleccionado se configura aquí: calibre, conexión, mantenimiento."
+      }
+    },
+    "edit-plan": {
+      "modes": {
+        "title": "Herramientas",
+        "text": "Habitación, contorno, hueco, punto, cable y foto. Pulsa en el plano para colocarlos."
+      },
+      "canvas": {
+        "title": "Plano",
+        "text": "Arrastra para moverte y usa la rueda para el zoom. Escribe un número para fijar la longitud de una pared o un cable."
+      },
+      "view3d": {
+        "title": "Revisar en 3D",
+        "text": "Cambia para ver alturas y recorridos en el espacio."
+      },
+      "aside": {
+        "title": "Propiedades",
+        "text": "Aquí se edita la habitación, el punto o el recorrido seleccionado."
+      }
+    },
+    "edit-maintenance": {
+      "add": {
+        "title": "Tarea nueva",
+        "text": "Añade tu propia tarea. Las habituales se proponen en la ficha del aparato."
+      },
+      "task": {
+        "title": "Tarea y registro",
+        "text": "Intervalo, instrucciones, aparatos y el registro de cuándo se hizo."
+      }
+    },
+    "edit-publish": {
+      "file": {
+        "title": "Archivo",
+        "text": "Guarda un .panel cifrado para dárselo al electricista o al dueño."
+      },
+      "site": {
+        "title": "Sitio",
+        "text": "Publica el cuadro en tu propio sitio: entra con GitHub y créalo en un par de clics."
+      },
+      "password": {
+        "title": "Contraseña",
+        "text": "Cifra los datos y no se puede recuperar. Apúntala."
+      }
+    }
   }
 }

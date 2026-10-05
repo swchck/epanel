@@ -367,7 +367,7 @@ const hint = computed(() => t(`editor.plan.hint.${view3d.value ? 'view3d' : mode
   <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_24rem]">
     <div class="min-w-0 space-y-3">
       <div class="flex flex-wrap items-center gap-2">
-        <div class="flex overflow-hidden rounded-lg border">
+        <div data-tour="eplan-modes" class="flex overflow-hidden rounded-lg border">
           <button
             v-for="m in MODES"
             :key="m.id"
@@ -408,7 +408,7 @@ const hint = computed(() => t(`editor.plan.hint.${view3d.value ? 'view3d' : mode
           </SelectContent>
         </Select>
         <div class="flex-1" />
-        <div class="flex overflow-hidden rounded-lg border text-xs font-medium">
+        <div data-tour="eplan-3d" class="flex overflow-hidden rounded-lg border text-xs font-medium">
           <button v-for="v in [false, true]" :key="String(v)" class="px-2.5 py-1.5 transition" :class="view3d === v ? 'bg-primary text-primary-foreground' : 'hover:bg-accent'" :aria-pressed="view3d === v" @click="view3d !== v && toggle3d()">
             {{ v ? '3D' : '2D' }}
           </button>
@@ -418,7 +418,7 @@ const hint = computed(() => t(`editor.plan.hint.${view3d.value ? 'view3d' : mode
       </div>
       <p class="text-xs text-muted-foreground">{{ hint }}</p>
 
-      <div class="relative h-[min(72vh,900px)] min-h-[420px] overflow-hidden rounded-2xl border bg-card">
+      <div data-tour="eplan-canvas" class="relative h-[min(72vh,900px)] min-h-[420px] overflow-hidden rounded-2xl border bg-card">
         <Plan3D
           v-if="view3d"
           show-routes
@@ -522,7 +522,7 @@ const hint = computed(() => t(`editor.plan.hint.${view3d.value ? 'view3d' : mode
       </div>
     </div>
 
-    <aside class="space-y-4">
+    <aside data-tour="eplan-aside" class="space-y-4">
       <div v-if="point" class="space-y-3 rounded-2xl border bg-card p-4">
         <div class="flex items-center gap-2">
           <Button variant="ghost" size="icon-sm" class="-ml-1.5" :aria-label="t('editor.plan.backToPlan')" @click="sel = null"><ChevronLeft /></Button>

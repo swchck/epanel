@@ -58,7 +58,7 @@ function back() {
     <h1 class="text-2xl font-semibold tracking-tight lg:text-3xl">{{ t('find.title') }}</h1>
     <p class="mt-1 text-muted-foreground">{{ t('find.subtitle') }}</p>
 
-    <div class="relative mt-5">
+    <div data-tour="find-search" class="relative mt-5">
       <Search class="absolute top-1/2 left-4 size-5 -translate-y-1/2 text-muted-foreground" />
       <input
         v-model="q"
@@ -115,7 +115,7 @@ function back() {
 
       <template v-else>
         <div class="mb-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">{{ t('find.pickRoom') }}</div>
-        <div class="grid grid-cols-2 gap-2 sm:grid-cols-3">
+        <div data-tour="find-rooms" class="grid grid-cols-2 gap-2 sm:grid-cols-3">
           <button
             v-for="r in rooms"
             :key="r.room.id"
