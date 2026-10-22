@@ -1,4 +1,4 @@
-import { defaultWidth, type Device, type DeviceType, type PanelData, type RowItem } from '@/domain/model'
+import { defaultWidth, resolveRef, type Device, type DeviceType, type PanelData, type RowItem } from '@/domain/model'
 
 const ID_PREFIX: Record<DeviceType, string> = {
   mcb: 'QF',
@@ -20,6 +20,7 @@ const ID_PREFIX: Record<DeviceType, string> = {
   ups: 'GU',
   bus: 'X',
   terminal: 'XT',
+  'distribution-block': 'XB',
   actuator: 'QA',
   'bus-psu': 'GB',
   'bus-gateway': 'KF',
@@ -47,6 +48,7 @@ const DEVICE_DEFAULTS: Record<DeviceType, Partial<Device>> = {
   ups: { poles: 1 },
   bus: { poles: 1 },
   terminal: { poles: 1, width: 1 },
+  'distribution-block': { poles: 1, width: 1.5 },
   actuator: { poles: 2, smart: { system: 'knx', channels: ['A', 'B', 'C', 'D'].map((id) => ({ id, function: 'switch' as const, points: [] })) } },
   'bus-psu': { poles: 1, smart: { system: 'knx', channels: [] } },
   'bus-gateway': { poles: 1, smart: { system: 'knx', channels: [] } },
@@ -72,6 +74,7 @@ export function addDevice(d: PanelData, type: DeviceType, rowIndex: number, at?:
     type,
     label: '',
     poles: 1,
+    terminals: [],
     tags: [],
     notes: [],
     photos: [],
@@ -86,12 +89,26 @@ export function addDevice(d: PanelData, type: DeviceType, rowIndex: number, at?:
   return dev
 }
 
+// renames one terminal and rewrites every link that points at it; refuses an empty or taken id
+export function renameTerminal(d: PanelData, deviceId: string, from: string, to: string): boolean {
+  const dev = d.devices.find((x) => x.id === deviceId)
+  const t = dev?.terminals.find((x) => x.id === from)
+  to = to.trim()
+  if (!dev || !t || !to || to === from || dev.terminals.some((x) => x.id === to)) return false
+  t.id = to
+  const oldRef = `${deviceId}.${from}`
+  for (const x of d.devices) for (const tt of x.terminals) if (tt.to === oldRef) tt.to = `${deviceId}.${to}`
+  return true
+}
+
 export function removeDevice(d: PanelData, id: string) {
   const dev = d.devices.find((x) => x.id === id)
   d.devices = d.devices.filter((x) => x.id !== id)
   for (const row of d.rows) row.items = row.items.filter((i) => i !== id)
   // children are re-attached to the removed device's feeder so the tree stays connected
   for (const x of d.devices) if (x.upstream === id) x.upstream = dev?.upstream
+  // links into the removed device would dangle; the other end keeps its terminal, just unlinked
+  for (const x of d.devices) for (const t of x.terminals) if (t.to?.startsWith(`${id}.`) && !resolveRef(t.to, d.devices)) t.to = undefined
   for (const p of d.points) if (p.device === id) p.device = undefined
   for (const r of d.routes) if (r.device === id) r.device = undefined
   for (const t of d.maintenance.tasks) t.devices = t.devices.filter((x) => x !== id)
@@ -106,6 +123,7 @@ export function renameDevice(d: PanelData, from: string, to: string): boolean {
   dev.id = to
   for (const row of d.rows) row.items = row.items.map((i) => (i === from ? to : i))
   for (const x of d.devices) if (x.upstream === from) x.upstream = to
+  for (const x of d.devices) for (const t of x.terminals) if (t.to?.startsWith(`${from}.`)) t.to = `${to}${t.to.slice(from.length)}`
   for (const p of d.points) if (p.device === from) p.device = to
   for (const r of d.routes) if (r.device === from) r.device = to
   for (const t of d.maintenance.tasks) t.devices = t.devices.map((x) => (x === from ? to : x))

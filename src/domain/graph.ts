@@ -1,5 +1,6 @@
 import type { Device, PanelData, PlanPoint } from './model'
 import { RCD_TYPES } from './model'
+import { buildTerminalIndex, effectiveUpstream, isOpen, liveFeeders, type TerminalIndex } from './terminals'
 
 export interface PowerGraph {
   byId: Map<string, Device>
@@ -14,17 +15,28 @@ export interface PowerGraph {
   isFed(id: string, off: ReadonlySet<string>): boolean
   rcdChain(id: string): Device[]
   depth(id: string): number
+  // the feeder the tree uses: from terminal links when they name one, else the hand-set upstream
+  upstreamOf(id: string): string | undefined
+  // all devices feeding the live group, the tree parent first
+  feedersOf(id: string): string[]
+  terminals: TerminalIndex
 }
 
 export function buildGraph(data: Pick<PanelData, 'devices' | 'points'>): PowerGraph {
   const byId = new Map(data.devices.map((d) => [d.id, d]))
+  const terminals = buildTerminalIndex(data.devices)
+  const upOf = new Map(data.devices.map((d) => [d.id, effectiveUpstream(d, terminals)]))
+  const up = (d: Device) => upOf.get(d.id)
+  const feederMap = new Map(data.devices.map((d) => [d.id, liveFeeders(d, terminals).filter((f) => f !== d.id)]))
+  const feeders = (id: string) => feederMap.get(id) ?? []
   const children = new Map<string, Device[]>()
   const roots: Device[] = []
   for (const d of data.devices) {
-    if (d.upstream && byId.has(d.upstream)) {
-      const list = children.get(d.upstream) ?? []
+    const u = up(d)
+    if (u && byId.has(u)) {
+      const list = children.get(u) ?? []
       list.push(d)
-      children.set(d.upstream, list)
+      children.set(u, list)
     } else {
       roots.push(d)
     }
@@ -33,14 +45,14 @@ export function buildGraph(data: Pick<PanelData, 'devices' | 'points'>): PowerGr
   const cycles: string[] = []
   for (const d of data.devices) {
     const seen = new Set<string>([d.id])
-    let cur = d.upstream ? byId.get(d.upstream) : undefined
+    let cur = up(d) ? byId.get(up(d)!) : undefined
     while (cur) {
       if (seen.has(cur.id)) {
         cycles.push(d.id)
         break
       }
       seen.add(cur.id)
-      cur = cur.upstream ? byId.get(cur.upstream) : undefined
+      cur = up(cur) ? byId.get(up(cur)!) : undefined
     }
   }
   const cyclic = new Set(cycles)
@@ -57,11 +69,11 @@ export function buildGraph(data: Pick<PanelData, 'devices' | 'points'>): PowerGr
     const out: Device[] = []
     if (cyclic.has(id)) return out
     let cur = byId.get(id)
-    while (cur?.upstream) {
-      const up = byId.get(cur.upstream)
-      if (!up) break
-      out.push(up)
-      cur = up
+    while (cur && up(cur)) {
+      const parent = byId.get(up(cur)!)
+      if (!parent) break
+      out.push(parent)
+      cur = parent
     }
     return out
   }
@@ -87,11 +99,22 @@ export function buildGraph(data: Pick<PanelData, 'devices' | 'points'>): PowerGr
   }
 
   function isFed(id: string, off: ReadonlySet<string>): boolean {
-    return ancestors(id).every((a) => !off.has(a.id))
+    // fed when every live feeder is on, closed and fed itself; a changeover switch in position 0 is off by itself.
+    // Walks all feeders, not just the tree parent, so one phase block switched off shows up.
+    // an unknown feeder stands for a supply outside the panel and a loop stops the walk, both as before (the reference
+    // check and the cycle check report them). ponytail: no memo, fine for panel-sized graphs.
+    const walk = (cur: string, seen: Set<string>): boolean =>
+      feeders(cur).every((f) => {
+        const fd = byId.get(f)
+        if (!fd || seen.has(f)) return true
+        return !off.has(f) && !isOpen(fd) && walk(f, new Set(seen).add(f))
+      })
+    return walk(id, new Set([id]))
   }
 
   function isPowered(id: string, off: ReadonlySet<string>): boolean {
-    return !off.has(id) && isFed(id, off)
+    const self = byId.get(id)
+    return !off.has(id) && !(self && isOpen(self)) && isFed(id, off)
   }
 
   function rcdChain(id: string): Device[] {
@@ -103,7 +126,7 @@ export function buildGraph(data: Pick<PanelData, 'devices' | 'points'>): PowerGr
     return ancestors(id).length
   }
 
-  return { byId, children, roots, cycles, ancestors, descendants, pointsOf, isFed, isPowered, rcdChain, depth }
+  return { byId, children, roots, cycles, ancestors, descendants, pointsOf, isFed, isPowered, rcdChain, depth, upstreamOf: (id) => upOf.get(id), feedersOf: feeders, terminals }
 }
 
 export function pointPowered(g: PowerGraph, p: PlanPoint, off: ReadonlySet<string>): boolean {

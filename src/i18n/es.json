@@ -120,6 +120,7 @@
       "din-socket": "Enchufe para carril DIN",
       "bus": "Barra",
       "terminal": "Bornas",
+      "distribution-block": "Bloque de distribución",
       "actuator": "Actuador de bus",
       "bus-psu": "Fuente de alimentación del bus",
       "bus-gateway": "Pasarela de bus",
@@ -146,6 +147,7 @@
       "din-socket": "Enchufe",
       "bus": "Barra",
       "terminal": "Bornas",
+      "distribution-block": "Bloque distr.",
       "actuator": "Actuador",
       "bus-psu": "Fuente bus",
       "bus-gateway": "Pasarela",
@@ -201,6 +203,7 @@
       "din-socket": "Un enchufe dentro del cuadro, para el router o un cargador",
       "bus": "Barra de neutro o de tierra, peine",
       "terminal": "Bornes de carril DIN para unir cables",
+      "distribution-block": "Bornes de entrada y salida en una barra, p. ej. un bloque por fase, N y PE",
       "actuator": "Relé del bus domótico: luces, persianas, calefacción",
       "bus-psu": "Alimenta un bus KNX o DALI",
       "bus-gateway": "Conecta el bus con la red y la app",
@@ -622,6 +625,10 @@
       "route-drop-midair": {
         "title": "La bajada al punto no va por la pared",
         "hint": "El recorrido {route} sube o baja hasta «{point}», que está a más de 30 cm de una pared. Los tramos verticales solo van por dentro de la pared: acerca el punto a una pared o cambia el recorrido."
+      },
+      "conductor-mismatch": {
+        "title": "Conductores cruzados",
+        "hint": "El borne {terminal} de {device} lleva {conductor}, pero {to} está marcado como {other}."
       }
     },
     "rules": {
@@ -789,7 +796,12 @@
       "file": "desde un archivo",
       "new": "proyecto nuevo",
       "preview": "Vista previa del editor"
-    }
+    },
+    "panelTitle": "Vista del cuadro",
+    "showScrews": "Tornillos de los bornes",
+    "showScrewsHint": "Dibujar los tornillos encima y debajo de cada dispositivo: según lo introducido o, si no, el juego estándar según los polos.",
+    "showTerminalIds": "Nombres de bornes",
+    "showTerminalIdsHint": "Mostrar los nombres de los bornes junto a los tornillos."
   },
   "editor": {
     "title": "Editor",
@@ -885,7 +897,8 @@
       "suggestTask": "recomendado",
       "createTask": "Crear tarea",
       "joinTask": "Añadir a la tarea",
-      "leaveTask": "Quitar de la tarea"
+      "leaveTask": "Quitar de la tarea",
+      "color": "Color"
     },
     "smart": {
       "title": "Bus domótico",
@@ -1089,6 +1102,39 @@
       "advanced": "Avanzado: rama y ruta del archivo",
       "remember": "Mantener la sesión en este dispositivo",
       "sessionExpired": "La sesión de GitHub ha caducado. Vuelve a entrar."
+    },
+    "terminals": {
+      "title": "Bornes",
+      "fromTemplate": "Bornes estándar",
+      "empty": "Aún no hay bornes. Añade el juego estándar para este tipo de dispositivo y elige para cada borne a qué está conectado.",
+      "id": "Borne",
+      "top": "arriba",
+      "bottom": "abajo",
+      "role": {
+        "in": "entrada",
+        "out": "salida",
+        "bus": "paso (bloque)"
+      },
+      "to": "Conectado a",
+      "none": "sin conectar",
+      "linkedFrom": "también conectado desde",
+      "conductor": "Conductor",
+      "group": "Grupo de alimentación",
+      "color": "Color del cable",
+      "fromLinks": "según las conexiones de bornes",
+      "position": "Posición del conmutador",
+      "positionOff": "0 (apagado)",
+      "idTaken": "El nombre del borne está vacío o ya existe en este dispositivo."
+    },
+    "colorAuto": "Automático (según el conductor)",
+    "color": {
+      "brown": "marrón",
+      "black": "negro",
+      "grey": "gris",
+      "blue": "azul",
+      "green-yellow": "verde-amarillo",
+      "red": "rojo",
+      "white": "blanco"
     }
   },
   "landing": {

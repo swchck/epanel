@@ -120,6 +120,7 @@
       "din-socket": "DIN rail socket",
       "bus": "Busbar",
       "terminal": "Terminals",
+      "distribution-block": "Distribution block",
       "actuator": "Bus actuator",
       "bus-psu": "Bus power supply",
       "bus-gateway": "Bus gateway",
@@ -146,6 +147,7 @@
       "din-socket": "Socket",
       "bus": "Busbar",
       "terminal": "Terminals",
+      "distribution-block": "Distr. block",
       "actuator": "Actuator",
       "bus-psu": "Bus PSU",
       "bus-gateway": "Gateway",
@@ -201,6 +203,7 @@
       "din-socket": "A socket inside the panel, for a router or charger",
       "bus": "Neutral or earth busbar, comb busbar",
       "terminal": "DIN-rail terminals for joining wires",
+      "distribution-block": "Main and branch clamps on one bar, e.g. one block per phase, N and PE",
       "actuator": "Smart-home bus relay: lights, blinds, heating",
       "bus-psu": "Powers a KNX or DALI bus",
       "bus-gateway": "Connects the bus to the network and app",
@@ -622,6 +625,10 @@
       "route-drop-midair": {
         "title": "The drop to a point is not in a wall",
         "hint": "Route {route} rises or drops to \"{point}\", which is more than 30 cm from a wall. Vertical sections only run inside walls: move the point to a wall or route the cable differently."
+      },
+      "conductor-mismatch": {
+        "title": "Conductors swapped on a link",
+        "hint": "Terminal {terminal} of {device} carries {conductor}, but {to} is marked {other}."
       }
     },
     "rules": {
@@ -789,7 +796,12 @@
       "file": "from a file",
       "new": "new project",
       "preview": "Preview from the editor"
-    }
+    },
+    "panelTitle": "Panel view",
+    "showScrews": "Terminal screws",
+    "showScrewsHint": "Draw the screws above and below each device: as entered, else the standard set for its poles.",
+    "showTerminalIds": "Terminal ids",
+    "showTerminalIdsHint": "Print the terminal ids next to the screws."
   },
   "editor": {
     "title": "Editor",
@@ -885,7 +897,8 @@
       "suggestTask": "recommended",
       "createTask": "Create task",
       "joinTask": "Add to task",
-      "leaveTask": "Remove from task"
+      "leaveTask": "Remove from task",
+      "color": "Colour"
     },
     "smart": {
       "title": "Smart-home bus",
@@ -1089,6 +1102,39 @@
       "advanced": "Advanced: branch and file path",
       "remember": "Stay signed in on this device",
       "sessionExpired": "Your GitHub sign-in expired. Please sign in again."
+    },
+    "terminals": {
+      "title": "Terminals",
+      "fromTemplate": "Standard terminals",
+      "empty": "No terminals yet. Add the standard set for this device type, then pick for each terminal what it is wired to.",
+      "id": "Terminal",
+      "top": "top",
+      "bottom": "bottom",
+      "role": {
+        "in": "input",
+        "out": "output",
+        "bus": "through (block)"
+      },
+      "to": "Connected to",
+      "none": "not connected",
+      "linkedFrom": "also wired from",
+      "conductor": "Conductor",
+      "group": "Feed group",
+      "color": "Wire colour",
+      "fromLinks": "from terminal links",
+      "position": "Switch position",
+      "positionOff": "0 (off)",
+      "idTaken": "This terminal id is empty or already used on this device."
+    },
+    "colorAuto": "Auto (from conductor)",
+    "color": {
+      "brown": "brown",
+      "black": "black",
+      "grey": "grey",
+      "blue": "blue",
+      "green-yellow": "green-yellow",
+      "red": "red",
+      "white": "white"
     }
   },
   "landing": {
