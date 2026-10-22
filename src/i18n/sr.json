@@ -120,6 +120,7 @@
       "din-socket": "Utičnica za DIN šinu",
       "bus": "Šina",
       "terminal": "Kleme",
+      "distribution-block": "Razdelni blok",
       "actuator": "Aktuator na magistrali",
       "bus-psu": "Napajanje magistrale",
       "bus-gateway": "Gejtvej magistrale",
@@ -146,6 +147,7 @@
       "din-socket": "Utičnica",
       "bus": "Šina",
       "terminal": "Kleme",
+      "distribution-block": "Razd. blok",
       "actuator": "Aktuator",
       "bus-psu": "Napajanje",
       "bus-gateway": "Gejtvej",
@@ -201,6 +203,7 @@
       "din-socket": "Utičnica u samoj tabli, za ruter ili punjač",
       "bus": "Nulta ili zaštitna šina, češalj",
       "terminal": "Kleme za spajanje provodnika na DIN šini",
+      "distribution-block": "Ulazne i izlazne kleme na jednoj šini, npr. po jedan blok za svaku fazu, N i PE",
       "actuator": "Relej magistrale pametne kuće: svetlo, roletne, grejanje",
       "bus-psu": "Napaja KNX ili DALI magistralu",
       "bus-gateway": "Povezuje magistralu sa mrežom i aplikacijom",
@@ -622,6 +625,10 @@
       "route-drop-midair": {
         "title": "Spust do tačke nije u zidu",
         "hint": "Trasa {route} se penje ili spušta do tačke „{point}“, a ona je dalje od 30 cm od zida. Uspravni delovi idu samo kroz zid: pomerite tačku uz zid ili vodite trasu drugačije."
+      },
+      "conductor-mismatch": {
+        "title": "Zamenjeni provodnici",
+        "hint": "Klema {terminal} uređaja {device} nosi {conductor}, a {to} je označena kao {other}."
       }
     },
     "rules": {
@@ -885,7 +892,8 @@
       "suggestTask": "preporučeno",
       "createTask": "Napravi zadatak",
       "joinTask": "Dodaj u zadatak",
-      "leaveTask": "Ukloni iz zadatka"
+      "leaveTask": "Ukloni iz zadatka",
+      "color": "Boja"
     },
     "smart": {
       "title": "Magistrala pametne kuće",
@@ -1089,6 +1097,38 @@
       "advanced": "Dodatno: grana i putanja do fajla",
       "remember": "Ostani prijavljen na ovom uređaju",
       "sessionExpired": "Prijava na GitHub je istekla. Prijavite se ponovo."
+    },
+    "terminals": {
+      "title": "Kleme",
+      "fromTemplate": "Standardne kleme",
+      "empty": "Još nema klema. Dodajte standardni skup za ovaj tip uređaja, pa za svaku klemu izaberite s čim je povezana.",
+      "id": "Klema",
+      "top": "gore",
+      "bottom": "dole",
+      "role": {
+        "in": "ulaz",
+        "out": "izlaz",
+        "bus": "prolazna (blok)"
+      },
+      "to": "Povezana sa",
+      "none": "nije povezana",
+      "linkedFrom": "povezano i sa",
+      "conductor": "Provodnik",
+      "group": "Grupa napajanja",
+      "color": "Boja provodnika",
+      "fromLinks": "iz veza klema",
+      "position": "Položaj preklopke",
+      "positionOff": "0 (isključeno)"
+    },
+    "colorAuto": "Automatski (po provodniku)",
+    "color": {
+      "brown": "braon",
+      "black": "crna",
+      "grey": "siva",
+      "blue": "plava",
+      "green-yellow": "zeleno-žuta",
+      "red": "crvena",
+      "white": "bela"
     }
   },
   "landing": {
