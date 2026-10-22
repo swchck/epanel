@@ -131,7 +131,7 @@
       "impulse-relay": "Telerruptor",
       "dimmer": "Regulador",
       "psu": "Fuente de 12/24 V",
-      "ats": "Conmutador automático de red",
+      "ats": "Conmutador de red",
       "ups": "SAI"
     },
     "typeShort": {
@@ -157,7 +157,7 @@
       "impulse-relay": "Telerruptor",
       "dimmer": "Regulador",
       "psu": "Fuente 12/24 V",
-      "ats": "ATS",
+      "ats": "Conmutador",
       "ups": "SAI"
     },
     "field": {
@@ -212,7 +212,7 @@
       "impulse-relay": "Luz que se enciende y apaga con pulsadores desde varios puntos",
       "dimmer": "Ajusta suavemente la intensidad de las luces",
       "psu": "Alimenta tiras LED, sensores, baja tensión",
-      "ats": "Pasa la vivienda a una segunda acometida o generador cuando cae la principal",
+      "ats": "Pasa la vivienda entre la acometida principal y una segunda o un generador, a mano (I–0–II) o de forma automática",
       "ups": "Mantiene el router, la caldera o la bomba con batería durante un corte"
     }
   },
@@ -622,6 +622,10 @@
       "route-drop-midair": {
         "title": "La bajada al punto no va por la pared",
         "hint": "El recorrido {route} sube o baja hasta «{point}», que está a más de 30 cm de una pared. Los tramos verticales solo van por dentro de la pared: acerca el punto a una pared o cambia el recorrido."
+      },
+      "conductor-mismatch": {
+        "title": "Conductores cruzados",
+        "hint": "El borne {terminal} de {device} lleva {conductor}, pero {to} está marcado como {other}."
       }
     },
     "rules": {
@@ -1089,6 +1093,28 @@
       "advanced": "Avanzado: rama y ruta del archivo",
       "remember": "Mantener la sesión en este dispositivo",
       "sessionExpired": "La sesión de GitHub ha caducado. Vuelve a entrar."
+    },
+    "terminals": {
+      "title": "Bornes",
+      "fromTemplate": "Bornes estándar",
+      "empty": "Aún no hay bornes. Añade el juego estándar para este tipo de dispositivo y elige para cada borne a qué está conectado.",
+      "id": "Borne",
+      "top": "arriba",
+      "bottom": "abajo",
+      "role": {
+        "in": "entrada",
+        "out": "salida",
+        "bus": "paso (bloque)"
+      },
+      "to": "Conectado a",
+      "none": "sin conectar",
+      "linkedFrom": "también conectado desde",
+      "conductor": "Conductor",
+      "group": "Grupo de alimentación",
+      "color": "Color del cable",
+      "fromLinks": "según las conexiones de bornes",
+      "position": "Posición del conmutador",
+      "positionOff": "0 (apagado)"
     }
   },
   "landing": {

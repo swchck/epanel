@@ -131,7 +131,7 @@
       "impulse-relay": "Impulse relay",
       "dimmer": "Dimmer",
       "psu": "12/24 V power supply",
-      "ats": "Automatic transfer switch",
+      "ats": "Transfer switch",
       "ups": "UPS"
     },
     "typeShort": {
@@ -157,7 +157,7 @@
       "impulse-relay": "Impulse",
       "dimmer": "Dimmer",
       "psu": "PSU 12/24 V",
-      "ats": "ATS",
+      "ats": "Transfer",
       "ups": "UPS"
     },
     "field": {
@@ -212,7 +212,7 @@
       "impulse-relay": "Lights switched by push buttons from several places",
       "dimmer": "Sets the brightness of the lights smoothly",
       "psu": "Powers LED strips, sensors, low-voltage gear",
-      "ats": "Moves the flat to a second feed or a generator when the main one fails",
+      "ats": "Switches the flat between the main feed and a second feed or a generator, by hand (I–0–II) or automatically",
       "ups": "Keeps the router, boiler or pump on battery during a power cut"
     }
   },
@@ -622,6 +622,10 @@
       "route-drop-midair": {
         "title": "The drop to a point is not in a wall",
         "hint": "Route {route} rises or drops to \"{point}\", which is more than 30 cm from a wall. Vertical sections only run inside walls: move the point to a wall or route the cable differently."
+      },
+      "conductor-mismatch": {
+        "title": "Conductors swapped on a link",
+        "hint": "Terminal {terminal} of {device} carries {conductor}, but {to} is marked {other}."
       }
     },
     "rules": {
@@ -1089,6 +1093,28 @@
       "advanced": "Advanced: branch and file path",
       "remember": "Stay signed in on this device",
       "sessionExpired": "Your GitHub sign-in expired. Please sign in again."
+    },
+    "terminals": {
+      "title": "Terminals",
+      "fromTemplate": "Standard terminals",
+      "empty": "No terminals yet. Add the standard set for this device type, then pick for each terminal what it is wired to.",
+      "id": "Terminal",
+      "top": "top",
+      "bottom": "bottom",
+      "role": {
+        "in": "input",
+        "out": "output",
+        "bus": "through (block)"
+      },
+      "to": "Connected to",
+      "none": "not connected",
+      "linkedFrom": "also wired from",
+      "conductor": "Conductor",
+      "group": "Feed group",
+      "color": "Wire colour",
+      "fromLinks": "from terminal links",
+      "position": "Switch position",
+      "positionOff": "0 (off)"
     }
   },
   "landing": {
